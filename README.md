@@ -6,9 +6,13 @@
 
 ## 🧑‍🤝‍🧑 팀원 소개
 
-| Scrum Master  | Product Owner| Developer | Developer | Developer | Mentor | Sub Mentor |
-|------------|-----------|-----------|------|------|------|-----------|
-| [권성준](https://github.com/Seongjun-Kwon)       | [이수영](https://github.com/twotwobread)     | [공태현](https://github.com/rhdtn311)     | [김소현](https://github.com/thguss)    | [박세준](https://github.com/park-se-jun) | [마르코](https://github.com/ksy90101) | [김명환](https://github.com/samkimuel) |
+| Product Owner | Scrum Master | Developer | Developer | Developer |
+|------------|-----------|-----------|------|------|
+| [권성준](https://github.com/Seongjun-Kwon)       | [이수영](https://github.com/twotwobread)     | [공태현](https://github.com/rhdtn311)     | [김소현](https://github.com/thguss)    | [박세준](https://github.com/park-se-jun) |
+  
+| Mentor | Sub Mentor |
+|--------|------------|
+| [마르코](https://github.com/ksy90101) | [김명환](https://github.com/samkimuel) |
 
 ## 프로젝트 목표
 
