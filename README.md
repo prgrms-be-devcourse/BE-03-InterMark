@@ -25,9 +25,9 @@
 |----------------------------|------------------------------|------------------------------------------|--------------------------|
 | Java 17                    | Gradle                        | SpringBoot 2.7.7                              | Spring Data JPA    |
 
-| ![RestDocs](image/be/restdocs.png) | ![Junit5](image/be/junit.png) | ![Mockito](image/be/mockito.png) | ![Mysql 8.0]() |
-|------------------------------------|------------------------------|----------------------------------|------------------------------|
-| RestDocs                    | Junit 5                      | Mockito                          | MySQL 8.0                      |
+| ![RestDocs](image/be/restdocs.png) | ![Junit5](image/be/junit.png) | ![Mockito](image/be/mockito.png) | ![Mysql 8.0]() | ![Lombok]() |
+|------------------------------------|------------------------------|----------------------------------|------------------------------|------------------------------|
+| RestDocs                    | Junit 5                      | Mockito                          | MySQL 8.0                      | Lombok                      |
 ### DevOps
 | ![EC2](image/devops/ec2.png) | ![S3](image/devops/s3.png) | ![RDS](image/devops/rds.png) |
 |------------------------------|----------------------------|------------------------------|
