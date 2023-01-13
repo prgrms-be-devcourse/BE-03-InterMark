@@ -2,6 +2,7 @@ package com.prgrms.be.intermark.domain.user;
 
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.Nullable;
@@ -15,6 +16,7 @@ import java.util.Date;
 @Table(name = "user",
         uniqueConstraints = {@UniqueConstraint(name = "social_uk", columnNames = {"social", "social_id"})})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class User {
 
     @Id
