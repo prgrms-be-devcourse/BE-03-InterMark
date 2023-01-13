@@ -29,9 +29,9 @@
 |------------------------------------|------------------------------|----------------------------------|------------------------------|------------------------------|
 | RestDocs                    | Junit 5                      | Mockito                          | MySQL 8.0                      | Lombok                      |
 ### DevOps
-| ![EC2](image/devops/ec2.png) | ![S3](image/devops/s3.png) | ![RDS](image/devops/rds.png) |
-|------------------------------|----------------------------|------------------------------|
-| AWS EC2                      | AWS S3                     | AWS RDS                      |
+| ![EC2](image/devops/ec2.png) | ![S3](image/devops/s3.png) | ![RDS](image/devops/rds.png) | ![ClockWatch](image/devops/rds.png) |
+|------------------------------|----------------------------|------------------------------|------------------------------|
+| AWS EC2                      | AWS S3                     | AWS RDS                      | AWS ClockWatch                      |
 
 ### 협업툴
 | ![Jira](image/work/jira.png) | ![Notion](image/work/notion.png) | ![Slack](image/work/slack.png) | ![Github](image/work/github.png) |
