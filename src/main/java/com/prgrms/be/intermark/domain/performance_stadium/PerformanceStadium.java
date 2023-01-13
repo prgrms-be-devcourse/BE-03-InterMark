@@ -1,6 +1,8 @@
 package com.prgrms.be.intermark.domain.performance_stadium;
 
 import com.prgrms.be.intermark.domain.performance.Performance;
+import com.prgrms.be.intermark.domain.schedule.Schedule;
+import com.prgrms.be.intermark.domain.seat.Seat;
 import com.prgrms.be.intermark.domain.stadium.Stadium;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "performance_stadium")
@@ -26,6 +30,12 @@ public class PerformanceStadium {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stadium_id", referencedColumnName = "id")
     private Stadium stadium;
+
+    @OneToMany(mappedBy = "performanceStadium")
+    private List<Schedule> schedules = new ArrayList<>();
+
+    @OneToMany(mappedBy = "performanceStadium")
+    private List<Seat> seats = new ArrayList<>();
 
     @Builder
     public PerformanceStadium(Performance performance, Stadium stadium) {
