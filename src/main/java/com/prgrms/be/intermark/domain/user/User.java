@@ -1,15 +1,19 @@
-package com.prgrms.be.intermark.domain;
+package com.prgrms.be.intermark.domain.user;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user",
+        uniqueConstraints = {@UniqueConstraint(name = "social_uk", columnNames = {"social", "social_id"})})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
@@ -17,38 +21,50 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "social")
+    @NotNull
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "social", nullable = false)
     private Social social;
 
-    @Column(name = "social_id")
+    @NotNull
+    @Column(name = "social_id", nullable = false, length = 64)
     private String socialId;
 
-    @Column(name = "refresh_token")
+    @NotNull
+    @Column(name = "refresh_token", nullable = false, unique = true)
     private String refreshToken;
 
-    @Column(name = "username")
+    @Length(min = 2, max = 20)
+    @NotBlank
+    @Column(name = "username", nullable = false, unique = true, length = 20)
     private String username;
 
-    @Column(name = "role")
+    @NotNull
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 15)
     private UserRole role;
 
-    @Column(name = "status")
-    private Boolean status;
+    @NotNull
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 
+    @Nullable
     @Temporal(value = TemporalType.DATE)
     @Column(name = "birth")
     private Date birth;
 
     @Builder
-    public User(Social social, String socialId, String refreshToken, String username, UserRole role, Boolean status, Date birth) {
+    public User(Social social, String socialId, String refreshToken, String username, UserRole role, boolean isDeleted, Date birth) {
         this.social = social;
         this.socialId = socialId;
         this.refreshToken = refreshToken;
         this.username = username;
         this.role = role;
-        this.status = status;
+        this.isDeleted = isDeleted;
+        this.birth = birth;
+    }
+
+    public void setBirth(Date birth) {
         this.birth = birth;
     }
 }
