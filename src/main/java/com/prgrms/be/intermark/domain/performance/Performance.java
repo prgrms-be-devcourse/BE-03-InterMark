@@ -1,5 +1,6 @@
 package com.prgrms.be.intermark.domain.performance;
 
+import com.prgrms.be.intermark.domain.performance_stadium.PerformanceStadium;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +9,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "performance")
@@ -61,6 +65,9 @@ public class Performance {
     @Column(name = "price", nullable = false)
     private int price;
 
+    @OneToMany(mappedBy = "performance")
+    private List<PerformanceStadium> performanceStadiums = new ArrayList<>();
+
     @Builder
     public Performance(Date startDate, Date endDate, String name, int runningTime, PerformanceRating possibleAge, Genre genre, String thumbnailUrl, String description, int price) {
         this.startDate = startDate;
@@ -72,5 +79,14 @@ public class Performance {
         this.thumbnailUrl = thumbnailUrl;
         this.description = description;
         this.price = price;
+    }
+
+    public void addPerformanceStadiums(PerformanceStadium performanceStadium) {
+        if (this.performanceStadiums.contains(performanceStadium)) {
+            this.performanceStadiums.remove(performanceStadium);
+        }
+
+        this.performanceStadiums.add(performanceStadium);
+        performanceStadium.setPerformance(this);
     }
 }

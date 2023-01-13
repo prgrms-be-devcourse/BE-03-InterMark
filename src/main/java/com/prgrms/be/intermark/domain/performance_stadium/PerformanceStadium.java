@@ -32,4 +32,12 @@ public class PerformanceStadium {
         this.performance = performance;
         this.stadium = stadium;
     }
+
+    public void setPerformance(Performance performance) {
+        performance.addPerformanceStadiums(this);
+    }
+
+    public void setStadium(Stadium stadium) {
+        stadium.addPerformanceStadium(this);
+    }
 }
