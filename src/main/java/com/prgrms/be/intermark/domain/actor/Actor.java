@@ -1,5 +1,6 @@
 package com.prgrms.be.intermark.domain.actor;
 
+import com.prgrms.be.intermark.domain.casting.Casting;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,8 +8,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "actor")
@@ -37,6 +39,8 @@ public class Actor {
     @Column(name = "image_url", nullable = false, length = 2000)
     private String imageUrl;
 
+    @OneToMany(mappedBy = "actor")
+    private List<Casting> castings = new ArrayList<>();
     @Builder
     public Actor(String name, Date birth, Gender gender, String imageUrl) {
         this.name = name;
@@ -44,4 +48,5 @@ public class Actor {
         this.gender = gender;
         this.imageUrl = imageUrl;
     }
+
 }
