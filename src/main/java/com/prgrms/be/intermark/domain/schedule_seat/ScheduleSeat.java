@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -33,6 +34,9 @@ public class ScheduleSeat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "is_reserved")
+    private boolean isReserved;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
@@ -45,7 +49,9 @@ public class ScheduleSeat {
     private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
-    public ScheduleSeat(Schedule schedule, Seat seat, List<Ticket> tickets) {
+    public ScheduleSeat(boolean isReserved, Schedule schedule, Seat seat,
+        List<Ticket> tickets) {
+        this.isReserved = isReserved;
         this.schedule = schedule;
         this.seat = seat;
         this.tickets = tickets;
