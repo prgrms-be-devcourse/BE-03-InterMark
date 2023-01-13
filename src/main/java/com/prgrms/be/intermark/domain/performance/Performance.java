@@ -68,6 +68,9 @@ public class Performance {
 
     @OneToMany(mappedBy = "performance")
     private List<Casting> castings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "performance")
+    private List<PerformanceDetailImage> performanceDetailImages = new ArrayList<>();
     @Builder
     public Performance(Date startDate, Date endDate, String name, int runningTime, PerformanceRating possibleAge, Genre genre, String thumbnailUrl, String description, int price) {
         this.startDate = startDate;
