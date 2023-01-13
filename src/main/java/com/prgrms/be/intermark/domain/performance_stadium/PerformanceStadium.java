@@ -34,10 +34,20 @@ public class PerformanceStadium {
     }
 
     public void setPerformance(Performance performance) {
-        performance.addPerformanceStadiums(this);
+        if (this.performance != null) {
+            this.performance.getPerformanceStadiums().remove(this);
+        }
+
+        this.performance = performance;
+        performance.getPerformanceStadiums().add(this);
     }
 
     public void setStadium(Stadium stadium) {
-        stadium.addPerformanceStadium(this);
+        if (this.stadium != null) {
+            this.stadium.getPerformanceStadiums().remove(this);
+        }
+
+        this.stadium = stadium;
+        stadium.getPerformanceStadiums().add(this);
     }
 }

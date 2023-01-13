@@ -43,13 +43,4 @@ public class Stadium {
         this.address = address;
         this.imageUrl = imageUrl;
     }
-
-    public void addPerformanceStadium(PerformanceStadium performanceStadium) {
-        if (this.performanceStadiums.contains(performanceStadium)) {
-            this.performanceStadiums.remove(performanceStadium);
-        }
-
-        this.performanceStadiums.add(performanceStadium);
-        performanceStadium.setStadium(this);
-    }
 }

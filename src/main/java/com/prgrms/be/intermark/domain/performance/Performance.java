@@ -80,13 +80,4 @@ public class Performance {
         this.description = description;
         this.price = price;
     }
-
-    public void addPerformanceStadiums(PerformanceStadium performanceStadium) {
-        if (this.performanceStadiums.contains(performanceStadium)) {
-            this.performanceStadiums.remove(performanceStadium);
-        }
-
-        this.performanceStadiums.add(performanceStadium);
-        performanceStadium.setPerformance(this);
-    }
 }
