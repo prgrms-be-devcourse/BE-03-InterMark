@@ -1,7 +1,7 @@
 package com.prgrms.be.intermark.domain.casting;
 
 import com.prgrms.be.intermark.domain.actor.Actor;
-import com.prgrms.be.intermark.domain.performance.Performance;
+import com.prgrms.be.intermark.domain.performance.model.Performance;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

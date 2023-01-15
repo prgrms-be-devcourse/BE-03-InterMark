@@ -1,4 +1,4 @@
-package com.prgrms.be.intermark.domain.performance;
+package com.prgrms.be.intermark.domain.performance.model;
 
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,6 +1,5 @@
 package com.prgrms.be.intermark.domain.schedule;
 
-import com.prgrms.be.intermark.domain.performance.Performance;
 import com.prgrms.be.intermark.domain.performance_stadium.PerformanceStadium;
 import com.prgrms.be.intermark.domain.schedule_seat.ScheduleSeat;
 import lombok.AccessLevel;
