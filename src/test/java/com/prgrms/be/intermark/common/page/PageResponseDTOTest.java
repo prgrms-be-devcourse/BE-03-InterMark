@@ -1,5 +1,7 @@
 package com.prgrms.be.intermark.common.page;
 
+import com.prgrms.be.intermark.common.page.dto.PageListIndexSize;
+import com.prgrms.be.intermark.common.page.dto.PageResponseDTO;
 import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntity;
 import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntityDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +42,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.getData())
@@ -66,7 +68,7 @@ class PageResponseDTOTest {
         List<Integer> nowPageNumbers = IntStream.rangeClosed(1, 10).boxed().toList();
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.getNowPageNumbers()).isEqualTo(nowPageNumbers);
@@ -84,7 +86,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.isNext()).isFalse();
@@ -102,7 +104,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.isNext()).isTrue();
@@ -120,7 +122,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.isPrev()).isFalse();
@@ -138,7 +140,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.isPrev()).isTrue();
