@@ -1,10 +1,14 @@
 services:
   mysql:
-    image: mysql:8
+    image: mysql:8.0.31
     container_name: intermark-mysql
     ports:
       - 3306:3306
     environment:
+      - MYSQL_DATABASE=intermark
       - MYSQL_ROOT_PASSWORD=intermark123!
-      - MYSQL_USER=marco
-      - MYSQL_PASSWORD=intermark123!
+    volumes:
+      - intermark:/var/lib/mysql
+
+volumes:
+  intermark:
