@@ -37,12 +37,12 @@ public class Seat {
     private Long id;
 
     @NotBlank
-    @Column(name = "row", nullable = false, length = 2)
-    private String row;
+    @Column(name = "row_number", nullable = false, length = 2)
+    private String rowNumber;
 
     @Range(min = 1, max = 100)
-    @Column(name = "column", nullable = false)
-    private int column;
+    @Column(name = "column_number", nullable = false)
+    private int columnNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_stadium_id")
@@ -56,9 +56,9 @@ public class Seat {
     private SeatGrade seatGrade;
 
     @Builder
-    public Seat(String row, int column, PerformanceStadium performanceStadium, List<ScheduleSeat> scheduleSeats, SeatGrade seatGrade) {
-        this.row = row;
-        this.column = column;
+    public Seat(String rowNumber, int columnNumber, PerformanceStadium performanceStadium, List<ScheduleSeat> scheduleSeats, SeatGrade seatGrade) {
+        this.rowNumber = rowNumber;
+        this.columnNumber = columnNumber;
         this.performanceStadium = performanceStadium;
         this.scheduleSeats = scheduleSeats;
         this.seatGrade = seatGrade;
