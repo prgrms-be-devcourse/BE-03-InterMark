@@ -1,16 +1,24 @@
 package com.prgrms.be.intermark.domain.actor;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.prgrms.be.intermark.domain.casting.Casting;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "actor")
@@ -27,9 +35,8 @@ public class Actor {
     private String name;
 
     @NotNull
-    @Temporal(value = TemporalType.DATE)
     @Column(name = "birth", nullable = false)
-    private Date birth;
+    private LocalDate birth;
 
     @NotNull
     @Column(name = "gender", nullable = false, length = 10)
@@ -42,7 +49,7 @@ public class Actor {
     @OneToMany(mappedBy = "actor")
     private List<Casting> castings = new ArrayList<>();
     @Builder
-    public Actor(String name, Date birth, Gender gender, String imageUrl) {
+    public Actor(String name, LocalDate birth, Gender gender, String imageUrl) {
         this.name = name;
         this.birth = birth;
         this.gender = gender;
