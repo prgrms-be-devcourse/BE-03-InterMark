@@ -44,7 +44,23 @@
 - develop : 개발 브랜치
 - main : 프로젝트 초기 설정이 있는 브랜치
 - 이슈마다 하나의 브랜치 생성 : 타입/Assignees_이슈번호 
-  - ex) feat/홍길동_#13
+  - ex) feature/홍길동_#13
+
+## 깃 커밋 메시지 컨벤션
+| [CHORE] | 코드 수정, 내부 파일 수정 |
+| --- | --- |
+| [FEAT] | 새로운 기능 구현 |
+| [ADD] | FEAT 이외의 부수적인 코드 추가, 라이브러리 추가, 새로운 파일 생성 |
+| [HOTFIX] | issue나 QA에서 급한 버그 수정에 사용 |
+| [FIX] | 버그, 오류 해결 |
+| [DEL] | 쓸모 없는 코드 삭제 |
+| [DOCS] | README나 WIKI 등의 문서 개정 |
+| [CORRECT] | 주로 문법의 오류나 타입의 변경, 이름 변경에 사용 |
+| [MOVE] | 프로젝트 내 파일이나 코드의 이동 |
+| [RENAME] | 파일 이름 변경이 있을 때 사용 |
+| [IMPROVE] | 향상이 있을 때 사용 |
+| [REFACTOR] | 전면 수정이 있을 때 사용 |
+| [TEST] | 테스트 코드 추가 시 사용 |
 
 ## 프로젝트 페이지
 [프로젝트 문서](https://www.notion.so/backend-devcourse/InterMark-73ab5e5458ce4955bb30c0f0e1b9c779)
