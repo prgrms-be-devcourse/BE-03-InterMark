@@ -2,7 +2,9 @@ package com.prgrms.be.intermark.domain.performance.dto;
 
 import java.time.LocalDate;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import com.prgrms.be.intermark.domain.performance.model.Genre;
 import com.prgrms.be.intermark.domain.performance.model.Performance;
@@ -14,13 +16,13 @@ import lombok.Builder;
 public record PerformanceCreateRequestDto(
 	@NotNull LocalDate startDate,
 	@NotNull LocalDate endDate,
-	@NotNull String name,
+	@NotBlank String name,
 	@NotNull int runningTime,
 	@NotNull PerformanceRating possibleAge,
 	@NotNull Genre genre,
 	@NotNull String thumbnailUrl,
 	@NotNull String description,
-	@NotNull int price
+	@NotNull @Positive int price
 ) {
 	public Performance toEntity() {
 		return Performance.builder()
