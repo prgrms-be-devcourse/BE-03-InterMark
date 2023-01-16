@@ -4,6 +4,7 @@ import java.net.URI;
 
 import javax.validation.Valid;
 
+import com.prgrms.be.intermark.domain.ticket.dto.TicketFindResponseDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketFindResponseDTOs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,5 +41,11 @@ public class TicketController {
 	public ResponseEntity<TicketFindResponseDTOs> getAllTicket() {
 		TicketFindResponseDTOs tickets = ticketService.getAllTicket();
 		return ResponseEntity.ok(tickets);
+	}
+
+	@GetMapping("/{ticketId}")
+	public ResponseEntity<TicketFindResponseDTO> getTicketById(@PathVariable Long ticketId) {
+		TicketFindResponseDTO ticket = ticketService.getTicketById(ticketId);
+		return ResponseEntity.ok(ticket);
 	}
 }

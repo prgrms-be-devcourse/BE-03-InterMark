@@ -86,4 +86,12 @@ public class TicketService {
                 .ticketFindResponseDTOs(ticketFindResponseDTOs)
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public TicketFindResponseDTO getTicketById(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new EntityNotFoundException("일치하는 예매 내역이 존재하지 않습니다."));
+
+        return TicketFindResponseDTO.from(ticket);
+    }
 }
