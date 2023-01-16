@@ -5,11 +5,9 @@ import com.prgrms.be.intermark.domain.ticket.dto.TicketFindResponseDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketFindResponseDTOs;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.prgrms.be.intermark.domain.schedule.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
 import com.prgrms.be.intermark.domain.schedule_seat.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
-import com.prgrms.be.intermark.domain.seat.Seat;
 import com.prgrms.be.intermark.domain.seat.repository.SeatRepository;
 import com.prgrms.be.intermark.domain.ticket.Ticket;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
@@ -29,8 +27,6 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
-    private final ScheduleRepository scheduleRepository;
-    private final SeatRepository seatRepository;
     private final ScheduleSeatRepository scheduleSeatRepository;
 
     @Transactional
