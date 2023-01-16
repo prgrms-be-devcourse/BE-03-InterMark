@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -28,8 +29,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user",
-        uniqueConstraints = {@UniqueConstraint(name = "social_uk", columnNames = {"social", "social_id"})})
+@Table(name = "users",
+        uniqueConstraints = {@UniqueConstraint(name = "social_uk", columnNames = {"social_type", "social_id"})})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User {
@@ -38,23 +39,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "social", nullable = false)
-    private Social social;
-
-    @NotNull
-    @Column(name = "social_id", nullable = false, length = 64)
-    private String socialId;
-
-    @NotNull
-    @Column(name = "refresh_token", nullable = false, unique = true)
-    private String refreshToken;
-
-    @Length(min = 2, max = 20)
+    @Length(min = 2, max = 25)
     @NotBlank
-    @Column(name = "username", nullable = false, unique = true, length = 20)
-    private String username;
+    @Column(name = "user_name", nullable = false, length = 25) // 구글 서비스에서의 최대 이름 길이 제약 25자 이내
+    private String userName;
+
+    @Column(name = "password", nullable = false, length = 72) // bcypt encoding 시 최대 72자
+    private String password;
+
+    @Email
+    @Column(name = "email", nullable = false, unique = true) // 일단 length 제약 없이 두기
+    private String email;
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
@@ -72,19 +67,38 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Ticket> tickets = new ArrayList<>();
 
+    @NotNull
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "social_type", nullable = false)
+    private SocialType socialType;
+
+    @NotNull
+    @Column(name = "social_id", nullable = false, length = 64)
+    private String socialId;
+
+    @Column(name = "refresh_token", unique = true)
+    private String refreshToken;
+
     @Builder
-    public User(Social social, String socialId, String refreshToken, String username, UserRole role, boolean isDeleted, LocalDate birth, List<Ticket> tickets) {
-        this.social = social;
-        this.socialId = socialId;
-        this.refreshToken = refreshToken;
-        this.username = username;
+    public User(String userName, String password, String email, UserRole role, boolean isDeleted, @Nullable LocalDate birth, List<Ticket> tickets, SocialType socialType, String socialId, String refreshToken) {
+        this.userName = userName;
+        this.password = password;
+        this.email = email;
         this.role = role;
         this.isDeleted = isDeleted;
         this.birth = birth;
         this.tickets = tickets;
+        this.socialType = socialType;
+        this.socialId = socialId;
+        this.refreshToken = refreshToken;
     }
 
-    public void setBirth(LocalDate birth) {
-        this.birth = birth;
+    public User setUserName(String userName) {
+        this.userName = userName;
+        return this;
+    }
+
+    public String getUserRoleKey() {
+        return role.getKey();
     }
 }
