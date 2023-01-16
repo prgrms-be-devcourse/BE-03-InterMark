@@ -11,11 +11,11 @@ import javax.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Date;
 
+import static com.prgrms.be.intermark.auth.constant.JwtConstants.ACCESS_TOKEN_EXP;
+import static com.prgrms.be.intermark.auth.constant.JwtConstants.REFRESH_TOKEN_EXP;
+
 
 public class TokenProvider {
-    private static final long ACCESS_TOKEN_EXP = 1800000;
-    private static final long REFRESH_TOKEN_EXP = 604800000;
-
     @Value("${jwt.secret.access}")
     private String ACCESS_SECRET_KEY;
     @Value("${jwt.secret.refresh}")

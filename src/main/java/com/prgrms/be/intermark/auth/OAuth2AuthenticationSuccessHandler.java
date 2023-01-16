@@ -2,6 +2,7 @@ package com.prgrms.be.intermark.auth;
 
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.service.UserService;
+import com.prgrms.be.intermark.util.CookieUils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -9,9 +10,14 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import static com.prgrms.be.intermark.auth.constant.JwtConstants.REFRESH_TOKEN_COOKIE_MAX_AGE;
+import static com.prgrms.be.intermark.auth.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
 
 @Slf4j
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -41,8 +47,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             userService.assignRefreshToken(userId,refreshToken);
 
+            CookieUils.deleteCookieByName(REFRESH_TOKEN_COOKIE_NAME,request,response);
+            CookieUils.addCookie(REFRESH_TOKEN_COOKIE_NAME,refreshToken,REFRESH_TOKEN_COOKIE_MAX_AGE,response);
+
+            String loginSuccessJson = generateLoginSuccessJson(aceessToken);
+            response.setContentType("application/json;charset=UTF-8");
+            response.setContentLength(loginSuccessJson.getBytes(StandardCharsets.UTF_8).length);
+            response.getWriter().write(loginSuccessJson);
         }
 
         super.onAuthenticationSuccess(request, response, authentication);
+    }
+    private String generateLoginSuccessJson(String accessToken){
+        return "{\"token\":\"" + accessToken +"\"}";
     }
 }
