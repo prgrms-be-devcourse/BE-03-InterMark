@@ -2,8 +2,10 @@ package com.prgrms.be.intermark.config;
 
 import com.prgrms.be.intermark.auth.CustomOauth2UserService;
 import com.prgrms.be.intermark.auth.OAuth2AuthenticationSuccessHandler;
+import com.prgrms.be.intermark.auth.TokenProvider;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig {
+    @Value("${jwt.secret.access}")
+    private String accessSecret;
+    @Value("${jwt.secret.refresh}")
+    private String refreshSecret;
 
     private final CustomOauth2UserService customOauth2UserService;
     private final UserService userService;
@@ -59,6 +65,10 @@ public class SpringSecurityConfig {
 
     @Bean
     public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler(UserService userService) {
-        return new OAuth2AuthenticationSuccessHandler(userService);
+        return new OAuth2AuthenticationSuccessHandler(userService, tokenProvider());
+    }
+    @Bean
+    public TokenProvider tokenProvider(){
+        return new TokenProvider();
     }
 }

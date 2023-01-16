@@ -93,6 +93,9 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
+    public void setRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
     public User setUserName(String userName) {
         this.userName = userName;
         return this;

@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Slf4j
@@ -16,7 +17,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-
+    
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -27,7 +28,7 @@ public class UserService {
     }
 
     @Transactional
-    public User join(OAuth2User oauth2User, String authorizedClientRegistrationId) {
+    public Long join(OAuth2User oauth2User, String authorizedClientRegistrationId) {
         SocialType socialType = SocialType.valueOf(authorizedClientRegistrationId.toUpperCase());
         String socialId = oauth2User.getName();
         OAuthAttribute authAttribute = OAuthAttribute.of(socialType, socialId, oauth2User.getAttributes());
@@ -39,7 +40,15 @@ public class UserService {
                 })
                 .orElseGet(() -> {
                     return userRepository.save(authAttribute.toEntity());
-                });
+                }).getId();
     }
+    @Transactional
+    public void assignRefreshToken(Long userId,String refreshToken){
+        Optional<User> user = userRepository.findById(userId);
+        user.map(user1 ->{
+            user1.setRefreshToken(refreshToken);
+            return user1;
+        }).orElseThrow(EntityNotFoundException::new);
 
+    }
 }
