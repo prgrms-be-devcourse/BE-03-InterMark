@@ -37,11 +37,11 @@ public class Seat {
     private Long id;
 
     @NotBlank
-    @Column(name = "row_number", nullable = false, length = 2)
+    @Column(name = "row_num", nullable = false, length = 2)
     private String rowNumber;
 
     @Range(min = 1, max = 100)
-    @Column(name = "column_number", nullable = false)
+    @Column(name = "column_num", nullable = false)
     private int columnNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
