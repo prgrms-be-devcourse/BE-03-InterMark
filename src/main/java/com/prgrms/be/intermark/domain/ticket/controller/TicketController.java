@@ -7,7 +7,6 @@ import com.prgrms.be.intermark.domain.ticket.dto.TicketDeleteResponseDto;
 import lombok.RequiredArgsConstructor;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
 import com.prgrms.be.intermark.domain.ticket.service.TicketService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
