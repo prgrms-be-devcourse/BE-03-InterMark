@@ -30,7 +30,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         String socialId = oAuth2User.getName();
 
         OAuthAttribute authAttribute = OAuthAttribute.of(socialType, socialId, oAuth2User.getAttributes());
-        User user = saveOrUpdate(authAttribute);
+        User user = authAttribute.toEntity();
         log.info("user_name = {}", user.getUserName());
         return new CustomUserPrincipal(user, oAuth2User.getAttributes());
     }

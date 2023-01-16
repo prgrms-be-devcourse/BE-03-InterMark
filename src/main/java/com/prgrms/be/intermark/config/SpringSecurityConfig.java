@@ -1,7 +1,9 @@
 package com.prgrms.be.intermark.config;
 
 import com.prgrms.be.intermark.auth.CustomOauth2UserService;
+import com.prgrms.be.intermark.auth.OAuth2AuthenticationSuccessHandler;
 import com.prgrms.be.intermark.domain.user.UserRole;
+import com.prgrms.be.intermark.domain.user.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,9 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SpringSecurityConfig {
 
     private final CustomOauth2UserService customOauth2UserService;
-
-    public SpringSecurityConfig(CustomOauth2UserService customOauth2UserService) {
+    private final UserService userService;
+    public SpringSecurityConfig(CustomOauth2UserService customOauth2UserService, UserService userService) {
         this.customOauth2UserService = customOauth2UserService;
+        this.userService = userService;
     }
 
     @Bean
@@ -48,7 +51,14 @@ public class SpringSecurityConfig {
                     .baseUri("/*/oauth2/code/*")
                 .and()
                     .userInfoEndpoint()
-                    .userService(customOauth2UserService);
+                    .userService(customOauth2UserService)
+                .and()
+                    .successHandler(oAuth2AuthenticationSuccessHandler(userService));
         return httpSecurity.build();
+    }
+
+    @Bean
+    public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler(UserService userService) {
+        return new OAuth2AuthenticationSuccessHandler(userService);
     }
 }
