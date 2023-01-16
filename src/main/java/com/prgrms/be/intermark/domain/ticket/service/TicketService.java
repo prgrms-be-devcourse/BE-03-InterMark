@@ -1,17 +1,27 @@
 package com.prgrms.be.intermark.domain.ticket.service;
 
+import javax.persistence.EntityNotFoundException;
+import com.prgrms.be.intermark.domain.ticket.dto.TicketFindResponseDTO;
+import com.prgrms.be.intermark.domain.ticket.dto.TicketFindResponseDTOs;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.prgrms.be.intermark.domain.schedule.Schedule;
+import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
 import com.prgrms.be.intermark.domain.schedule_seat.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
+import com.prgrms.be.intermark.domain.seat.Seat;
+import com.prgrms.be.intermark.domain.seat.repository.SeatRepository;
 import com.prgrms.be.intermark.domain.ticket.Ticket;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
+import com.prgrms.be.intermark.domain.ticket.dto.TicketDeleteResponseDto;
 import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -19,6 +29,8 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final SeatRepository seatRepository;
     private final ScheduleSeatRepository scheduleSeatRepository;
 
     @Transactional
@@ -41,5 +53,44 @@ public class TicketService {
         ticketRepository.save(ticket);
 
         return ticket.getId();
+    }
+
+    @Transactional
+    public TicketDeleteResponseDto deleteTicket(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException("해당하는 예매가 없습니다.");
+                });
+
+        ticket.deleteTicket();
+
+        return TicketDeleteResponseDto.builder()
+                .ticketId(ticketId)
+                .status(ticket.getTicketStatus())
+                .message("티켓이 삭제 처리 되었습니다.")
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public TicketFindResponseDTOs getAllTicket() {
+        List<Ticket> tickets = ticketRepository.findAll();
+
+        List<TicketFindResponseDTO> ticketFindResponseDTOs = new ArrayList<>();
+
+        tickets.forEach((ticket) ->
+                ticketFindResponseDTOs.add(TicketFindResponseDTO.from(ticket))
+        );
+
+        return TicketFindResponseDTOs.builder()
+                .ticketFindResponseDTOs(ticketFindResponseDTOs)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public TicketFindResponseDTO getTicketById(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new EntityNotFoundException("일치하는 예매 내역이 존재하지 않습니다."));
+
+        return TicketFindResponseDTO.from(ticket);
     }
 }
