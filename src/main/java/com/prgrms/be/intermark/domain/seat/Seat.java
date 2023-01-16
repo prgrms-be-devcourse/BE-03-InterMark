@@ -38,11 +38,11 @@ public class Seat {
 
     @NotBlank
     @Column(name = "row_num", nullable = false, length = 2)
-    private String rowNumber;
+    private String rowNum;
 
     @Range(min = 1, max = 100)
     @Column(name = "column_num", nullable = false)
-    private int columnNumber;
+    private int columnNum;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_stadium_id")
