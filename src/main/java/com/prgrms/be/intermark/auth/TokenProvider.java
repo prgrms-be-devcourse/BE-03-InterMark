@@ -24,12 +24,6 @@ public class TokenProvider {
     private Key accessKey;
     private Key refreshKey;
 
-//    public TokenProvider( String accessSecretKey,
-//                         String refreshSecretKey) {
-//        ACCESS_SECRET_KEY = accessSecretKey;
-//        REFRESH_SECRET_KEY = refreshSecretKey;
-//    }
-
     @PostConstruct
     public void initialize() {
         byte[] accessKeyBytes = Decoders.BASE64.decode(ACCESS_SECRET_KEY);

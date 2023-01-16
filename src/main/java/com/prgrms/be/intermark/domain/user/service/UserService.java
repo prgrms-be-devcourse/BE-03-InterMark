@@ -1,6 +1,7 @@
 package com.prgrms.be.intermark.domain.user.service;
 
 import com.prgrms.be.intermark.auth.OAuthAttribute;
+import com.prgrms.be.intermark.auth.TokenProvider;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
@@ -17,9 +18,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TokenProvider tokenProvider;
     
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, TokenProvider tokenProvider) {
         this.userRepository = userRepository;
+        this.tokenProvider = tokenProvider;
     }
 
     @Transactional(readOnly = true)
@@ -43,12 +46,14 @@ public class UserService {
                 }).getId();
     }
     @Transactional
-    public void assignRefreshToken(Long userId,String refreshToken){
-        Optional<User> user = userRepository.findById(userId);
+    public void assignRefreshToken(String refreshToken){
+        // TODO: 의존성 주입 받는 것 (빈 주입) vs 인자로 넣어주는 것 vs 안에서 만들어주는 것
+        String userIdFromRefreshToken = tokenProvider.getUserIdFromRefreshToken(refreshToken);
+        Optional<User> user = userRepository.findById(Long.parseLong(userIdFromRefreshToken));
         user.map(user1 ->{
             user1.setRefreshToken(refreshToken);
+
             return user1;
         }).orElseThrow(EntityNotFoundException::new);
-
     }
 }
