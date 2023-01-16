@@ -26,7 +26,6 @@ public class ScheduleService {
 
     @Transactional
     public Long createSchedule(ScheduleRequestDTO scheduleRequestDto) {
-        System.out.println(scheduleRequestDto.performanceId());
         Performance performance = performanceRepository.findById(scheduleRequestDto.performanceId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 공연이 존재하지 않습니다."));
 
@@ -42,6 +41,29 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.save(
                 scheduleRequestDto.toEntity(performanceStadium)
         );
+
+        return schedule.getId();
+    }
+
+    @Transactional
+    public Long updateSchedule(Long scheduleId, ScheduleRequestDTO scheduleRequestDto) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("일치하는 스케줄이 존재하지 않습니다."));
+
+        Performance performance = performanceRepository.findById(scheduleRequestDto.performanceId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 공연이 존재하지 않습니다."));
+
+        Stadium stadium = stadiumRepository.findById(scheduleRequestDto.stadiumId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 공연장이 존재하지 않습니다."));
+
+        PerformanceStadium performanceStadium = performanceStadiumRepository.save(
+                PerformanceStadium.builder()
+                        .performance(performance)
+                        .stadium(stadium)
+                        .build());
+
+        schedule.setPerformanceStadium(performanceStadium);
+        schedule.setStartTime(scheduleRequestDto.getStartTime());
 
         return schedule.getId();
     }

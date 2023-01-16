@@ -14,12 +14,15 @@ public record ScheduleRequestDTO(
         @NotNull Long performanceId,
         @NotNull Long stadiumId
 ) {
-    public Schedule toEntity(PerformanceStadium performanceStadium) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime scheduleTime = LocalDateTime.parse(this.startTime, formatter);
 
+    public LocalDateTime getStartTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(this.startTime, formatter);
+    }
+
+    public Schedule toEntity(PerformanceStadium performanceStadium) {
         return Schedule.builder()
-                .startTime(scheduleTime)
+                .startTime(getStartTime())
                 .performanceStadium(performanceStadium)
                 .build();
     }

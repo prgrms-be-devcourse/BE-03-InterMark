@@ -59,4 +59,8 @@ public class Schedule {
         this.performanceStadium = performanceStadium;
         performanceStadium.getSchedules().add(this);
     }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
 }
