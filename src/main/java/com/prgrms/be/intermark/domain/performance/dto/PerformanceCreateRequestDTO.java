@@ -13,7 +13,7 @@ import com.prgrms.be.intermark.domain.performance.model.PerformanceRating;
 import lombok.Builder;
 
 @Builder
-public record PerformanceCreateRequestDto(
+public record PerformanceCreateRequestDTO(
 	@NotNull LocalDate startDate,
 	@NotNull LocalDate endDate,
 	@NotBlank String name,

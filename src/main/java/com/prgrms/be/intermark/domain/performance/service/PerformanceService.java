@@ -2,8 +2,8 @@ package com.prgrms.be.intermark.domain.performance.service;
 
 import org.springframework.stereotype.Service;
 
-import com.prgrms.be.intermark.domain.performance.dto.PerformanceCommandResponseDto;
-import com.prgrms.be.intermark.domain.performance.dto.PerformanceCreateRequestDto;
+import com.prgrms.be.intermark.domain.performance.dto.PerformanceCommandResponseDTO;
+import com.prgrms.be.intermark.domain.performance.dto.PerformanceCreateRequestDTO;
 import com.prgrms.be.intermark.domain.performance.model.Performance;
 import com.prgrms.be.intermark.domain.performance.repository.PerformanceRepository;
 
@@ -15,9 +15,9 @@ public class PerformanceService {
 
 	private final PerformanceRepository performanceRepository;
 
-	public PerformanceCommandResponseDto create(PerformanceCreateRequestDto createRequestDto) {
-		Performance performance = createRequestDto.toEntity();
+	public PerformanceCommandResponseDTO create(PerformanceCreateRequestDTO createRequestDTO) {
+		Performance performance = createRequestDTO.toEntity();
 		Performance savedPerformance = performanceRepository.save(performance);
-		return new PerformanceCommandResponseDto(savedPerformance.getId());
+		return new PerformanceCommandResponseDTO(savedPerformance.getId());
 	}
 }
