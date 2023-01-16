@@ -1,8 +1,6 @@
 package com.prgrms.be.intermark.config;
 
-import com.prgrms.be.intermark.auth.CustomOauth2UserService;
-import com.prgrms.be.intermark.auth.OAuth2AuthenticationSuccessHandler;
-import com.prgrms.be.intermark.auth.TokenProvider;
+import com.prgrms.be.intermark.auth.*;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -42,8 +41,12 @@ public class SpringSecurityConfig {
                     .csrf().disable()
                     .formLogin().disable()
                     .httpBasic().disable()
+                    .exceptionHandling()
+                    .accessDeniedHandler(oAuthAccessDeniedHandler())
+                    .authenticationEntryPoint(oAuthAuthenticationEntryPoint())
+                .and()
                     .authorizeRequests()
-                    .antMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**").permitAll()
+                    .antMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/login").permitAll()
                     .antMatchers("/api/**").hasAnyAuthority(UserRole.USER.getKey())
                     .antMatchers("/api/**/admin/**").hasAnyAuthority(UserRole.ADMIN.getKey())
                     .anyRequest().authenticated()
@@ -54,6 +57,7 @@ public class SpringSecurityConfig {
                     .oauth2Login()
                     .authorizationEndpoint()
                     .baseUri("/oauth2/authorization") //로그인페이지를 받기위한 서버의 엔드포인트 설정
+                    .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository())
                 .and()
                     .redirectionEndpoint()
                     .baseUri("/*/oauth2/code/*")
@@ -62,11 +66,32 @@ public class SpringSecurityConfig {
                     .userService(customOauth2UserService)
                 .and()
                     .successHandler(oAuth2AuthenticationSuccessHandler(userService));
-        return httpSecurity.build();
+        return httpSecurity.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
     public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler(UserService userService) {
         return new OAuth2AuthenticationSuccessHandler(userService,tokenProvider);
+    }
+
+    @Bean
+    public CookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository() {
+        return new CookieOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
+    public OAuthAccessDeniedHandler oAuthAccessDeniedHandler() {
+        return new OAuthAccessDeniedHandler();
+    }
+
+    @Bean
+    public OAuthAuthenticationEntryPoint oAuthAuthenticationEntryPoint() {
+        return new OAuthAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public TokenAuthenticationFilter tokenAuthenticationFilter() {
+        return new TokenAuthenticationFilter(tokenProvider);
     }
 }
