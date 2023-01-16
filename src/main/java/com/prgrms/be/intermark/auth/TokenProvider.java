@@ -14,7 +14,7 @@ import java.util.Date;
 import static com.prgrms.be.intermark.auth.constant.JwtConstants.ACCESS_TOKEN_EXP;
 import static com.prgrms.be.intermark.auth.constant.JwtConstants.REFRESH_TOKEN_EXP;
 
-
+@Component
 public class TokenProvider {
     @Value("${jwt.secret.access}")
     private String ACCESS_SECRET_KEY;

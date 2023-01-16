@@ -23,9 +23,11 @@ public class SpringSecurityConfig {
 
     private final CustomOauth2UserService customOauth2UserService;
     private final UserService userService;
-    public SpringSecurityConfig(CustomOauth2UserService customOauth2UserService, UserService userService) {
+    private final TokenProvider tokenProvider;
+    public SpringSecurityConfig(CustomOauth2UserService customOauth2UserService, UserService userService, TokenProvider tokenProvider) {
         this.customOauth2UserService = customOauth2UserService;
         this.userService = userService;
+        this.tokenProvider = tokenProvider;
     }
 
     @Bean
@@ -65,10 +67,6 @@ public class SpringSecurityConfig {
 
     @Bean
     public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler(UserService userService) {
-        return new OAuth2AuthenticationSuccessHandler(userService, tokenProvider());
-    }
-    @Bean
-    public TokenProvider tokenProvider(){
-        return new TokenProvider();
+        return new OAuth2AuthenticationSuccessHandler(userService,tokenProvider);
     }
 }
