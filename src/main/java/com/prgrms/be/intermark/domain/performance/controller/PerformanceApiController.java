@@ -29,6 +29,6 @@ public class PerformanceApiController {
 	) {
 		PerformanceCommandResponseDto commandResponseDto = performanceService.create(createRequestDto);
 		URI location = URI.create("/api/v1/performances/" + commandResponseDto.performanceId());
-		return ResponseEntity.created(location).build();
+		return ResponseEntity.created(location).body(commandResponseDto);
 	}
 }
