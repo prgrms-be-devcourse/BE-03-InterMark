@@ -1,6 +1,6 @@
 package com.prgrms.be.intermark.domain.performance.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,8 +12,8 @@ import lombok.Builder;
 
 @Builder
 public record PerformanceCreateRequestDto(
-	@NotNull Date startDate,
-	@NotNull Date endDate,
+	@NotNull LocalDate startDate,
+	@NotNull LocalDate endDate,
 	@NotNull String name,
 	@NotNull int runningTime,
 	@NotNull PerformanceRating possibleAge,
