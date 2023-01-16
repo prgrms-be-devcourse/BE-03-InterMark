@@ -1,6 +1,5 @@
 package com.prgrms.be.intermark.auth;
 
-import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.service.UserService;
 import com.prgrms.be.intermark.util.CookieUils;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +9,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,7 +43,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             String refreshToken = tokenProvider.createRefreshToken(userId);
 
-            userService.assignRefreshToken(userId,refreshToken);
+            userService.assignRefreshToken(refreshToken);
 
             CookieUils.deleteCookieByName(REFRESH_TOKEN_COOKIE_NAME,request,response);
             CookieUils.addCookie(REFRESH_TOKEN_COOKIE_NAME,refreshToken,REFRESH_TOKEN_COOKIE_MAX_AGE,response);
