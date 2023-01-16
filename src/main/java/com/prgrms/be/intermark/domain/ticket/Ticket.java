@@ -74,4 +74,8 @@ public class Ticket {
 		this.scheduleSeat = scheduleSeat;
 		scheduleSeat.getTickets().add(this);
 	}
+
+	public void deleteTicket() {
+		this.ticketStatus = TicketStatus.CANCELLED;
+	}
 }
