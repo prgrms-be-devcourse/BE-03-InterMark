@@ -1,26 +1,27 @@
 package com.prgrms.be.intermark.domain.ticket.controller;
 
-import java.net.URI;
-
-import javax.validation.Valid;
-
 import com.prgrms.be.intermark.domain.ticket.dto.TicketFindResponseDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketFindResponseDTOs;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketDeleteResponseDto;
-import com.prgrms.be.intermark.domain.ticket.service.TicketService;
-
 import lombok.RequiredArgsConstructor;
+import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
+import com.prgrms.be.intermark.domain.ticket.service.TicketService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1/tickets")
+import javax.validation.Valid;
+import java.net.URI;
+
+@RequestMapping("api/v1/tickets")
 @RequiredArgsConstructor
 @RestController
 public class TicketController {
 
-	private final TicketService ticketService;
+  private final TicketService ticketService;
 
 	@PostMapping
 	public ResponseEntity<Long> reservePerformance(@RequestBody @Valid TicketCreateRequestDTO ticketCreateRequestDTO) {
@@ -48,4 +49,5 @@ public class TicketController {
 		TicketFindResponseDTO ticket = ticketService.getTicketById(ticketId);
 		return ResponseEntity.ok(ticket);
 	}
+
 }
