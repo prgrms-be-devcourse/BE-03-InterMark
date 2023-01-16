@@ -56,9 +56,9 @@ public class Seat {
     private SeatGrade seatGrade;
 
     @Builder
-    public Seat(String rowNumber, int columnNumber, PerformanceStadium performanceStadium, List<ScheduleSeat> scheduleSeats, SeatGrade seatGrade) {
-        this.rowNumber = rowNumber;
-        this.columnNumber = columnNumber;
+    public Seat(String rowNum, int columnNum, PerformanceStadium performanceStadium, List<ScheduleSeat> scheduleSeats, SeatGrade seatGrade) {
+        this.rowNum = rowNum;
+        this.columnNum = columnNum;
         this.performanceStadium = performanceStadium;
         this.scheduleSeats = scheduleSeats;
         this.seatGrade = seatGrade;
