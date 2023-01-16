@@ -4,13 +4,9 @@ import java.net.URI;
 
 import javax.validation.Valid;
 
+import com.prgrms.be.intermark.domain.ticket.dto.TicketFindResponseDTOs;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketDeleteResponseDto;
@@ -18,7 +14,7 @@ import com.prgrms.be.intermark.domain.ticket.service.TicketService;
 
 import lombok.RequiredArgsConstructor;
 
-@RequestMapping("/tickets")
+@RequestMapping("/api/v1/tickets")
 @RequiredArgsConstructor
 @RestController
 public class TicketController {
@@ -38,5 +34,11 @@ public class TicketController {
 	public ResponseEntity<TicketDeleteResponseDto> deleteTicket(@PathVariable Long ticketId) {
 		TicketDeleteResponseDto deleteResponseDto = ticketService.deleteTicket(ticketId);
 		return ResponseEntity.ok(deleteResponseDto);
+	}
+
+	@GetMapping
+	public ResponseEntity<TicketFindResponseDTOs> getAllTicket() {
+		TicketFindResponseDTOs tickets = ticketService.getAllTicket();
+		return ResponseEntity.ok(tickets);
 	}
 }
