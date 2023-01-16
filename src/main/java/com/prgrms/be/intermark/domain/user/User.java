@@ -1,7 +1,7 @@
 package com.prgrms.be.intermark.domain.user;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -13,8 +13,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -68,15 +66,14 @@ public class User {
     private boolean isDeleted;
 
     @Nullable
-    @Temporal(value = TemporalType.DATE)
     @Column(name = "birth")
-    private Date birth;
+    private LocalDate birth;
 
     @OneToMany(mappedBy = "user")
     private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
-    public User(Social social, String socialId, String refreshToken, String username, UserRole role, boolean isDeleted, Date birth, List<Ticket> tickets) {
+    public User(Social social, String socialId, String refreshToken, String username, UserRole role, boolean isDeleted, LocalDate birth, List<Ticket> tickets) {
         this.social = social;
         this.socialId = socialId;
         this.refreshToken = refreshToken;
@@ -87,7 +84,7 @@ public class User {
         this.tickets = tickets;
     }
 
-    public void setBirth(Date birth) {
+    public void setBirth(LocalDate birth) {
         this.birth = birth;
     }
 }

@@ -1,16 +1,29 @@
 package com.prgrms.be.intermark.domain.performance.model;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.prgrms.be.intermark.domain.casting.Casting;
 import com.prgrms.be.intermark.domain.performance_stadium.PerformanceStadium;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.*;
 
 @Entity
 @Table(name = "performance")
@@ -23,14 +36,12 @@ public class Performance {
     private Long id;
 
     @NotNull
-    @Temporal(value = TemporalType.DATE)
     @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    private LocalDate startDate;
 
     @NotNull
-    @Temporal(value = TemporalType.DATE)
     @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    private LocalDate endDate;
 
     @NotBlank
     @Column(name = "name", nullable = false)
@@ -72,7 +83,7 @@ public class Performance {
     @OneToMany(mappedBy = "performance")
     private List<PerformanceDetailImage> performanceDetailImages = new ArrayList<>();
     @Builder
-    public Performance(Date startDate, Date endDate, String name, int runningTime, PerformanceRating possibleAge, Genre genre, String thumbnailUrl, String description, int price) {
+    public Performance(LocalDate startDate, LocalDate endDate, String name, int runningTime, PerformanceRating possibleAge, Genre genre, String thumbnailUrl, String description, int price) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.name = name;
