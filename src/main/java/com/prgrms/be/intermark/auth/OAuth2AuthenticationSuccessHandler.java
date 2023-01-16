@@ -1,5 +1,6 @@
 package com.prgrms.be.intermark.auth;
 
+import com.prgrms.be.intermark.domain.user.dto.UserIdAndRoleDTO;
 import com.prgrms.be.intermark.domain.user.service.UserService;
 import com.prgrms.be.intermark.util.CookieUils;
 import lombok.extern.slf4j.Slf4j;
@@ -36,12 +37,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             OAuth2User principal = oauth2Token.getPrincipal();
             String registrationId = oauth2Token.getAuthorizedClientRegistrationId();
             log.info("{}",principal.getAttributes());
-            Long userId = userService.join(principal, registrationId);
+            UserIdAndRoleDTO userIdAndRoleDTO = userService.join(principal, registrationId);
 
-            String aceessToken = tokenProvider.createAceessToken(userId);
+            String aceessToken = tokenProvider.createAceessToken(userIdAndRoleDTO.userId(), userIdAndRoleDTO.userRole());
             log.info(aceessToken);
 
-            String refreshToken = tokenProvider.createRefreshToken(userId);
+            String refreshToken = tokenProvider.createRefreshToken(userIdAndRoleDTO.userId(), userIdAndRoleDTO.userRole());
 
             userService.assignRefreshToken(refreshToken);
 

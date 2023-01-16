@@ -4,6 +4,7 @@ import com.prgrms.be.intermark.auth.OAuthAttribute;
 import com.prgrms.be.intermark.auth.TokenProvider;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
+import com.prgrms.be.intermark.domain.user.dto.UserIdAndRoleDTO;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -31,11 +32,11 @@ public class UserService {
     }
 
     @Transactional
-    public Long join(OAuth2User oauth2User, String authorizedClientRegistrationId) {
+    public UserIdAndRoleDTO join(OAuth2User oauth2User, String authorizedClientRegistrationId) {
         SocialType socialType = SocialType.valueOf(authorizedClientRegistrationId.toUpperCase());
         String socialId = oauth2User.getName();
         OAuthAttribute authAttribute = OAuthAttribute.of(socialType, socialId, oauth2User.getAttributes());
-        return findByProviderAndProviderId(socialType, socialId)
+        User foundedUser = findByProviderAndProviderId(socialType, socialId)
                 .map(user -> {
                     log.warn("Already exists: {} for (provider: {}, providerId: {})", user, authorizedClientRegistrationId, socialId);
                     user.setUserName(authAttribute.getName());
@@ -43,7 +44,8 @@ public class UserService {
                 })
                 .orElseGet(() -> {
                     return userRepository.save(authAttribute.toEntity());
-                }).getId();
+                });
+        return new UserIdAndRoleDTO(foundedUser.getId(), foundedUser.getRole());
     }
     @Transactional
     public void assignRefreshToken(String refreshToken){
