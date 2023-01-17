@@ -2,13 +2,18 @@ package com.prgrms.be.intermark.domain.performance.service;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.prgrms.be.intermark.common.page.dto.PageListIndexSize;
+import com.prgrms.be.intermark.common.page.dto.PageResponseDTO;
 import com.prgrms.be.intermark.domain.actor.repository.ActorRepository;
 import com.prgrms.be.intermark.domain.casting.Casting;
 import com.prgrms.be.intermark.domain.performance.dto.PerformanceCommandResponseDTO;
 import com.prgrms.be.intermark.domain.performance.dto.PerformanceCreateRequestDTO;
+import com.prgrms.be.intermark.domain.performance.dto.PerformanceInfoResponseDTO;
 import com.prgrms.be.intermark.domain.performance.model.Performance;
 import com.prgrms.be.intermark.domain.performance.repository.PerformanceRepository;
 import com.prgrms.be.intermark.domain.performance_detail_image.model.PerformanceDetailImage;
@@ -62,6 +67,14 @@ public class PerformanceService {
 			});
 
 		return new PerformanceCommandResponseDTO(savedPerformance.getId());
+	}
+
+	@Transactional(readOnly = true)
+	public PageResponseDTO<Performance, PerformanceInfoResponseDTO> findAllPerformances(Pageable pageable) {
+
+		Page<Performance> performancePage = performanceRepository.findAll(pageable);
+
+		return new PageResponseDTO<>(performancePage, PerformanceInfoResponseDTO::from, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
 	}
 
 }
