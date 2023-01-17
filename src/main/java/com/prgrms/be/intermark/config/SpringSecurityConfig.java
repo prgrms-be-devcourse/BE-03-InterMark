@@ -43,7 +43,6 @@ public class SpringSecurityConfig {
                     .httpBasic().disable()
                     .exceptionHandling()
                     .accessDeniedHandler(oAuthAccessDeniedHandler())
-                    .authenticationEntryPoint(oAuthAuthenticationEntryPoint())
                 .and()
                     .authorizeRequests()
                     .antMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/login").permitAll()
@@ -83,11 +82,6 @@ public class SpringSecurityConfig {
     @Bean
     public OAuthAccessDeniedHandler oAuthAccessDeniedHandler() {
         return new OAuthAccessDeniedHandler();
-    }
-
-    @Bean
-    public OAuthAuthenticationEntryPoint oAuthAuthenticationEntryPoint() {
-        return new OAuthAuthenticationEntryPoint();
     }
 
     @Bean
