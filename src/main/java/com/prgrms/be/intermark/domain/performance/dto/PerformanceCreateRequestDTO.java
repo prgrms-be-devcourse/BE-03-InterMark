@@ -1,6 +1,7 @@
 package com.prgrms.be.intermark.domain.performance.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -22,8 +23,12 @@ public record PerformanceCreateRequestDTO(
 	@NotNull Genre genre,
 	@NotNull String thumbnailUrl,
 	@NotNull String description,
-	@NotNull @Positive int price
-) {
+	@NotNull @Positive int price,
+	@NotNull Long stadiumId,
+	List<Long> actorIds,
+	List<String> detailImageUrls
+	) {
+
 	public Performance toEntity() {
 		return Performance.builder()
 			.startDate(startDate)

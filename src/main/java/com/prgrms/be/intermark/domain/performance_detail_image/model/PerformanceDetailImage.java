@@ -1,13 +1,24 @@
-package com.prgrms.be.intermark.domain.performance.model;
+package com.prgrms.be.intermark.domain.performance_detail_image.model;
+
+import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import com.prgrms.be.intermark.domain.performance.model.Performance;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.Objects;
 
 @Entity
 @Table(name = "parformance_detail_image")
