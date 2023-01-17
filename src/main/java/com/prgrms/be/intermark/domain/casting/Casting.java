@@ -19,13 +19,13 @@ public class Casting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) //<< 맞나요?
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actor_id")
     private Actor actor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id")
-    private Performance performance; //그건 참 흥미로운 질문이에요
+    private Performance performance;
 
     @Builder
     public Casting(Actor actor, Performance performance) {

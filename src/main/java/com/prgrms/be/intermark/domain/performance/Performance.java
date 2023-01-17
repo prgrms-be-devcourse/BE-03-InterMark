@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "performance")
@@ -71,6 +73,7 @@ public class Performance {
 
     @OneToMany(mappedBy = "performance")
     private List<PerformanceDetailImage> performanceDetailImages = new ArrayList<>();
+
     @Builder
     public Performance(Date startDate, Date endDate, String name, int runningTime, PerformanceRating possibleAge, Genre genre, String thumbnailUrl, String description, int price) {
         this.startDate = startDate;

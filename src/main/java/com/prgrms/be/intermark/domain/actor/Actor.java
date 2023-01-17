@@ -32,6 +32,7 @@ public class Actor {
     private Date birth;
 
     @NotNull
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "gender", nullable = false, length = 10)
     private Gender gender;
 
