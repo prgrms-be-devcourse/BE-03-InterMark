@@ -84,6 +84,7 @@ public class Performance {
 
     @OneToMany(mappedBy = "performance", cascade = CascadeType.PERSIST)
     private List<PerformanceDetailImage> performanceDetailImages = new ArrayList<>();
+
     @Builder
     public Performance(LocalDate startDate, LocalDate endDate, String name, int runningTime, PerformanceRating possibleAge, Genre genre, String thumbnailUrl, String description, int price) {
         this.startDate = startDate;

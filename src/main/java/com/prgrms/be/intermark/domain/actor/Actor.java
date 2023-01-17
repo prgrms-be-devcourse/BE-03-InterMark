@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,6 +41,7 @@ public class Actor {
     private LocalDate birth;
 
     @NotNull
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "gender", nullable = false, length = 10)
     private Gender gender;
 
@@ -48,6 +51,7 @@ public class Actor {
 
     @OneToMany(mappedBy = "actor")
     private List<Casting> castings = new ArrayList<>();
+
     @Builder
     public Actor(String name, LocalDate birth, Gender gender, String imageUrl) {
         this.name = name;
