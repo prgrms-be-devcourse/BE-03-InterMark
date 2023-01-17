@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.prgrms.be.intermark.common.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
 import com.prgrms.be.intermark.domain.actor.repository.ActorRepository;
 import com.prgrms.be.intermark.domain.casting.Casting;
 import com.prgrms.be.intermark.domain.performance.dto.PerformanceCommandResponseDTO;
