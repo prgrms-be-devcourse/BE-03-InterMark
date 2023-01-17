@@ -1,6 +1,6 @@
 package com.prgrms.be.intermark.domain.performance_stadium;
 
-import com.prgrms.be.intermark.domain.performance.Performance;
+import com.prgrms.be.intermark.domain.performance.model.Performance;
 import com.prgrms.be.intermark.domain.schedule.Schedule;
 import com.prgrms.be.intermark.domain.seat.Seat;
 import com.prgrms.be.intermark.domain.stadium.Stadium;

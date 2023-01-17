@@ -1,18 +1,31 @@
-package com.prgrms.be.intermark.domain.performance;
+package com.prgrms.be.intermark.domain.performance.model;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.prgrms.be.intermark.domain.casting.Casting;
+import com.prgrms.be.intermark.domain.performance_detail_image.model.PerformanceDetailImage;
 import com.prgrms.be.intermark.domain.performance_stadium.PerformanceStadium;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "performance")
@@ -63,13 +76,13 @@ public class Performance {
     @Column(name = "price", nullable = false)
     private int price;
 
-    @OneToMany(mappedBy = "performance")
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.PERSIST)
     private List<PerformanceStadium> performanceStadiums = new ArrayList<>();
 
-    @OneToMany(mappedBy = "performance")
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.PERSIST)
     private List<Casting> castings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "performance")
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.PERSIST)
     private List<PerformanceDetailImage> performanceDetailImages = new ArrayList<>();
 
     @Builder
@@ -83,5 +96,17 @@ public class Performance {
         this.thumbnailUrl = thumbnailUrl;
         this.description = description;
         this.price = price;
+    }
+
+    public void addPerformanceStadium(PerformanceStadium performanceStadium) {
+        performanceStadium.setPerformance(this);
+    }
+
+    public void addCasting(Casting casting) {
+        casting.setPerformance(this);
+    }
+
+    public void addPerformanceDetailImage(PerformanceDetailImage performanceDetailImage) {
+        performanceDetailImage.setPerformance(this);
     }
 }
