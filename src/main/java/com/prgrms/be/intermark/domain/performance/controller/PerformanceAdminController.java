@@ -2,17 +2,19 @@ package com.prgrms.be.intermark.domain.performance.controller;
 
 import com.prgrms.be.intermark.common.page.dto.PageResponseDTO;
 import com.prgrms.be.intermark.domain.performance.Performance;
+import com.prgrms.be.intermark.domain.performance.dto.PerformanceDetailResponseDTO;
 import com.prgrms.be.intermark.domain.performance.dto.PerformanceInfoResponseDTO;
 import com.prgrms.be.intermark.domain.performance.service.PerformanceAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/vi/admin/performances")
+@RequestMapping("/api/v1/admin/performances")
 @RequiredArgsConstructor
 public class PerformanceAdminController {
 
@@ -26,5 +28,12 @@ public class PerformanceAdminController {
         return ResponseEntity.ok(
                 performancesPageResponseDTO
         );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PerformanceDetailResponseDTO> getPerformance(@PathVariable(value = "id") Long performanceId) {
+        PerformanceDetailResponseDTO performanceDetail = performanceAdminService.findPerformanceDetail(performanceId);
+
+        return ResponseEntity.ok(performanceDetail);
     }
 }
