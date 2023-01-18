@@ -12,4 +12,5 @@ public interface PerformanceStadiumRepository extends JpaRepository<PerformanceS
 
 	@Query("select ps from PerformanceStadium ps where ps.performance.id = :performanceId and  ps.stadium.id = :stadiumId")
 	Optional<PerformanceStadium> findByPerformanceIdAndStadiumId(@Param("performanceId") Long performanceId, @Param("stadiumId") Long stadiumId);
+
 }
