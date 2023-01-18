@@ -1,9 +1,10 @@
-package com.prgrms.be.intermark.domain.performance;
+package com.prgrms.be.intermark.domain.performance.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,6 +19,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.prgrms.be.intermark.domain.casting.Casting;
+import com.prgrms.be.intermark.domain.performance_detail_image.model.PerformanceDetailImage;
 import com.prgrms.be.intermark.domain.performance_stadium.PerformanceStadium;
 
 import lombok.AccessLevel;
@@ -74,14 +76,15 @@ public class Performance {
     @Column(name = "price", nullable = false)
     private int price;
 
-    @OneToMany(mappedBy = "performance")
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.PERSIST)
     private List<PerformanceStadium> performanceStadiums = new ArrayList<>();
 
-    @OneToMany(mappedBy = "performance")
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.PERSIST)
     private List<Casting> castings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "performance")
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.PERSIST)
     private List<PerformanceDetailImage> performanceDetailImages = new ArrayList<>();
+
     @Builder
     public Performance(LocalDate startDate, LocalDate endDate, String name, int runningTime, PerformanceRating possibleAge, Genre genre, String thumbnailUrl, String description, int price) {
         this.startDate = startDate;
@@ -93,5 +96,17 @@ public class Performance {
         this.thumbnailUrl = thumbnailUrl;
         this.description = description;
         this.price = price;
+    }
+
+    public void addPerformanceStadium(PerformanceStadium performanceStadium) {
+        performanceStadium.setPerformance(this);
+    }
+
+    public void addCasting(Casting casting) {
+        casting.setPerformance(this);
+    }
+
+    public void addPerformanceDetailImage(PerformanceDetailImage performanceDetailImage) {
+        performanceDetailImage.setPerformance(this);
     }
 }

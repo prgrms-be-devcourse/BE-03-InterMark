@@ -1,13 +1,21 @@
 package com.prgrms.be.intermark.domain.casting;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.prgrms.be.intermark.domain.actor.Actor;
-import com.prgrms.be.intermark.domain.performance.Performance;
+import com.prgrms.be.intermark.domain.performance.model.Performance;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "casting")
@@ -19,13 +27,13 @@ public class Casting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) //<< 맞나요?
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actor_id")
     private Actor actor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id")
-    private Performance performance; //그건 참 흥미로운 질문이에요
+    private Performance performance;
 
     @Builder
     public Casting(Actor actor, Performance performance) {
