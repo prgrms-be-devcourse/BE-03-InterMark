@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+**/application-oauth2.yml
+**/application-test.yml
+**/application-deploy.yml
