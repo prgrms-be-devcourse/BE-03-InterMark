@@ -37,7 +37,7 @@ public class Actor {
     private Gender gender;
 
     @NotBlank
-    @Column(name = "profileImageUrl", nullable = false, length = 2000)
+    @Column(name = "profile_image_url", nullable = false, length = 2000)
     private String profileImageUrl;
 
     @OneToMany(mappedBy = "actor")
