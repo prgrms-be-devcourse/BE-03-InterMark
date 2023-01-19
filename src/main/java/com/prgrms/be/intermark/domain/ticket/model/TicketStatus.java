@@ -1,4 +1,4 @@
-package com.prgrms.be.intermark.domain.ticket;
+package com.prgrms.be.intermark.domain.ticket.model;
 
 public enum TicketStatus {
 
