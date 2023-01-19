@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -54,6 +55,11 @@ public class User {
     @Nullable
     @Column(name = "birth")
     private LocalDate birth;
+
+    @NotBlank
+    @Email
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @OneToMany(mappedBy = "user")
     private List<Ticket> tickets = new ArrayList<>();

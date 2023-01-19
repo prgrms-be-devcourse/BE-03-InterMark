@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -20,6 +21,7 @@ import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "musical")
@@ -105,6 +107,22 @@ public class Musical {
         this.endDate = endDate;
         this.runningTime = runningTime;
         this.stadium = stadium;
+        this.user = user;
+    }
+
+    public void setStadium(Stadium stadium) {
+        Assert.notNull(stadium, "Stadium cannot be null");
+
+        if (Objects.nonNull(this.stadium)) {
+            this.stadium.getMusicals().remove(this);
+        }
+        this.stadium = stadium;
+        stadium.getMusicals().add(this);
+    }
+
+    public void setUser(User user) {
+        Assert.notNull(user, "User cannot be null");
+
         this.user = user;
     }
 }
