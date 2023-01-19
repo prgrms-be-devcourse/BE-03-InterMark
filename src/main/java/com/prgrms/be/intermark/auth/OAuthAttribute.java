@@ -17,40 +17,42 @@ public class OAuthAttribute {
     private Map<String, Object> attributes;
     private String socialId;
     private SocialType socialType;
-    private String name;
+    private String nickname;
     private String email;
-
+    private UserRole userRole;
     @Builder
-    public OAuthAttribute(Map<String, Object> attributes, String socialId, SocialType socialType, String name, String email) {
+    public OAuthAttribute(Map<String, Object> attributes, String socialId, SocialType socialType, String nickname, String email, UserRole userRole) {
         this.attributes = attributes;
         this.socialId = socialId;
-        this.name = name;
+        this.nickname = nickname;
         this.socialType = socialType;
         this.email = email;
+        this.userRole = userRole;
     }
 
-    public static OAuthAttribute of(SocialType socialType, String socialId, Map<String, Object> attributes) {
-        return ofGoogle(socialId, attributes);
+    public static OAuthAttribute of(SocialType socialType, String socialId, UserRole userRole, Map<String, Object> attributes) {
+        return ofGoogle(socialId,userRole, attributes);
     }
 
-    private static OAuthAttribute ofGoogle(String socialId, Map<String, Object> attributes) {
+    private static OAuthAttribute ofGoogle(String socialId,UserRole userRole, Map<String, Object> attributes) {
         return OAuthAttribute.builder()
-                .name((String) attributes.get("name"))
+                .nickname((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .attributes(attributes)
                 .socialId(socialId)
                 .socialType(SocialType.GOOGLE)
+                .userRole(userRole)
                 .build();
     }
 
+    //최초로 회원가입 되는 곳에서 사용
     public User toEntity() {
         return User.builder()
-                .userName(name)
+                .nickname(nickname)
                 .email(email)
-                .password(PASSWORD)
-                .role(UserRole.GUEST)
+                .role(this.userRole)
                 .socialId(socialId)
-                .socialType(socialType)
+                .social(socialType)
                 .build();
     }
 }

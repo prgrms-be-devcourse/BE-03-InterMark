@@ -35,9 +35,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             // db에 유저정보 저장
             OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
             OAuth2User principal = oauth2Token.getPrincipal();
-            String registrationId = oauth2Token.getAuthorizedClientRegistrationId();
+            String social = oauth2Token.getAuthorizedClientRegistrationId();
             log.info("{}",principal.getAttributes());
-            UserIdAndRoleDTO userIdAndRoleDTO = userService.join(principal, registrationId);
+            UserIdAndRoleDTO userIdAndRoleDTO = userService.join(principal, social);
 
             String aceessToken = tokenProvider.createAceessToken(userIdAndRoleDTO.userId(), userIdAndRoleDTO.userRole());
             log.info(aceessToken);

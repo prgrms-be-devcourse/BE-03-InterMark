@@ -1,7 +1,7 @@
 package com.prgrms.be.intermark.auth;
 
 import com.prgrms.be.intermark.domain.user.SocialType;
-import com.prgrms.be.intermark.domain.user.User;
+import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -29,17 +29,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
                 .toUpperCase());
         String socialId = oAuth2User.getName();
 
-        OAuthAttribute authAttribute = OAuthAttribute.of(socialType, socialId, oAuth2User.getAttributes());
-        User user = authAttribute.toEntity();
-        log.info("user_name = {}", user.getUserName());
-        return new CustomUserPrincipal(user, oAuth2User.getAttributes());
-    }
-
-    private User saveOrUpdate(OAuthAttribute authAttribute) {
-        User user = userRepository.findByEmail(authAttribute.getEmail())
-                .map(entity -> entity.setUserName(authAttribute.getName()))
-                .orElse(authAttribute.toEntity());
-
-        return userRepository.save(user);
+        //OAuth2user를  return 해줘야 한다.
+        return new CustomUserPrincipal("sub", UserRole.USER, oAuth2User.getAttributes());
     }
 }

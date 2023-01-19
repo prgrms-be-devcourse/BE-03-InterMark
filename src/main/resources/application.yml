@@ -1,20 +1,23 @@
 server:
-  port: 8000
+  port: 8080
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:mydb
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/intermark
+    username: root
+    password: intermark123!
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create
-    show-sql: true
     properties:
       hibernate:
+        show-sql: true
         format_sql: true
-  h2:
-    console.enabled: true
+    hibernate:
+      ddl-auto: update
   profiles:
     include: oauth2
+
+logging:
+  level:
+    org.springframework: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
