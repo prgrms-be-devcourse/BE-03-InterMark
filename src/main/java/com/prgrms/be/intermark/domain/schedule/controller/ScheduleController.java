@@ -1,13 +1,11 @@
 package com.prgrms.be.intermark.domain.schedule.controller;
 
 import com.prgrms.be.intermark.domain.schedule.dtos.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dtos.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -26,5 +24,12 @@ public class ScheduleController {
         return ResponseEntity
                 .created(URI.create("/api/v1/schedules/" + scheduleId))
                 .build();
+    }
+
+    @PutMapping("/{scheduleId}")
+    public ResponseEntity<Object> updateSchedule(@PathVariable("scheduleId") long scheduleId,
+            @RequestBody @Valid ScheduleUpdateRequestDTO requestDto) {
+        scheduleService.updateSchedule(scheduleId, requestDto);
+        return ResponseEntity.noContent().build();
     }
 }
