@@ -59,6 +59,10 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
 
+        if (schedule.isDeleted()) {
+            throw new EntityNotFoundException("해당 스케줄이 존재하지 않습니다.");
+        }
+
         LocalDateTime startTime = requestDto.getStartTime();
         LocalDateTime endTime = requestDto.getEndTime(schedule.getMusical());
 
