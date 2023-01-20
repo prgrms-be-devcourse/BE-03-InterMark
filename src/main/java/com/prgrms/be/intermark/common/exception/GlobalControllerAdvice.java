@@ -101,4 +101,14 @@ public class GlobalControllerAdvice {
 		);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
+
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.BAD_REQUEST,
+				e.getMessage(),
+				LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 }
