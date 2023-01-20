@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -55,6 +56,11 @@ public class User {
     @NotBlank
     @Column(name = "username", nullable = false, unique = true, length = 20)
     private String username;
+
+    // TODO : 이메일 길이 제약 생각해보기
+    @Email
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
