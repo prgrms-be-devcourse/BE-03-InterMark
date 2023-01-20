@@ -31,6 +31,12 @@ public class ScheduleService {
         Musical musical = musicalRepository.findById(requestDto.musicalId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 뮤지컬이 존재하지 않습니다."));
 
+        int duplicatedSchedulesNum = scheduleRepository.getSchedulesNumByStartTime(requestDto.getStartTime(),
+                requestDto.getEndTime(musical));
+        if (duplicatedSchedulesNum > 0) {
+            throw new IllegalStateException("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
+        }
+
         Schedule schedule = scheduleRepository.save(requestDto.toEntity(musical));
 
         List<MusicalSeat> musicalSeats = musicalSeatRepository.findAllByMusical(musical);

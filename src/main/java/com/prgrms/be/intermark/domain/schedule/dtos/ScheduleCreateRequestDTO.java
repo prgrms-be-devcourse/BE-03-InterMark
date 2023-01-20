@@ -22,13 +22,18 @@ public record ScheduleCreateRequestDTO(
         return LocalDateTime.parse(time, formatter);
     }
 
-    public Schedule toEntity(Musical musical) {
-        LocalDateTime startTime = toLocalDateTime(this.startTime);
-        LocalDateTime endTime = startTime.plusMinutes(musical.getRunningTime());
+    public LocalDateTime getStartTime() {
+        return toLocalDateTime(this.startTime);
+    }
 
+    public LocalDateTime getEndTime(Musical musical) {
+        return getStartTime().plusMinutes(musical.getRunningTime());
+    }
+
+    public Schedule toEntity(Musical musical) {
         return Schedule.builder()
-                .startTime(startTime)
-                .endTime(endTime)
+                .startTime(getStartTime())
+                .endTime(getEndTime(musical))
                 .isDeleted(false)
                 .musical(musical)
                 .build();
