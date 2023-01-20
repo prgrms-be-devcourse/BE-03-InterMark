@@ -1,6 +1,7 @@
 package com.prgrms.be.intermark.common.exception;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
@@ -91,8 +92,8 @@ public class GlobalControllerAdvice {
 		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
 	}
 
-	@ExceptionHandler(IllegalStateException.class)
-	public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
+	@ExceptionHandler(DateTimeParseException.class)
+	public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException e) {
 		ErrorResponse errorResponse = ErrorResponse.of(
 				HttpStatus.BAD_REQUEST,
 				e.getMessage(),
