@@ -21,7 +21,6 @@ public record ScheduleCreateRequestDTO(
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             return LocalDateTime.parse(time, formatter);
         } catch (Exception e) {
-            log.error(String.valueOf(e));
             throw new IllegalStateException("잘못된 날짜 시간 형식입니다.");
         }
     }
