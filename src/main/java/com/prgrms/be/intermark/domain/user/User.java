@@ -79,4 +79,12 @@ public class User {
     public void setBirth(LocalDate birth) {
         this.birth = birth;
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
