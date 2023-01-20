@@ -48,8 +48,7 @@ public class User {
     @Column(name = "social_id", nullable = false, length = 64)
     private String socialId;
 
-    @NotNull
-    @Column(name = "refresh_token", nullable = false, unique = true)
+    @Column(name = "refresh_token", unique = true)
     private String refreshToken;
 
     @Length(min = 2, max = 20)
@@ -59,7 +58,7 @@ public class User {
 
     // TODO : 이메일 길이 제약 생각해보기
     @Email
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
     @NotNull
@@ -79,13 +78,12 @@ public class User {
     private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
-    public User(Social social, String socialId, String refreshToken, String username, UserRole role, boolean isDeleted, LocalDate birth, List<Ticket> tickets) {
+    public User(Social social, String socialId, String username, UserRole role, LocalDate birth, List<Ticket> tickets) {
         this.social = social;
         this.socialId = socialId;
-        this.refreshToken = refreshToken;
         this.username = username;
         this.role = role;
-        this.isDeleted = isDeleted;
+        this.isDeleted = false;
         this.birth = birth;
         this.tickets = tickets;
     }
