@@ -20,6 +20,7 @@ public class OAuthAttribute {
     private String nickname;
     private String email;
     private UserRole userRole;
+
     @Builder
     public OAuthAttribute(Map<String, Object> attributes, String socialId, SocialType socialType, String nickname, String email, UserRole userRole) {
         this.attributes = attributes;
@@ -31,10 +32,10 @@ public class OAuthAttribute {
     }
 
     public static OAuthAttribute of(SocialType socialType, String socialId, UserRole userRole, Map<String, Object> attributes) {
-        return ofGoogle(socialId,userRole, attributes);
+        return ofGoogle(socialId, userRole, attributes);
     }
 
-    private static OAuthAttribute ofGoogle(String socialId,UserRole userRole, Map<String, Object> attributes) {
+    private static OAuthAttribute ofGoogle(String socialId, UserRole userRole, Map<String, Object> attributes) {
         return OAuthAttribute.builder()
                 .nickname((String) attributes.get("name"))
                 .email((String) attributes.get("email"))

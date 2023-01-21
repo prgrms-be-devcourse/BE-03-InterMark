@@ -6,7 +6,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.DeclareMixin;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,7 +19,6 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import static com.prgrms.be.intermark.auth.constant.JwtConstants.*;
 
@@ -44,22 +42,24 @@ public class TokenProvider {
         this.refreshKey = Keys.hmacShaKeyFor(secretKeyBytes);
     }
 
-    public String createAceessToken(Long userId, UserRole role){
+    public String createAceessToken(Long userId, UserRole role) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .claim(AUTHORITIES_KEY, role)
                 .setExpiration(new Date(new Date().getTime() + ACCESS_TOKEN_EXP))
-                .signWith(accessKey,SignatureAlgorithm.HS256)
+                .signWith(accessKey, SignatureAlgorithm.HS256)
                 .compact();
     }
-    public String createRefreshToken(Long userId, UserRole role){
+
+    public String createRefreshToken(Long userId, UserRole role) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .claim(AUTHORITIES_KEY, role)
                 .setExpiration(new Date(new Date().getTime() + REFRESH_TOKEN_EXP))
-                .signWith(refreshKey,SignatureAlgorithm.HS256)
+                .signWith(refreshKey, SignatureAlgorithm.HS256)
                 .compact();
     }
+
     public String getUserIdFromAccessToken(String accessToken) {
         return Jwts.parserBuilder()
                 .setSigningKey(accessKey)
@@ -76,12 +76,26 @@ public class TokenProvider {
                 .getBody().getSubject();
     }
 
-    public Long getExpiration(String accessToken) {
+    public Long getExpiration(String token) {
         Date expiration = Jwts.parserBuilder()
                 .build()
-                .parseClaimsJws(accessToken)
+                .parseClaimsJws(token)
                 .getBody().getExpiration();
         return expiration.getTime() - new Date().getTime();
+    }
+
+    public Claims getExpiredTokenClaims(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(accessKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT token.");
+            return e.getClaims();
+        }
+        return null;
     }
 
     public Authentication getAuthentication(String accessToken) {
