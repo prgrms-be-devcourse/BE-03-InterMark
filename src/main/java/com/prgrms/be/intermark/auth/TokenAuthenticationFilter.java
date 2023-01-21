@@ -3,7 +3,6 @@ package com.prgrms.be.intermark.auth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.HeaderUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -14,8 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.prgrms.be.intermark.auth.constant.JwtConstants.HEADER_AUTHORIZATION;
-import static com.prgrms.be.intermark.auth.constant.JwtConstants.TOKEN_PREFIX;
+import static com.prgrms.be.intermark.util.HeaderUtil.getAccessToken;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +24,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain)  throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
         String accessToken = getAccessToken(request);
 
@@ -36,19 +34,5 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private static String getAccessToken(HttpServletRequest request) {
-        String headerValue = request.getHeader(HEADER_AUTHORIZATION);
-
-        if (headerValue == null) {
-            return null;
-        }
-
-        if (headerValue.startsWith(TOKEN_PREFIX)) {
-            return headerValue.substring(TOKEN_PREFIX.length());
-        }
-
-        return null;
     }
 }
