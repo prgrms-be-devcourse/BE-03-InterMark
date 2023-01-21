@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.prgrms.be.intermark.domain.musical.model.Musical;
-import com.prgrms.be.intermark.domain.musical_image.model.MusicalDetailImage;
-import com.prgrms.be.intermark.domain.musical_image.repository.MusicalDetailImageRepository;
+import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
+import com.prgrms.be.intermark.domain.musical.repository.MusicalDetailImageRepository;
 
 import lombok.RequiredArgsConstructor;
 

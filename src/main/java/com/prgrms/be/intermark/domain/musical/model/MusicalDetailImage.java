@@ -1,4 +1,4 @@
-package com.prgrms.be.intermark.domain.musical_image.model;
+package com.prgrms.be.intermark.domain.musical.model;
 
 import java.util.Objects;
 
@@ -15,8 +15,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.util.Assert;
-
-import com.prgrms.be.intermark.domain.musical.model.Musical;
 
 import lombok.AccessLevel;
 import lombok.Builder;

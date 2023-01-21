@@ -25,7 +25,6 @@ import javax.validation.constraints.Positive;
 import org.springframework.util.Assert;
 
 import com.prgrms.be.intermark.domain.casting.model.Casting;
-import com.prgrms.be.intermark.domain.musical_image.model.MusicalDetailImage;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
