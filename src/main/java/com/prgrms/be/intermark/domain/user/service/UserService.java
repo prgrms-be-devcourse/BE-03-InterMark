@@ -2,6 +2,8 @@ package com.prgrms.be.intermark.domain.user.service;
 
 import com.prgrms.be.intermark.auth.OAuthAttribute;
 import com.prgrms.be.intermark.auth.TokenProvider;
+import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
@@ -9,6 +11,8 @@ import com.prgrms.be.intermark.domain.user.dto.UserIdAndRoleDTO;
 import com.prgrms.be.intermark.domain.user.dto.UserInfoResponseDTO;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -91,5 +95,13 @@ public class UserService {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
         return UserInfoResponseDTO.from(user);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponseDTO<User, UserInfoResponseDTO> findAllUser(Pageable pageable) {
+        Page<User> all = userRepository.findByIsDeletedFalse(pageable);
+        return new PageResponseDTO<>(all,
+                UserInfoResponseDTO::from,
+                PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
     }
 }
