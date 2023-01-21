@@ -13,8 +13,8 @@ import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
 import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.actor.service.ActorService;
 import com.prgrms.be.intermark.domain.casting.service.CastingService;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDto;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDto;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.MusicalThumbnail;
@@ -42,8 +42,8 @@ public class MusicalFacadeService {
 	private final CastingService castingService;
 
 	@Transactional
-	public MusicalCommandResponseDto create(
-		MusicalCreateRequestDto createRequestDto,
+	public MusicalCommandResponseDTO create(
+		MusicalCreateRequestDTO createRequestDto,
 		MultipartFile thumbnail,
 		List<MultipartFile> detailImages
 	) {
@@ -59,7 +59,7 @@ public class MusicalFacadeService {
 		List<Actor> actors = actorService.findActors(createRequestDto.actors());
 		castingService.saveCasting(actors, createdMusical);
 
-		return MusicalCommandResponseDto.from(createdMusical);
+		return MusicalCommandResponseDTO.from(createdMusical);
 	}
 
 	@Transactional(readOnly = true)

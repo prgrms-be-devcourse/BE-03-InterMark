@@ -14,7 +14,7 @@ import com.prgrms.be.intermark.domain.musical.model.ViewRating;
 import lombok.Builder;
 
 @Builder
-public record MusicalCreateRequestDto(
+public record MusicalCreateRequestDTO(
 	@NotBlank String title,
 	@NotNull ViewRating viewRating,
 	@NotNull Genre genre,
@@ -25,8 +25,8 @@ public record MusicalCreateRequestDto(
 	@NotNull long managerId,
 	@NotNull long stadiumId,
 	List<Long> actors,
-	List<MusicalSeatGradeCreateRequestDto> seatGrades,
-	List<MusicalSeatCreateRequestDto> seats
+	List<MusicalSeatGradeCreateRequestDTO> seatGrades,
+	List<MusicalSeatCreateRequestDTO> seats
 ) {
 
 	public Musical toEntity() {

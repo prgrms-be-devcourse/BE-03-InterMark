@@ -9,7 +9,7 @@ import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 import lombok.Builder;
 
 @Builder
-public record MusicalSeatGradeCreateRequestDto(
+public record MusicalSeatGradeCreateRequestDTO(
 	@NotBlank String seatGradeName,
 	@NotNull @Positive int seatGradePrice
 ) {

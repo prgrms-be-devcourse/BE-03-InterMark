@@ -5,10 +5,10 @@ import com.prgrms.be.intermark.domain.musical.model.Musical;
 import lombok.Builder;
 
 @Builder
-public record MusicalCommandResponseDto(Long id) {
+public record MusicalCommandResponseDTO(Long id) {
 
-	public static MusicalCommandResponseDto from(Musical musical) {
-		return MusicalCommandResponseDto.builder()
+	public static MusicalCommandResponseDTO from(Musical musical) {
+		return MusicalCommandResponseDTO.builder()
 			.id(musical.getId())
 			.build();
 	}

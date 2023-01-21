@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 
 @Builder
-public record MusicalSeatCreateRequestDto(
+public record MusicalSeatCreateRequestDTO(
 	@NotBlank Long seatId,
 	@NotBlank String seatGradeName) {
 }

@@ -1,4 +1,4 @@
-package com.prgrms.be.intermark.domain.schedule.dtos;
+package com.prgrms.be.intermark.domain.schedule.dto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

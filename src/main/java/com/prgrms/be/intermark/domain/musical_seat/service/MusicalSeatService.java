@@ -7,7 +7,7 @@ import javax.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDto;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
 import com.prgrms.be.intermark.domain.musical_seat.repository.MusicalSeatRepository;
@@ -27,7 +27,7 @@ public class MusicalSeatService {
 	private final MusicalSeatRepository musicalSeatRepository;
 
 	@Transactional
-	public void saveMusicalSeat(List<MusicalSeatCreateRequestDto> createRequestDTOs, Musical musical) {
+	public void saveMusicalSeat(List<MusicalSeatCreateRequestDTO> createRequestDTOs, Musical musical) {
 		createRequestDTOs
 			.forEach(musicalSeat -> {
 				Seat seat = seatRepository.findById(musicalSeat.seatId())

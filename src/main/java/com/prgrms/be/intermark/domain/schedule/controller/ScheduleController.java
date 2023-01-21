@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.prgrms.be.intermark.domain.schedule.dtos.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
 
 import lombok.RequiredArgsConstructor;

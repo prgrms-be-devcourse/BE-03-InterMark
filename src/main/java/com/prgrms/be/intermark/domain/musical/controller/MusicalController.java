@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDto;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDto;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.service.MusicalFacadeService;
@@ -36,11 +36,11 @@ public class MusicalController {
 		consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}
 	)
 	public ResponseEntity<Void> createMusical(
-		@RequestPart @Valid MusicalCreateRequestDto createRequestDto,
+		@RequestPart @Valid MusicalCreateRequestDTO createRequestDto,
 		@RequestPart(required = false) MultipartFile thumbnail,
 		@RequestPart(required = false) List<MultipartFile> detailImages
 	) {
-		MusicalCommandResponseDto responseDto = musicalFacadeService.create(createRequestDto, thumbnail, detailImages);
+		MusicalCommandResponseDTO responseDto = musicalFacadeService.create(createRequestDto, thumbnail, detailImages);
 		URI location = URI.create("/api/v1/musicals/" + responseDto.id());
 		return ResponseEntity.created(location).build();
 	}
