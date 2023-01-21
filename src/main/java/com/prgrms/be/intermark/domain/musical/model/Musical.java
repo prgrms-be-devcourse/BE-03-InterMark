@@ -25,7 +25,7 @@ import javax.validation.constraints.Positive;
 import org.springframework.util.Assert;
 
 import com.prgrms.be.intermark.domain.casting.model.Casting;
-import com.prgrms.be.intermark.domain.musical_detail_image.model.MusicalDetailImage;
+import com.prgrms.be.intermark.domain.musical_image.model.MusicalImage;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
@@ -52,16 +52,15 @@ public class Musical {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @NotBlank
+    @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "view_rating", nullable = false, length = 10)
     private ViewRating viewRating;
 
-    @NotBlank
-    @Column(name = "thumbnail_url", nullable = false, length = 2000)
+    @Column(name = "thumbnail_url", length = 2000)
     private String thumbnailUrl;
 
-    @NotBlank
+    @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "genre", nullable = false, length = 20)
     private Genre genre;
@@ -79,6 +78,7 @@ public class Musical {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
+    @NotNull
     @Positive
     @Column(name = "running_time", nullable = false)
     private int runningTime;
@@ -97,7 +97,7 @@ public class Musical {
     private List<Casting> castings = new ArrayList<>();
 
     @OneToMany(mappedBy = "musical")
-    private List<MusicalDetailImage> musicalDetailImages = new ArrayList<>();
+    private List<MusicalImage> detailImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "musical")
     private List<Schedule> schedules = new ArrayList<>();
@@ -139,5 +139,9 @@ public class Musical {
         Assert.notNull(user, "User cannot be null");
 
         this.user = user;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 }
