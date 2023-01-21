@@ -16,13 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
+import static com.prgrms.be.intermark.auth.constant.JwtConstants.THREE_DAYS_MSEC;
+
 @Slf4j
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
-    
+
     public UserService(UserRepository userRepository, TokenProvider tokenProvider) {
         this.userRepository = userRepository;
         this.tokenProvider = tokenProvider;
@@ -55,12 +57,28 @@ public class UserService {
                 });
         return new UserIdAndRoleDTO(foundedUser.getId(), foundedUser.getRole());
     }
+
     @Transactional
-    public void assignRefreshToken(String refreshToken){
+    public Optional<String> changeRefreshToken(Long userId, UserRole role, String refreshToken) {
+        User findUser = userRepository.findByIdAndRefreshToken(userId, refreshToken)
+                .orElseThrow(() -> new IllegalArgumentException("user id, refresh token으로 일치하는 유저를 찾을 수 없습니다."));
+        String findUserRefreshToken = findUser.getRefreshToken();
+
+        if (tokenProvider.getExpiration(findUserRefreshToken) <= THREE_DAYS_MSEC) {
+            String newRefreshToken = tokenProvider.createRefreshToken(userId, role);
+
+            findUser.setRefreshToken(newRefreshToken);
+            return Optional.of(newRefreshToken);
+        }
+        return Optional.empty();
+    }
+
+    @Transactional
+    public void assignRefreshToken(String refreshToken) {
         // TODO: 의존성 주입 받는 것 (빈 주입) vs 인자로 넣어주는 것 vs 안에서 만들어주는 것
         String userIdFromRefreshToken = tokenProvider.getUserIdFromRefreshToken(refreshToken);
         Optional<User> user = userRepository.findById(Long.parseLong(userIdFromRefreshToken));
-        user.map(user1 ->{
+        user.map(user1 -> {
             user1.setRefreshToken(refreshToken);
 
             return user1;
