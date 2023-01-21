@@ -6,6 +6,7 @@ import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.dto.UserIdAndRoleDTO;
+import com.prgrms.be.intermark.domain.user.dto.UserInfoResponseDTO;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -83,5 +84,12 @@ public class UserService {
 
             return user1;
         }).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfoResponseDTO findById(Long userId) {
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
+        return UserInfoResponseDTO.from(user);
     }
 }
