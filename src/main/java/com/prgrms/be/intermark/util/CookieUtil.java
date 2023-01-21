@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
-public class CookieUils {
+public class CookieUtil {
 
 
     public static void addCookie(String cookieName,String cookieValue,int maxAge, HttpServletResponse response){

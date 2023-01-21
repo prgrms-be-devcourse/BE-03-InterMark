@@ -1,6 +1,6 @@
 package com.prgrms.be.intermark.auth;
 
-import com.prgrms.be.intermark.util.CookieUils;
+import com.prgrms.be.intermark.util.CookieUtil;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.util.SerializationUtils;
@@ -43,7 +43,7 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
         } else {
             String value = Base64.getUrlEncoder().encodeToString(SerializationUtils.serialize(authorizationRequest));
 
-            CookieUils.addCookie(cookieName, value, cookieExpireSeconds, response);
+            CookieUtil.addCookie(cookieName, value, cookieExpireSeconds, response);
         }
     }
 
@@ -65,7 +65,7 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
     }
 
     private Optional<Cookie> getCookie(HttpServletRequest request) {
-        return CookieUils.getCookieByName(cookieName, request);
+        return CookieUtil.getCookieByName(cookieName, request);
     }
 
     private void clear(Cookie cookie, HttpServletResponse response) {
