@@ -25,7 +25,7 @@ import javax.validation.constraints.Positive;
 import org.springframework.util.Assert;
 
 import com.prgrms.be.intermark.domain.casting.model.Casting;
-import com.prgrms.be.intermark.domain.musical_image.model.MusicalImage;
+import com.prgrms.be.intermark.domain.musical_image.model.MusicalDetailImage;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
@@ -57,9 +57,6 @@ public class Musical {
     @Column(name = "view_rating", nullable = false, length = 10)
     private ViewRating viewRating;
 
-    @Column(name = "thumbnail_url", length = 2000)
-    private String thumbnailUrl;
-
     @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "genre", nullable = false, length = 20)
@@ -85,6 +82,11 @@ public class Musical {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "thumbnail_id", referencedColumnName = "id", nullable = false)
+    private MusicalThumbnail thumbnail;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stadium_id", referencedColumnName = "id", nullable = false)
     private Stadium stadium;
 
@@ -97,7 +99,7 @@ public class Musical {
     private List<Casting> castings = new ArrayList<>();
 
     @OneToMany(mappedBy = "musical")
-    private List<MusicalImage> detailImages = new ArrayList<>();
+    private List<MusicalDetailImage> detailImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "musical")
     private List<Schedule> schedules = new ArrayList<>();
@@ -112,15 +114,16 @@ public class Musical {
     private List<MusicalSeat> musicalSeats = new ArrayList<>();
 
     @Builder
-    public Musical(String title, ViewRating viewRating, String thumbnailUrl, Genre genre, String description, LocalDate startDate, LocalDate endDate, int runningTime, Stadium stadium, User user) {
+    public Musical(String title, ViewRating viewRating, Genre genre, String description, LocalDate startDate,
+        LocalDate endDate, int runningTime, MusicalThumbnail thumbnail, Stadium stadium, User user) {
         this.title = title;
         this.viewRating = viewRating;
-        this.thumbnailUrl = thumbnailUrl;
         this.genre = genre;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.runningTime = runningTime;
+        this.thumbnail = thumbnail;
         this.stadium = stadium;
         this.user = user;
     }
@@ -141,7 +144,7 @@ public class Musical {
         this.user = user;
     }
 
-    public void setThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
+    public void setThumbnail(MusicalThumbnail thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }

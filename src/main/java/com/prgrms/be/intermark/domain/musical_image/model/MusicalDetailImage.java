@@ -24,10 +24,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "musical_image")
+@Table(name = "musical_detail_image")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class MusicalImage {
+public class MusicalDetailImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,7 +46,7 @@ public class MusicalImage {
     private Musical musical;
 
     @Builder
-    public MusicalImage(Musical musical, String originalFileName, String imageUrl) {
+    public MusicalDetailImage(Musical musical, String originalFileName, String imageUrl) {
         this.musical = musical;
         this.originalFileName = originalFileName;
         this.imageUrl = imageUrl;
