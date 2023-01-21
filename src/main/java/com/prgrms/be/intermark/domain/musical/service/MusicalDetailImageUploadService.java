@@ -5,48 +5,51 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.prgrms.be.intermark.domain.musical.model.Musical;
-import com.prgrms.be.intermark.domain.musical_image.model.MusicalImage;
-import com.prgrms.be.intermark.domain.musical_image.repository.MusicalImageRepository;
+import com.prgrms.be.intermark.domain.musical_image.model.MusicalDetailImage;
+import com.prgrms.be.intermark.domain.musical_image.repository.MusicalDetailImageRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class FIleUploadService {
+public class MusicalDetailImageUploadService {
 
-	private final MusicalImageRepository musicalImageRepository;
-	private String savePath = "D://바탕화면/file/";
+	private final MusicalDetailImageRepository musicalDetailImageRepository;
 
-	public String uploadFile(MultipartFile multipartFile, Musical musical) throws IOException {
+	@Value("${file.detailImages}")
+	private String savePath;
+
+	public void uploadImage(MultipartFile multipartFile, Musical musical) {
 		if (multipartFile.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
 
 		String originalFilename = multipartFile.getOriginalFilename();
 		String savedFileName = createSavedFileName(originalFilename);
-		multipartFile.transferTo(new File(getFullPath(savedFileName)));
 
-		MusicalImage musicalImage = MusicalImage.builder()
+		try {
+			multipartFile.transferTo(new File(getFullPath(savedFileName)));
+		} catch (IOException e) {
+			throw new RuntimeException("상세 이미지를 업로드할 수 없습니다.", e);
+		}
+
+		MusicalDetailImage musicalDetailImage = MusicalDetailImage.builder()
 			.musical(musical)
 			.originalFileName(originalFilename)
 			.imageUrl(getFullPath(savedFileName))
 			.build();
 
-		MusicalImage savedMusicalImage = musicalImageRepository.save(musicalImage);
-		return savedMusicalImage.getImageUrl();
+		musicalDetailImageRepository.save(musicalDetailImage);
 	}
 
 	public void uploadFiles(List<MultipartFile> multipartFiles, Musical musical) {
 		multipartFiles.forEach(multipartFile -> {
-			try {
-				uploadFile(multipartFile, musical);
-			} catch (IOException e) {
-				throw new RuntimeException();
-			}
+			uploadImage(multipartFile, musical);
 		});
 	}
 

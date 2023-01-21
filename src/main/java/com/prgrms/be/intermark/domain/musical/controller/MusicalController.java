@@ -1,6 +1,5 @@
 package com.prgrms.be.intermark.domain.musical.controller;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDto;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDto;
-import com.prgrms.be.intermark.domain.musical.service.MusicalService;
+import com.prgrms.be.intermark.domain.musical.service.MusicalFacadeService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1")
 public class MusicalController {
 
-	private final MusicalService musicalService;
+	private final MusicalFacadeService musicalFacadeService;
 
 	@PostMapping(
 		value = "/musicals",
@@ -35,8 +34,8 @@ public class MusicalController {
 		@RequestPart @Valid MusicalCreateRequestDto createRequestDto,
 		@RequestPart(required = false) MultipartFile thumbnail,
 		@RequestPart(required = false) List<MultipartFile> detailImages
-	) throws IOException {
-		MusicalCommandResponseDto responseDto = musicalService.create(createRequestDto, thumbnail, detailImages);
+	) {
+		MusicalCommandResponseDto responseDto = musicalFacadeService.create(createRequestDto, thumbnail, detailImages);
 		URI location = URI.create("/api/v1/musicals/" + responseDto.id());
 		return ResponseEntity.created(location).build();
 	}
