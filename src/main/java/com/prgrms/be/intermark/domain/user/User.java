@@ -1,6 +1,5 @@
 package com.prgrms.be.intermark.domain.user;
 
-import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,9 +10,8 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "user",
@@ -35,22 +33,22 @@ public class User {
     @Column(name = "nickname", nullable = false, length = 25)
     private String nickname;
 
-    @NotBlank
+    @NotNull
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "social", nullable = false)
-    private SocialType social;
+    @Column(name = "social_type", nullable = false)
+    private SocialType socialType;
 
     @NotBlank
     @Column(name = "social_id", nullable = false, length = 64)
     private String socialId;
 
-    @NotBlank
+    @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false, length = 15)
     private UserRole role;
 
-    @NotBlank
-    @Column(name = "refresh_token", nullable = false, unique = true)
+    @Nullable
+    @Column(name = "refresh_token", unique = true)
     private String refreshToken;
 
     @Column(name = "is_deleted", nullable = false)
@@ -60,12 +58,12 @@ public class User {
     @Column(name = "birth")
     private LocalDate birth;
 
-    @OneToMany(mappedBy = "user")
-    private List<Ticket> tickets = new ArrayList<>();
+//    @OneToMany(mappedBy = "user")
+//    private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
     public User(SocialType social, String socialId, String nickname, UserRole role,  String email) {
-        this.social = social;
+        this.socialType = social;
         this.socialId = socialId;
         this.nickname = nickname;
         this.role = role;

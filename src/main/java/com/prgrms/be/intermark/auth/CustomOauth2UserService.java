@@ -30,6 +30,6 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         String socialId = oAuth2User.getName();
 
         //OAuth2user를  return 해줘야 한다.
-        return new CustomUserPrincipal("sub", UserRole.USER, oAuth2User.getAttributes());
+        return new CustomUserPrincipal("sub", UserRole.ROLE_USER, oAuth2User.getAttributes());
     }
 }
