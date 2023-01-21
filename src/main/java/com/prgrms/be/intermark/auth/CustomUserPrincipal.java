@@ -13,42 +13,11 @@ import java.util.Map;
 
 @Getter
 @RequiredArgsConstructor
-public class CustomUserPrincipal implements OAuth2User/*, UserDetails*/ {
+public class CustomUserPrincipal implements OAuth2User{
 
     private final String nameAttributeKey;
     private final UserRole authority;
-    private final Map<String,Object> attributes;
-
-//    @Override
-//    public String getPassword() {
-//        return user.getPassword();
-//    }
-//
-//    @Override
-//    public String getUsername() {
-//        return user.getEmail();
-//    }
-//
-//    @Override
-//    public boolean isAccountNonExpired() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isAccountNonLocked() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isCredentialsNonExpired() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isEnabled() {
-//        return true;
-//    }
-
+    private final Map<String, Object> attributes;
 
     @Override
     public Map<String, Object> getAttributes() {
