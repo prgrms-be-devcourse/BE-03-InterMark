@@ -1,6 +1,5 @@
 package com.prgrms.be.intermark.domain.user;
 
-import com.prgrms.be.intermark.domain.ticket.Ticket;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,12 +12,10 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "user",
-        uniqueConstraints = {@UniqueConstraint(name = "social_uk", columnNames = {"social", "social_id"})})
+        uniqueConstraints = {@UniqueConstraint(name = "social_uk", columnNames = {"social_type", "social_id"})})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User {
@@ -27,34 +24,33 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Email
+    @Column(name = "email", nullable = false, unique = true) // 일단 length 제약 없이 두기
+    private String email;
+
+    @Length(min = 2, max = 25)
+    @NotBlank
+    @Column(name = "nickname", nullable = false, length = 25)
+    private String nickname;
+
     @NotNull
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "social", nullable = false)
-    private Social social;
+    @Column(name = "social_type", nullable = false)
+    private SocialType socialType;
 
-    @NotNull
+    @NotBlank
     @Column(name = "social_id", nullable = false, length = 64)
     private String socialId;
-
-    @Column(name = "refresh_token", unique = true)
-    private String refreshToken;
-
-    @Length(min = 2, max = 20)
-    @NotBlank
-    @Column(name = "username", nullable = false, unique = true, length = 20)
-    private String username;
-
-    // TODO : 이메일 길이 제약 생각해보기
-    @Email
-    @Column(name = "email", unique = true)
-    private String email;
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false, length = 15)
     private UserRole role;
 
-    @NotNull
+    @Nullable
+    @Column(name = "refresh_token", unique = true)
+    private String refreshToken;
+
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
@@ -62,29 +58,27 @@ public class User {
     @Column(name = "birth")
     private LocalDate birth;
 
-    @OneToMany(mappedBy = "user")
-    private List<Ticket> tickets = new ArrayList<>();
+//    @OneToMany(mappedBy = "user")
+//    private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
-    public User(Social social, String socialId, String username, UserRole role, LocalDate birth, List<Ticket> tickets) {
-        this.social = social;
+    public User(SocialType social, String socialId, String nickname, UserRole role,  String email) {
+        this.socialType = social;
         this.socialId = socialId;
-        this.username = username;
+        this.nickname = nickname;
         this.role = role;
         this.isDeleted = false;
-        this.birth = birth;
-        this.tickets = tickets;
-    }
-
-    public void setBirth(LocalDate birth) {
-        this.birth = birth;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
     }
 
-    public void setRefreshToken(String refreshToken) {
+    public void setRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
+    }
+
+    public void setNickname(String nickname){
+        this.nickname = nickname;
+    }
+    public String getUserRoleKey() {
+        return role.getKey();
     }
 }

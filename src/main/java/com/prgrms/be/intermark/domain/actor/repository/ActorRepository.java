@@ -1,10 +1,9 @@
 package com.prgrms.be.intermark.domain.actor.repository;
 
-import java.util.Optional;
-
+import com.prgrms.be.intermark.domain.actor.model.Actor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.prgrms.be.intermark.domain.actor.Actor;
+import java.util.Optional;
 
 public interface ActorRepository extends JpaRepository<Actor, Long> {
 
