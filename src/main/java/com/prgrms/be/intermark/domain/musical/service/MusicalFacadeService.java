@@ -15,6 +15,7 @@ import com.prgrms.be.intermark.common.service.UploadImageServiceImpl;
 import com.prgrms.be.intermark.domain.casting.service.CastingService;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical_seat.service.MusicalSeatService;
@@ -65,5 +66,11 @@ public class MusicalFacadeService {
 	public PageResponseDTO<Musical, MusicalSummaryResponseDTO> findAllMusicals(Pageable pageable) {
 		Page<Musical> musicalPage = musicalService.findAllMusicals(pageable);
 		return new PageResponseDTO<>(musicalPage, MusicalSummaryResponseDTO::from, PageListIndexSize.MUSICAL_LIST_INDEX_SIZE);
+	}
+
+	@Transactional(readOnly = true)
+	public MusicalDetailResponseDTO findMusicalById(Long musicalId) {
+		Musical musical = musicalService.findMusicalById(musicalId);
+		return MusicalDetailResponseDTO.from(musical);
 	}
 }

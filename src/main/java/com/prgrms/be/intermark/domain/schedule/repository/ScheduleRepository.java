@@ -14,4 +14,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime
     );
+
+    @Query("SELECT COUNT(s) FROM Schedule s " +
+            "WHERE NOT s.id = :scheduleId AND s.startTime <= :endTime AND s.endTime >= :startTime")
+    int getDuplicatedScheduleExceptById(
+            @Param("scheduleId") Long scheduleId,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime
+    );
 }

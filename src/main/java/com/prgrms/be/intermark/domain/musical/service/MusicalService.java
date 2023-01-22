@@ -1,5 +1,7 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,4 +39,10 @@ public class MusicalService {
 		return musicalRepository.findAll(pageable);
 	}
 
+    @Transactional(readOnly = true)
+    public Musical findMusicalById(Long musicalId) {
+
+        return musicalRepository.findMusicalsFetchByMusicalId(musicalId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 뮤지컬입니다."));
+    }
 }

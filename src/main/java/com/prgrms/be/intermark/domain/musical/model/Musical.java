@@ -83,6 +83,9 @@ public class Musical {
     @Column(name = "running_time", nullable = false)
     private int runningTime;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stadium_id", referencedColumnName = "id", nullable = false)
@@ -122,6 +125,7 @@ public class Musical {
         this.startDate = startDate;
         this.endDate = endDate;
         this.runningTime = runningTime;
+        this.isDeleted = false;
         this.stadium = stadium;
         this.user = user;
     }
