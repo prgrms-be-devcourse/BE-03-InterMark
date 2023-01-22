@@ -67,4 +67,9 @@ public class Schedule {
         this.musical = musical;
         musical.getSchedules().add(this);
     }
+
+    public void setScheduleTime(LocalDateTime startTime, LocalDateTime endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }
