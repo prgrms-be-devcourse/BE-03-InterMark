@@ -76,4 +76,16 @@ public class ScheduleService {
 
         schedule.setScheduleTime(startTime, endTime);
     }
+
+    @Transactional
+    public void deleteSchedule(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
+
+        if (schedule.isDeleted()) {
+            throw new EntityNotFoundException("이미 삭제된 스케줄입니다.");
+        }
+
+        schedule.deleteSchedule();
+    }
 }
