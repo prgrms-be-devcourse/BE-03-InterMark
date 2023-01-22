@@ -35,7 +35,7 @@ public class MusicalSeatService {
 						throw new EntityNotFoundException("존재하지 않는 좌석입니다");
 					});
 
-				SeatGrade seatGrade = seatGradeRepository.findSeatGradeByNameAndMusical(musicalSeat.seatGradeName(), musical)
+				SeatGrade seatGrade = seatGradeRepository.findByNameAndMusical(musicalSeat.seatGradeName(), musical)
 					.orElseThrow(() -> {
 						throw new EntityNotFoundException("존재하지 않는 좌석 등급입니다");
 					});

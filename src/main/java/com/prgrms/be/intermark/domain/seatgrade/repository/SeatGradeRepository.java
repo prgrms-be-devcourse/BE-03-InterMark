@@ -9,5 +9,5 @@ import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 
 public interface SeatGradeRepository extends JpaRepository<SeatGrade, Long> {
 
-	Optional<SeatGrade> findSeatGradeByNameAndMusical(String name, Musical musical);
+	Optional<SeatGrade> findByNameAndMusical(String name, Musical musical);
 }
