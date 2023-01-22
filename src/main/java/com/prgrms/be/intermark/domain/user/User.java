@@ -78,7 +78,7 @@ public class User {
     private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
-    public User(Social social, String socialId, String refreshToken, String nickname, UserRole role, boolean isDeleted, LocalDate birth) {
+    public User(Social social, String socialId, String refreshToken, String nickname, UserRole role, boolean isDeleted, LocalDate birth, String email) {
         this.social = social;
         this.socialId = socialId;
         this.refreshToken = refreshToken;
@@ -86,6 +86,7 @@ public class User {
         this.role = role;
         this.isDeleted = isDeleted;
         this.birth = birth;
+        this.email = email;
     }
 
     public void setBirth(LocalDate birth) {
