@@ -74,7 +74,6 @@ public class ScheduleService {
             throw new IllegalStateException("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
         }
 
-        schedule.setStartTime(startTime);
-        schedule.setEndTime(endTime);
+        schedule.setScheduleTime(startTime, endTime);
     }
 }

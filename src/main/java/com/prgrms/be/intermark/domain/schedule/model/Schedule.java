@@ -68,11 +68,8 @@ public class Schedule {
         musical.getSchedules().add(this);
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setScheduleTime(LocalDateTime startTime, LocalDateTime endTime) {
         this.startTime = startTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 }
