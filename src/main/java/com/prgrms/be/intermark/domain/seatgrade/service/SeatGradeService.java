@@ -19,7 +19,7 @@ public class SeatGradeService {
 	private final SeatGradeRepository seatGradeRepository;
 
 	@Transactional
-	public void saveSeatGrade(List<MusicalSeatGradeCreateRequestDTO> createRequestDTOs, Musical musical) {
+	public void save(List<MusicalSeatGradeCreateRequestDTO> createRequestDTOs, Musical musical) {
 		createRequestDTOs
 			.forEach(seatGrade -> {
 				SeatGrade createdSeatGrade = seatGrade.toEntity();

@@ -19,7 +19,7 @@ public class CastingService {
 	private final CastingRepository castingRepository;
 
 	@Transactional
-	public void saveCasting(List<Actor> actors, Musical musical) {
+	public void save(List<Actor> actors, Musical musical) {
 		actors.forEach(actor -> {
 			Casting casting = Casting.builder()
 				.actor(actor)

@@ -27,7 +27,7 @@ public class MusicalSeatService {
 	private final MusicalSeatRepository musicalSeatRepository;
 
 	@Transactional
-	public void saveMusicalSeat(List<MusicalSeatCreateRequestDTO> createRequestDTOs, Musical musical) {
+	public void save(List<MusicalSeatCreateRequestDTO> createRequestDTOs, Musical musical) {
 		createRequestDTOs
 			.forEach(musicalSeat -> {
 				Seat seat = seatRepository.findById(musicalSeat.seatId())

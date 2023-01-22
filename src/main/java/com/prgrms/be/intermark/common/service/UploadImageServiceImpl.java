@@ -1,4 +1,4 @@
-package com.prgrms.be.intermark.domain.musical.service;
+package com.prgrms.be.intermark.common.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,22 +9,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.prgrms.be.intermark.domain.musical.model.Musical;
-import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
-import com.prgrms.be.intermark.domain.musical.repository.MusicalDetailImageRepository;
+import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MusicalDetailImageUploadService {
+public class UploadImageServiceImpl implements UploadImageService {
 
-	private final MusicalDetailImageRepository musicalDetailImageRepository;
-
-	@Value("${file.detailImages}")
+	@Value("${file.images}")
 	private String savePath;
 
-	public void uploadImage(MultipartFile multipartFile, Musical musical) {
+	@Override
+	public ImageResponseDTO uploadImage(MultipartFile multipartFile) {
 		if (multipartFile.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
@@ -35,22 +32,20 @@ public class MusicalDetailImageUploadService {
 		try {
 			multipartFile.transferTo(new File(getFullPath(savedFileName)));
 		} catch (IOException e) {
-			throw new RuntimeException("상세 이미지를 업로드할 수 없습니다.", e);
+			throw new RuntimeException("이미지를 업로드할 수 없습니다.", e);
 		}
 
-		MusicalDetailImage musicalDetailImage = MusicalDetailImage.builder()
-			.musical(musical)
+		return ImageResponseDTO.builder()
 			.originalFileName(originalFilename)
-			.imageUrl(getFullPath(savedFileName))
+			.path(getFullPath(savedFileName))
 			.build();
-
-		musicalDetailImageRepository.save(musicalDetailImage);
 	}
 
-	public void uploadFiles(List<MultipartFile> multipartFiles, Musical musical) {
-		multipartFiles.forEach(multipartFile -> {
-			uploadImage(multipartFile, musical);
-		});
+	@Override
+	public List<ImageResponseDTO> uploadImages(List<MultipartFile> multipartFiles) {
+		return multipartFiles.stream()
+			.map(this::uploadImage)
+			.toList();
 	}
 
 	public String getFullPath(String savedFileName) {

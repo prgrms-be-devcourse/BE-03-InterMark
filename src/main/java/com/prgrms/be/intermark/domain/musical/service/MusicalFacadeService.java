@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.service.UploadImageServiceImpl;
 import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.actor.service.ActorService;
 import com.prgrms.be.intermark.domain.casting.service.CastingService;
@@ -17,7 +19,6 @@ import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
-import com.prgrms.be.intermark.domain.musical.model.MusicalThumbnail;
 import com.prgrms.be.intermark.domain.musical_seat.service.MusicalSeatService;
 import com.prgrms.be.intermark.domain.seatgrade.service.SeatGradeService;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
@@ -35,8 +36,8 @@ public class MusicalFacadeService {
 	private final StadiumService stadiumService;
 	private final UserService userService;
 	private final SeatGradeService seatGradeService;
-	private final MusicalThumbnailUploadService musicalThumbnailUploadService;
-	private final MusicalDetailImageUploadService musicalDetailImageUploadService;
+	private final UploadImageServiceImpl uploadImageServiceImpl;
+	private final MusicalDetailImageService musicalDetailImageService;
 	private final MusicalSeatService musicalSeatService;
 	private final ActorService actorService;
 	private final CastingService castingService;
@@ -47,19 +48,21 @@ public class MusicalFacadeService {
 		MultipartFile thumbnail,
 		List<MultipartFile> detailImages
 	) {
-		Musical musical = createRequestDto.toEntity();
-		MusicalThumbnail musicalThumbnail = musicalThumbnailUploadService.uploadThumbnail(thumbnail);
-		Stadium findStadium = stadiumService.findById(createRequestDto.stadiumId());
-		User findManager = userService.findById(createRequestDto.managerId());
-		Musical createdMusical = musicalService.saveMusical(musical, musicalThumbnail, findStadium, findManager);
+		Musical createdMusical = createRequestDto.toEntity();
 
-		musicalDetailImageUploadService.uploadFiles(detailImages, musical);
-		seatGradeService.saveSeatGrade(createRequestDto.seatGrades(), createdMusical);
-		musicalSeatService.saveMusicalSeat(createRequestDto.seats(), createdMusical);
+		ImageResponseDTO thumbnailInfo = uploadImageServiceImpl.uploadImage(thumbnail);
+		Stadium stadium = stadiumService.findById(createRequestDto.stadiumId());
+		User manager = userService.findById(createRequestDto.managerId());
+		Musical savedMusical = musicalService.save(createdMusical, thumbnailInfo.path(), stadium, manager);
+
+		List<ImageResponseDTO> detailImagesInfo = uploadImageServiceImpl.uploadImages(detailImages);
+		musicalDetailImageService.save(detailImagesInfo, savedMusical);
+		seatGradeService.save(createRequestDto.seatGrades(), savedMusical);
+		musicalSeatService.save(createRequestDto.seats(), savedMusical);
 		List<Actor> actors = actorService.findActors(createRequestDto.actorIds());
-		castingService.saveCasting(actors, createdMusical);
+		castingService.save(actors, savedMusical);
 
-		return MusicalCommandResponseDTO.from(createdMusical);
+		return MusicalCommandResponseDTO.from(savedMusical);
 	}
 
 	@Transactional(readOnly = true)

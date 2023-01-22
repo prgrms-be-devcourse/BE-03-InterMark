@@ -51,6 +51,10 @@ public class Musical {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @NotBlank
+    @Column(name = "thumbnail_url", nullable = false)
+    private String thumbnailUrl;
+
     @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "view_rating", nullable = false, length = 10)
@@ -81,11 +85,6 @@ public class Musical {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thumbnail_id", referencedColumnName = "id", nullable = false)
-    private MusicalThumbnail thumbnail;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stadium_id", referencedColumnName = "id", nullable = false)
     private Stadium stadium;
 
@@ -113,16 +112,16 @@ public class Musical {
     private List<MusicalSeat> musicalSeats = new ArrayList<>();
 
     @Builder
-    public Musical(String title, ViewRating viewRating, Genre genre, String description, LocalDate startDate,
-        LocalDate endDate, int runningTime, MusicalThumbnail thumbnail, Stadium stadium, User user) {
+    public Musical(String title, String thumbnailUrl, ViewRating viewRating, Genre genre, String description, LocalDate startDate,
+        LocalDate endDate, int runningTime, Stadium stadium, User user) {
         this.title = title;
+        this.thumbnailUrl = thumbnailUrl;
         this.viewRating = viewRating;
         this.genre = genre;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.runningTime = runningTime;
-        this.thumbnail = thumbnail;
         this.stadium = stadium;
         this.user = user;
     }
@@ -143,7 +142,7 @@ public class Musical {
         this.user = user;
     }
 
-    public void setThumbnail(MusicalThumbnail thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 }
