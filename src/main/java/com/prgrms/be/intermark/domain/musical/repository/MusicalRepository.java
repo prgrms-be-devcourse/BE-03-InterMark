@@ -1,11 +1,12 @@
 package com.prgrms.be.intermark.domain.musical.repository;
 
-import com.prgrms.be.intermark.domain.musical.model.Musical;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+import com.prgrms.be.intermark.domain.musical.model.Musical;
 
 public interface MusicalRepository extends JpaRepository<Musical, Long> {
 

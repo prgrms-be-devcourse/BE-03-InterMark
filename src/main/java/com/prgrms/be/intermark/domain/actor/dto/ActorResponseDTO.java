@@ -1,10 +1,11 @@
 package com.prgrms.be.intermark.domain.actor.dto;
 
+import java.util.List;
+
 import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.casting.model.Casting;
-import lombok.Builder;
 
-import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record ActorResponseDTO(String name, String profileImage) {

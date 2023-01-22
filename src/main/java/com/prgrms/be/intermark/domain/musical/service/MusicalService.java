@@ -1,39 +1,48 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
-import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalResponseDTO;
-import com.prgrms.be.intermark.domain.musical.model.Musical;
-import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
-import lombok.RequiredArgsConstructor;
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
+import com.prgrms.be.intermark.domain.musical.model.Musical;
+import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
+import com.prgrms.be.intermark.domain.stadium.model.Stadium;
+import com.prgrms.be.intermark.domain.user.User;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class MusicalService {
 
-    private final MusicalRepository musicalRepository;
+	private final MusicalRepository musicalRepository;
+
+	@Transactional
+	public Musical save(
+		Musical musical,
+		String thumbnailUrl,
+		Stadium stadium,
+		User user
+	) {
+		musical.setThumbnailUrl(thumbnailUrl);
+		musical.setStadium(stadium);
+		musical.setUser(user);
+		return musicalRepository.save(musical);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<Musical> findAllMusicals(Pageable pageable) {
+
+		return musicalRepository.findAll(pageable);
+	}
 
     @Transactional(readOnly = true)
-    public PageResponseDTO<Musical, MusicalResponseDTO> findAllMusicals(Pageable pageable) {
+    public Musical findMusicalById(Long musicalId) {
 
-        Page<Musical> musicalPage = musicalRepository.findAll(pageable);
-
-        return new PageResponseDTO<>(musicalPage, MusicalResponseDTO::from, PageListIndexSize.MUSICAL_LIST_INDEX_SIZE);
-    }
-
-    @Transactional(readOnly = true)
-    public MusicalDetailResponseDTO findMusicalById(Long musicalId) {
-
-        Musical musical = musicalRepository.findMusicalsFetchByMusicalId(musicalId)
+        return musicalRepository.findMusicalsFetchByMusicalId(musicalId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 뮤지컬입니다."));
-
-        return MusicalDetailResponseDTO.from(musical);
     }
 }

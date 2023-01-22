@@ -1,14 +1,22 @@
 package com.prgrms.be.intermark.domain.schedule.controller;
 
-import com.prgrms.be.intermark.domain.schedule.dtos.ScheduleCreateRequestDTO;
-import com.prgrms.be.intermark.domain.schedule.dtos.ScheduleUpdateRequestDTO;
-import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import java.net.URI;
 
 import javax.validation.Valid;
-import java.net.URI;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
+
+import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/api/v1/schedules")
 @RequiredArgsConstructor
