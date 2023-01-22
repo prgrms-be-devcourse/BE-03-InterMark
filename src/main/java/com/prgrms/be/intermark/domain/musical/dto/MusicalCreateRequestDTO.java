@@ -24,7 +24,7 @@ public record MusicalCreateRequestDTO(
 	@NotNull @Positive int runningTime,
 	@NotNull long managerId,
 	@NotNull long stadiumId,
-	List<Long> actors,
+	List<Long> actorIds,
 	List<MusicalSeatGradeCreateRequestDTO> seatGrades,
 	List<MusicalSeatCreateRequestDTO> seats
 ) {

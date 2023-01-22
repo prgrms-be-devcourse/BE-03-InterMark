@@ -56,7 +56,7 @@ public class MusicalFacadeService {
 		musicalDetailImageUploadService.uploadFiles(detailImages, musical);
 		seatGradeService.saveSeatGrade(createRequestDto.seatGrades(), createdMusical);
 		musicalSeatService.saveMusicalSeat(createRequestDto.seats(), createdMusical);
-		List<Actor> actors = actorService.findActors(createRequestDto.actors());
+		List<Actor> actors = actorService.findActors(createRequestDto.actorIds());
 		castingService.saveCasting(actors, createdMusical);
 
 		return MusicalCommandResponseDTO.from(createdMusical);
