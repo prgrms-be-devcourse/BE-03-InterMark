@@ -17,8 +17,8 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	@Transactional(readOnly = true)
-	public User findById(Long id) {
-		return userRepository.findById(id)
+	public User findById(Long userId) {
+		return userRepository.findById(userId)
 			.orElseThrow(() -> {
 				throw new EntityNotFoundException("존재하지 않는 유저입니다");
 			});

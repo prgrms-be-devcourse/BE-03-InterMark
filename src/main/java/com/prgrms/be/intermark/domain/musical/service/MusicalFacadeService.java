@@ -12,8 +12,6 @@ import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
 import com.prgrms.be.intermark.common.service.UploadImageServiceImpl;
-import com.prgrms.be.intermark.domain.actor.model.Actor;
-import com.prgrms.be.intermark.domain.actor.service.ActorService;
 import com.prgrms.be.intermark.domain.casting.service.CastingService;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
@@ -39,7 +37,6 @@ public class MusicalFacadeService {
 	private final UploadImageServiceImpl uploadImageServiceImpl;
 	private final MusicalDetailImageService musicalDetailImageService;
 	private final MusicalSeatService musicalSeatService;
-	private final ActorService actorService;
 	private final CastingService castingService;
 
 	@Transactional
@@ -59,8 +56,7 @@ public class MusicalFacadeService {
 		musicalDetailImageService.save(detailImagesInfo, savedMusical);
 		seatGradeService.save(createRequestDto.seatGrades(), savedMusical);
 		musicalSeatService.save(createRequestDto.seats(), savedMusical);
-		List<Actor> actors = actorService.findActors(createRequestDto.actorIds());
-		castingService.save(actors, savedMusical);
+		castingService.save(createRequestDto.actorIds(), savedMusical);
 
 		return MusicalCommandResponseDTO.from(savedMusical);
 	}

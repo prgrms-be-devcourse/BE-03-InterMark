@@ -17,8 +17,8 @@ public class StadiumService {
 	private final StadiumRepository stadiumRepository;
 
 	@Transactional(readOnly = true)
-	public Stadium findById(Long id) {
-		return stadiumRepository.findById(id)
+	public Stadium findById(Long stadiumId) {
+		return stadiumRepository.findById(stadiumId)
 			.orElseThrow(() -> {
 				throw new EntityNotFoundException("존재하지 않는 공연장입니다");
 			});
