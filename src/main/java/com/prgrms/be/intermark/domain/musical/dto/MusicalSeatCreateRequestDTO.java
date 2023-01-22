@@ -1,11 +1,12 @@
 package com.prgrms.be.intermark.domain.musical.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.Builder;
 
 @Builder
 public record MusicalSeatCreateRequestDTO(
-	@NotBlank Long seatId,
+	@NotNull Long seatId,
 	@NotBlank String seatGradeName) {
 }

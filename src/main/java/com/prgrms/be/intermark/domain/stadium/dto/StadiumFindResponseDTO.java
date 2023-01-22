@@ -9,7 +9,7 @@ public record StadiumFindResponseDTO(String name, String address, String imageUr
 
 	public static StadiumFindResponseDTO from(Stadium stadium) {
 		return StadiumFindResponseDTO.builder()
-			.name(stadium.getAddress())
+			.name(stadium.getName())
 			.address(stadium.getAddress())
 			.imageUrl(stadium.getImageUrl())
 			.build();

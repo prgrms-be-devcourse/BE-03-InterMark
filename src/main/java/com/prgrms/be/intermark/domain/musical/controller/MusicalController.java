@@ -26,15 +26,12 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/musicals")
 public class MusicalController {
 
 	private final MusicalFacadeService musicalFacadeService;
 
-	@PostMapping(
-		value = "/musicals",
-		consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}
-	)
+	@PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Void> createMusical(
 		@RequestPart @Valid MusicalCreateRequestDTO createRequestDto,
 		@RequestPart(required = false) MultipartFile thumbnail,
