@@ -70,6 +70,10 @@ public class Schedule {
         this.musical = musical;
     }
 
+    public boolean isOver(LocalDateTime time) {
+        return this.endTime.isBefore(time);
+    }
+
     public void setMusical(Musical musical) {
         Assert.notNull(musical, "Musical cannot be null");
 

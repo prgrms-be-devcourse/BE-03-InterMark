@@ -27,6 +27,7 @@ import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.user.User;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,7 +41,7 @@ public class Ticket {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
+	@NotNull
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "status", nullable = false, length = 15)
 	private TicketStatus ticketStatus;
@@ -75,7 +76,19 @@ public class Ticket {
 	@JoinColumn(name = "stadium_id", referencedColumnName = "id", nullable = false)
 	private Stadium stadium;
 
-	public Ticket(TicketStatus ticketStatus, User user, Schedule schedule, Seat seat, SeatGrade seatGrade, Musical musical, Stadium stadium) {
+	@Builder
+	private Ticket(TicketStatus ticketStatus, User user, Schedule schedule, Seat seat, SeatGrade seatGrade, Musical musical, Stadium stadium) {
+		Assert.notNull(user, "사용자가 존재하지 않습니다.");
+		Assert.notNull(schedule, "스케줄이 존재하지 않습니다.");
+		Assert.notNull(seat, "좌석이 존재하지 않습니다.");
+		Assert.notNull(seatGrade, "좌석등급이 존재하지 않습니다.");
+		Assert.notNull(musical, "뮤지컬이 존재하지 않습니다.");
+		Assert.notNull(stadium, "공연장이 존재하지 않습니다.");
+
+		if (schedule.isDeleted()) {
+			throw new IllegalArgumentException("삭제된 스케줄입니다.");
+		}
+
 		this.ticketStatus = ticketStatus;
 		this.user = user;
 		this.schedule = schedule;
