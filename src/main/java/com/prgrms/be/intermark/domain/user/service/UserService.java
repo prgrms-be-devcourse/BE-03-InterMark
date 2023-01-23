@@ -2,8 +2,8 @@ package com.prgrms.be.intermark.domain.user.service;
 
 import com.prgrms.be.intermark.auth.OAuthAttribute;
 import com.prgrms.be.intermark.auth.TokenProvider;
-import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
@@ -99,8 +99,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public PageResponseDTO<User, UserInfoResponseDTO> findAllUser(Pageable pageable) {
-        Page<User> all = userRepository.findByIsDeletedFalse(pageable);
-        return new PageResponseDTO<>(all,
+        Page<User> allUserPage = userRepository.findByIsDeletedFalse(pageable);
+        return new PageResponseDTO<>(allUserPage,
                 UserInfoResponseDTO::from,
                 PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
     }
