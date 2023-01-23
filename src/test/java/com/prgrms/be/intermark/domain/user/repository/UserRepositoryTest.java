@@ -84,7 +84,7 @@ class UserRepositoryTest {
                 .nickname("이수영")
                 .email("example1@gmail.com")
                 .build();
-        user.setIsDeleted(true);
+        user.deleteUser();
         // when
         userRepository.save(user);
         Optional<User> findUser = userRepository.findByIdAndIsDeletedFalse(user.getId());

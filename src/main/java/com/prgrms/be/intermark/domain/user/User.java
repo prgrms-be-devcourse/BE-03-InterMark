@@ -82,4 +82,12 @@ public class User {
     public String getUserRoleKey() {
         return role.getKey();
     }
+
+    public void deleteUser() {
+        this.isDeleted = true;
+    }
+
+    public boolean isDeleted() {
+        return this.isDeleted;
+    }
 }
