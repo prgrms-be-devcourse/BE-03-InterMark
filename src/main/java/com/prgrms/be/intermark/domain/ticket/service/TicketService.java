@@ -58,6 +58,12 @@ public class TicketService {
         Page<Ticket> ticketPage = ticketRepository.findByMusical(musical, pageable);
         return new PageResponseDTO<>(
                 ticketPage, TicketResponseByMusicalDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
+    }
 
+    @Transactional(readOnly = true)
+    public TicketResponseDTO getTicketById(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 티켓이 존재하지 않습니다."));
+        return TicketResponseDTO.from(ticket);
     }
 }

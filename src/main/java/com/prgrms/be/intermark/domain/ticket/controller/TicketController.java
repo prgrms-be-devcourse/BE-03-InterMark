@@ -41,4 +41,10 @@ public class TicketController {
                 musicalId, pageable);
         return ResponseEntity.ok(tickets);
     }
+
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable("ticketId") Long ticketId) {
+        TicketResponseDTO ticket = ticketService.getTicketById(ticketId);
+        return ResponseEntity.ok(ticket);
+    }
 }
