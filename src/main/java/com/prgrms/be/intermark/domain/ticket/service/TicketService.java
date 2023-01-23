@@ -3,10 +3,7 @@ package com.prgrms.be.intermark.domain.ticket.service;
 import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
-import com.prgrms.be.intermark.domain.schedule.model.Schedule;
-import com.prgrms.be.intermark.domain.seat.model.Seat;
-import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
-import com.prgrms.be.intermark.domain.stadium.model.Stadium;
+import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.ticket.dto.*;
 import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
@@ -19,9 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -29,6 +23,7 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final MusicalRepository musicalRepository;
 
     @Transactional(readOnly = true)
     public PageResponseDTO<Ticket, TicketResponseDTO> getAllTickets(Pageable pageable) {
@@ -48,6 +43,21 @@ public class TicketService {
         Page<Ticket> ticketPage = ticketRepository.findByUser(user, pageable);
         return new PageResponseDTO<>(
                 ticketPage, TicketResponseByUserDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
+
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponseDTO<Ticket, TicketResponseByMusicalDTO> getTicketsByMusical(Long musicalId, Pageable pageable) {
+        Musical musical = musicalRepository.findById(musicalId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 뮤지컬이 존재하지 않습니다."));
+
+        if (musical.isDeleted()) {
+            throw new EntityNotFoundException("해당 뮤지컬이 존재하지 않습니다.");
+        }
+
+        Page<Ticket> ticketPage = ticketRepository.findByMusical(musical, pageable);
+        return new PageResponseDTO<>(
+                ticketPage, TicketResponseByMusicalDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
 
     }
 }
