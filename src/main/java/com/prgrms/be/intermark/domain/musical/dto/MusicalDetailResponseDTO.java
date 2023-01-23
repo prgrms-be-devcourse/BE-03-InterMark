@@ -1,14 +1,14 @@
 package com.prgrms.be.intermark.domain.musical.dto;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.prgrms.be.intermark.domain.actor.dto.ActorResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
-import com.prgrms.be.intermark.domain.musical_detail_image.dto.MusicalDetailImageResponseDTO;
-import lombok.Builder;
 
-import java.time.LocalDate;
-import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record MusicalDetailResponseDTO(String musicalTitle, LocalDate startDate, LocalDate endDate, ViewRating rate,
@@ -27,7 +27,7 @@ public record MusicalDetailResponseDTO(String musicalTitle, LocalDate startDate,
                 .runningTime(musical.getRunningTime())
                 .stadiumName(musical.getStadium().getName())
                 .actors(ActorResponseDTO.listFromCastings(musical.getCastings()))
-                .images(MusicalDetailImageResponseDTO.listFrom(musical.getMusicalDetailImages()))
+                .images(MusicalDetailImageResponseDTO.listFrom(musical.getDetailImages()))
                 .build();
     }
 }

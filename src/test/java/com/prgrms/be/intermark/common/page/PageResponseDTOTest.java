@@ -1,9 +1,11 @@
 package com.prgrms.be.intermark.common.page;
 
-import com.prgrms.be.intermark.common.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.page.dto.PageResponseDTO;
-import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntity;
-import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntityDTO;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,11 +14,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntity;
+import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntityDTO;
 
 class PageResponseDTOTest {
 
@@ -42,7 +43,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.MUSICAL_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.getData())
@@ -68,7 +69,7 @@ class PageResponseDTOTest {
         List<Integer> nowPageNumbers = IntStream.rangeClosed(1, 10).boxed().toList();
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.MUSICAL_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.getNowPageNumbers()).isEqualTo(nowPageNumbers);
@@ -86,7 +87,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.MUSICAL_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.isNext()).isFalse();
@@ -104,7 +105,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.MUSICAL_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.isNext()).isTrue();
@@ -122,7 +123,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.MUSICAL_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.isPrev()).isFalse();
@@ -140,7 +141,7 @@ class PageResponseDTOTest {
         Page<DummyEntity> dummyEntityPage = getDummyEntityPage(pageable);
 
         // when
-        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
+        PageResponseDTO<DummyEntity, DummyEntityDTO> pageResponseDTOs = new PageResponseDTO<>(dummyEntityPage, DummyEntityDTO::toDto, PageListIndexSize.MUSICAL_LIST_INDEX_SIZE);
 
         // then
         assertThat(pageResponseDTOs.isPrev()).isTrue();

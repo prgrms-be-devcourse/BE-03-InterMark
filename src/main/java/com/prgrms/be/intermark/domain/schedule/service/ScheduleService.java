@@ -1,21 +1,25 @@
 package com.prgrms.be.intermark.domain.schedule.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
 import com.prgrms.be.intermark.domain.musical_seat.repository.MusicalSeatRepository;
-import com.prgrms.be.intermark.domain.schedule.dtos.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
-import com.prgrms.be.intermark.domain.seat.model.Seat;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -51,5 +55,28 @@ public class ScheduleService {
         }));
 
         return schedule.getId();
+    }
+
+    @Transactional
+    public void updateSchedule(Long scheduleId, ScheduleUpdateRequestDTO requestDto) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
+
+        if (schedule.isDeleted()) {
+            throw new EntityNotFoundException("해당 스케줄이 존재하지 않습니다.");
+        }
+
+        LocalDateTime startTime = requestDto.getStartTime();
+        LocalDateTime endTime = requestDto.getEndTime(schedule.getMusical());
+
+        int duplicatedSchedulesNum = scheduleRepository.getDuplicatedScheduleExceptById(
+                scheduleId,
+                startTime,
+                endTime);
+        if (duplicatedSchedulesNum > 0) {
+            throw new IllegalStateException("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
+        }
+
+        schedule.setScheduleTime(startTime, endTime);
     }
 }
