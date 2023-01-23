@@ -62,7 +62,7 @@ public class User {
 //    private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
-    public User(SocialType social, String socialId, String nickname, UserRole role,  String email) {
+    public User(SocialType social, String socialId, String nickname, UserRole role, String email) {
         this.socialType = social;
         this.socialId = socialId;
         this.nickname = nickname;
@@ -71,13 +71,14 @@ public class User {
         this.email = email;
     }
 
-    public void setRefreshToken(String refreshToken){
+    public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
-    public void setNickname(String nickname){
+    public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+
     public String getUserRoleKey() {
         return role.getKey();
     }

@@ -12,8 +12,8 @@ import static java.util.Optional.ofNullable;
 public class CookieUtil {
 
 
-    public static void addCookie(String cookieName,String cookieValue,int maxAge, HttpServletResponse response){
-        Cookie cookie = new Cookie(cookieName,cookieValue);
+    public static void addCookie(String cookieName, String cookieValue, int maxAge, HttpServletResponse response) {
+        Cookie cookie = new Cookie(cookieName, cookieValue);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
@@ -21,14 +21,14 @@ public class CookieUtil {
         response.addCookie(cookie);
     }
 
-    public static Optional<Cookie> getCookieByName(String name,HttpServletRequest request){
-        return ofNullable(WebUtils.getCookie(request,name));
+    public static Optional<Cookie> getCookieByName(String name, HttpServletRequest request) {
+        return ofNullable(WebUtils.getCookie(request, name));
     }
 
-    public static void deleteCookieByName(String name, HttpServletRequest request,HttpServletResponse response){
+    public static void deleteCookieByName(String name, HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
-            if(name.equals(cookie.getName())){
+            if (name.equals(cookie.getName())) {
                 cookie.setValue("");
                 cookie.setPath("/");
                 cookie.setMaxAge(0);

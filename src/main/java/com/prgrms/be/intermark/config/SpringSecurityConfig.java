@@ -15,14 +15,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig {
+    private final CustomOauth2UserService customOauth2UserService;
+    private final UserService userService;
+    private final TokenProvider tokenProvider;
     @Value("${jwt.secret.access}")
     private String accessSecret;
     @Value("${jwt.secret.refresh}")
     private String refreshSecret;
 
-    private final CustomOauth2UserService customOauth2UserService;
-    private final UserService userService;
-    private final TokenProvider tokenProvider;
     public SpringSecurityConfig(CustomOauth2UserService customOauth2UserService, UserService userService, TokenProvider tokenProvider) {
         this.customOauth2UserService = customOauth2UserService;
         this.userService = userService;
@@ -32,46 +32,46 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .headers()
-                    .frameOptions().disable()
+                .headers()
+                .frameOptions().disable()
                 .and()
-                    .csrf().disable()
-                    .formLogin().disable()
-                    .httpBasic().disable()
-                    .exceptionHandling()
-                    .accessDeniedHandler(oAuthAccessDeniedHandler())
+                .csrf().disable()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .exceptionHandling()
+                .accessDeniedHandler(oAuthAccessDeniedHandler())
                 .and()
-                    .authorizeRequests()
-                    .antMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/login").permitAll()
-                    .antMatchers("/api/**").hasAnyAuthority(UserRole.ROLE_USER.getKey())
-                    .antMatchers("/api/**/admin/**").hasAnyAuthority(UserRole.ROLE_ADMIN.getKey())
-                    .anyRequest().authenticated()
+                .authorizeRequests()
+                .antMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/login").permitAll()
+                .antMatchers("/api/**").hasAnyAuthority(UserRole.ROLE_USER.getKey())
+                .antMatchers("/api/**/admin/**").hasAnyAuthority(UserRole.ROLE_ADMIN.getKey())
+                .anyRequest().authenticated()
                 .and()
-                    .logout()
-                    .logoutSuccessUrl("/")
+                .logout()
+                .logoutSuccessUrl("/")
                 .and()
-                    .oauth2Login()
-                    .authorizationEndpoint()
-                    .baseUri("/oauth2/authorization") //로그인페이지를 받기위한 서버의 엔드포인트 설정
-                    .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository())
+                .oauth2Login()
+                .authorizationEndpoint()
+                .baseUri("/oauth2/authorization") //로그인페이지를 받기위한 서버의 엔드포인트 설정
+                .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository())
                 .and()
-                    .redirectionEndpoint()
-                    .baseUri("/*/oauth2/code/*")
+                .redirectionEndpoint()
+                .baseUri("/*/oauth2/code/*")
                 .and()
-                    .userInfoEndpoint()
-                    .userService(customOauth2UserService)
+                .userInfoEndpoint()
+                .userService(customOauth2UserService)
                 .and()
-                    .successHandler(oAuth2AuthenticationSuccessHandler(userService));
+                .successHandler(oAuth2AuthenticationSuccessHandler(userService));
         return httpSecurity.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
     public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler(UserService userService) {
-        return new OAuth2AuthenticationSuccessHandler(userService,tokenProvider);
+        return new OAuth2AuthenticationSuccessHandler(userService, tokenProvider);
     }
 
     @Bean

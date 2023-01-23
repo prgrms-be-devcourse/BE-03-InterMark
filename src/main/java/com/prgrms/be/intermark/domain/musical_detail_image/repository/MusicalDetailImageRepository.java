@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface MusicalDetailImageRepository extends JpaRepository<MusicalDetailImage, Long> {
 
-	Optional<MusicalDetailImage> findByImageUrl(String url);
+    Optional<MusicalDetailImage> findByImageUrl(String url);
 }

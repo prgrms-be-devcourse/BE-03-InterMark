@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Getter
 @RequiredArgsConstructor
-public class CustomUserPrincipal implements OAuth2User{
+public class CustomUserPrincipal implements OAuth2User {
 
     private final String nameAttributeKey;
     private final UserRole authority;
