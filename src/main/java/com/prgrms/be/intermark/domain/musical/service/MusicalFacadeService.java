@@ -73,4 +73,9 @@ public class MusicalFacadeService {
 		Musical musical = musicalService.findMusicalById(musicalId);
 		return MusicalDetailResponseDTO.from(musical);
 	}
+
+	@Transactional
+	public void deleteMusical(Long musicalId) {
+		musicalService.deleteMusical(musicalId);
+	}
 }

@@ -130,6 +130,10 @@ public class Musical {
         this.user = user;
     }
 
+    public void deleteMusical() {
+        this.isDeleted = true;
+    }
+
     public void setStadium(Stadium stadium) {
         Assert.notNull(stadium, "Stadium cannot be null");
 
