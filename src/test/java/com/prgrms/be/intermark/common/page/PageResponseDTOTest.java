@@ -1,7 +1,7 @@
 package com.prgrms.be.intermark.common.page;
 
-import com.prgrms.be.intermark.common.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntity;
 import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntityDTO;
 import org.junit.jupiter.api.BeforeEach;
