@@ -7,6 +7,7 @@ import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.model.TicketStatus;
+import com.prgrms.be.intermark.domain.user.User;
 import lombok.Builder;
 
 import javax.validation.constraints.NotNull;
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 @Builder
 public record TicketResponseDTO(
         @NotNull Long ticketId,
+        @NotNull String nickname,
         @NotNull TicketResponseMusicalDTO musical,
         @NotNull TicketResponseSeatDTO seat,
         @NotNull TicketResponseStadiumDTO stadium,
@@ -27,9 +29,11 @@ public record TicketResponseDTO(
         Seat seat = ticket.getSeat();
         SeatGrade seatGrade = ticket.getSeatGrade();
         Stadium stadium = ticket.getStadium();
+        User user = ticket.getUser();
 
         return TicketResponseDTO.builder()
                 .ticketId(ticket.getId())
+                .nickname(user.getNickname())
                 .musical(TicketResponseMusicalDTO.builder()
                         .title(musical.getTitle())
                         .startTime(schedule.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
