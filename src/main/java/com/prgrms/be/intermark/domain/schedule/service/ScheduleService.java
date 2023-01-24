@@ -5,9 +5,13 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
@@ -116,6 +120,22 @@ public class ScheduleService {
 			});
 
 		return ScheduleFindResponseDTO.from(schedule);
+	}
+
+	@Transactional(readOnly = true)
+	public PageResponseDTO<Schedule, ScheduleFindResponseDTO> findSchedulesByMusical(Long musicalId, Pageable pageable) {
+		Musical musical = musicalRepository.findById(musicalId)
+			.orElseThrow(() -> {
+				throw new EntityNotFoundException("존재하지 않는 뮤지컬입니다.");
+			});
+
+		Page<Schedule> schedulePage = scheduleRepository.findAllByMusical(musical, pageable);
+
+		return new PageResponseDTO<>(
+			schedulePage,
+			ScheduleFindResponseDTO::from,
+			PageListIndexSize.SCHEDULE_LIST_INDEX_SIZE
+		);
 	}
 
     public boolean existsByMusical(Musical musical) {
