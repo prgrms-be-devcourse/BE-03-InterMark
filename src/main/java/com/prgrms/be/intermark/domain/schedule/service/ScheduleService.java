@@ -13,10 +13,12 @@ import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
 import com.prgrms.be.intermark.domain.musical_seat.repository.MusicalSeatRepository;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleFindResponseDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
 import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
+import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTOs;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
 
@@ -94,12 +96,26 @@ public class ScheduleService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ScheduleSeatResponseDTO> findScheduleSeats(Long scheduleId) {
-		List<ScheduleSeat> scheduleSeats = scheduleSeatRepository.findAllByScheduleId(scheduleId);
-
-		return scheduleSeats.stream()
+	public ScheduleSeatResponseDTOs findScheduleSeats(Long scheduleId) {
+		List<ScheduleSeatResponseDTO> scheduleSeats
+			= scheduleSeatRepository.findAllByScheduleId(scheduleId)
+			.stream()
 			.map(ScheduleSeatResponseDTO::from)
 			.toList();
+
+		return ScheduleSeatResponseDTOs.builder()
+			.scheduleSeats(scheduleSeats)
+			.build();
+	}
+
+	@Transactional(readOnly = true)
+	public ScheduleFindResponseDTO findSchedule(Long scheduleId) {
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+			.orElseThrow(() -> {
+				throw new EntityNotFoundException("존재하지 않는 스케줄입니다.");
+			});
+
+		return ScheduleFindResponseDTO.from(schedule);
 	}
 
 	public boolean existsByMusical(Musical musical) {
