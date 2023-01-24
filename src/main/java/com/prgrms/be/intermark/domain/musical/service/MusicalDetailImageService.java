@@ -1,13 +1,15 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalDetailImageRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

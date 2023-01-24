@@ -1,10 +1,12 @@
 package com.prgrms.be.intermark.domain.ticket.dto;
 
-import com.prgrms.be.intermark.domain.musical.model.ViewRating;
-import lombok.Builder;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
+import com.prgrms.be.intermark.domain.musical.model.ViewRating;
+
+import lombok.Builder;
 
 @Builder
 public record TicketResponseMusicalDTO(

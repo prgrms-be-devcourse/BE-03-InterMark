@@ -1,15 +1,18 @@
 package com.prgrms.be.intermark.domain.musical.dto;
 
-import com.prgrms.be.intermark.domain.musical.model.Genre;
-import com.prgrms.be.intermark.domain.musical.model.ViewRating;
-import lombok.Builder;
-import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.time.LocalDate;
-import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.prgrms.be.intermark.domain.musical.model.Genre;
+import com.prgrms.be.intermark.domain.musical.model.ViewRating;
+
+import lombok.Builder;
 
 @Builder
 public record MusicalUpdateRequestDTO(

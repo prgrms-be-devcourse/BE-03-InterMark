@@ -1,19 +1,33 @@
 package com.prgrms.be.intermark.domain.musical.controller;
 
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.*;
-import com.prgrms.be.intermark.domain.musical.model.Musical;
-import com.prgrms.be.intermark.domain.musical.service.MusicalFacadeService;
-import lombok.RequiredArgsConstructor;
+import java.net.URI;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import java.net.URI;
-import java.util.List;
+import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.model.Musical;
+import com.prgrms.be.intermark.domain.musical.service.MusicalFacadeService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor

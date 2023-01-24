@@ -1,5 +1,9 @@
 package com.prgrms.be.intermark.domain.ticket.dto;
 
+import java.time.format.DateTimeFormatter;
+
+import javax.validation.constraints.NotNull;
+
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.seat.model.Seat;
@@ -7,10 +11,8 @@ import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.model.TicketStatus;
-import lombok.Builder;
 
-import javax.validation.constraints.NotNull;
-import java.time.format.DateTimeFormatter;
+import lombok.Builder;
 
 @Builder
 public record TicketResponseByUserDTO(
