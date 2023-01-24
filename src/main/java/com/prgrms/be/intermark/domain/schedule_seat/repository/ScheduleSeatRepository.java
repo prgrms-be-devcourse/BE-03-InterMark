@@ -13,7 +13,8 @@ public interface ScheduleSeatRepository extends JpaRepository<ScheduleSeat, Long
 
     @Query("SELECT ss FROM ScheduleSeat ss LEFT JOIN FETCH ss.schedule sd LEFT JOIN FETCH ss.seat s LEFT JOIN FETCH ss.seatGrade sg LEFT JOIN FETCH sd.musical m LEFT JOIN FETCH m.stadium st WHERE ss.id = :scheduleSeatId")
     Optional<ScheduleSeat> findByScheduleSeatFetch(@Param("scheduleSeatId") Long scheduleSeatId);
+
     @Query("SELECT s FROM ScheduleSeat s WHERE s.schedule.id = :scheduleId ")
-    List<ScheduleSeat> findAllByScheduleId(@Param("scheduleId") Long scheduleOd);
+    List<ScheduleSeat> findAllByScheduleId(@Param("scheduleId") Long scheduleId);
 
 }

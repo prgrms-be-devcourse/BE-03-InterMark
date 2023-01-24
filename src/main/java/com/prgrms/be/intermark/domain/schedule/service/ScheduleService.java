@@ -117,4 +117,8 @@ public class ScheduleService {
 
 		return ScheduleFindResponseDTO.from(schedule);
 	}
+
+    public boolean existsByMusical(Musical musical) {
+        return scheduleRepository.existsByMusicalAndIsDeletedFalse(musical);
+    }
 }
