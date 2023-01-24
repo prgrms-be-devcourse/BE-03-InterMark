@@ -20,7 +20,7 @@ public record MusicalUpdateRequestDTO(
         @NotNull ViewRating viewRating,
         @NotNull Genre genre,
         @NotNull @Positive int runningTime,
-        @NotNull long managerId,
+        @NotNull Long managerId,
         @NotNull @Positive Long stadiumId,
         @NotNull List<Long> actors,
         @NotNull List<MusicalSeatGradeUpdateRequestDTO> seatGrades,
