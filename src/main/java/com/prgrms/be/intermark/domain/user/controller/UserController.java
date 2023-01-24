@@ -1,6 +1,7 @@
 package com.prgrms.be.intermark.domain.user.controller;
 
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
+import com.prgrms.be.intermark.common.service.page.PageService;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.dto.UserInfoResponseDTO;
 import com.prgrms.be.intermark.domain.user.service.UserService;
@@ -21,6 +22,7 @@ public class UserController {
 
     // TODO : 발생할 수 있는 EntityNotFoundException에 대한 핸들러 없는 경우 추가.
     private final UserService userService;
+    private final PageService pageService;
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserInfoResponseDTO> findUser(@PathVariable Long userId) {
@@ -32,7 +34,8 @@ public class UserController {
     public ResponseEntity<PageResponseDTO<User, UserInfoResponseDTO>> findUsers(
             @PathParam(value = "page") int page,
             @PathParam(value = "size") int size) {
-        PageResponseDTO<User, UserInfoResponseDTO> users = userService.findAllUser(PageRequest.of(page, size));
+        PageRequest pageRequest = pageService.getPageRequest(PageRequest.of(page, size), (int) userService.countAllUser());
+        PageResponseDTO<User, UserInfoResponseDTO> users = userService.findAllUser(pageRequest);
         return ResponseEntity.ok(users);
     }
 }
