@@ -9,6 +9,9 @@ import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.user.User;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
+
+    boolean existsByMusical(Musical musical);
+
     Page<Ticket> findByUser(User user, Pageable pageable);
 
     Page<Ticket> findByMusical(Musical musical, Pageable pageable);

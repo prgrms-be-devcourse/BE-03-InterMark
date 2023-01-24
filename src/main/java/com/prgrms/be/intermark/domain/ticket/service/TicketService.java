@@ -121,4 +121,8 @@ public class TicketService {
 
         ticket.deleteTicket();
     }
+
+    public boolean existsByMusical(Musical musical) {
+        return ticketRepository.existsByMusical(musical);
+    }
 }

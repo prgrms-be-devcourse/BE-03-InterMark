@@ -91,4 +91,8 @@ public class ScheduleService {
 
         schedule.deleteSchedule();
     }
+    
+    public boolean existsByMusical(Musical musical) {
+        return scheduleRepository.existsByMusicalAndIsDeletedFalse(musical);
+    }
 }
