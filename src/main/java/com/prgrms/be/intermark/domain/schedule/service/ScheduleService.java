@@ -13,6 +13,7 @@ import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
 import com.prgrms.be.intermark.domain.musical_seat.repository.MusicalSeatRepository;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleFindResponseDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
@@ -100,5 +101,15 @@ public class ScheduleService {
         return scheduleSeats.stream()
             .map(ScheduleSeatResponseDTO::from)
             .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ScheduleFindResponseDTO findSchedule(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(() -> {
+                throw new EntityNotFoundException("존재하지 않는 스케줄입니다.");
+            });
+
+        return ScheduleFindResponseDTO.from(schedule);
     }
 }
