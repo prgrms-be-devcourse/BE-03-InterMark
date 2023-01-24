@@ -78,6 +78,7 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 티켓이 존재하지 않습니다."));
         return TicketResponseDTO.from(ticket);
+    }
 
     @Transactional
     public Long createTicket(TicketCreateRequestDTO ticketCreateRequestDTO) {

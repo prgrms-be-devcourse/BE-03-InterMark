@@ -52,6 +52,7 @@ public class TicketController {
     public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable("ticketId") Long ticketId) {
         TicketResponseDTO ticket = ticketService.getTicketById(ticketId);
         return ResponseEntity.ok(ticket);
+    }
 
     @PostMapping
     public ResponseEntity<Void> createTicket(@RequestBody @Valid TicketCreateRequestDTO ticketCreateRequestDTO) {
