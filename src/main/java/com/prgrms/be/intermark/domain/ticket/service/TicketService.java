@@ -1,5 +1,6 @@
 package com.prgrms.be.intermark.domain.ticket.service;
 
+import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
@@ -43,5 +44,9 @@ public class TicketService {
         scheduleSeat.reserve();
 
         return ticket.getId();
+    }
+
+    public boolean existsByMusical(Musical musical) {
+        return ticketRepository.existsByMusical(musical);
     }
 }
