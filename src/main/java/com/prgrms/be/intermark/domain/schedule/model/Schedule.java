@@ -63,10 +63,10 @@ public class Schedule {
     private List<ScheduleSeat> scheduleSeats = new ArrayList<>();
 
     @Builder
-    public Schedule(LocalDateTime startTime, LocalDateTime endTime, boolean isDeleted, Musical musical) {
+    public Schedule(LocalDateTime startTime, LocalDateTime endTime, Musical musical) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.isDeleted = isDeleted;
+        this.isDeleted = false;
         this.musical = musical;
     }
 

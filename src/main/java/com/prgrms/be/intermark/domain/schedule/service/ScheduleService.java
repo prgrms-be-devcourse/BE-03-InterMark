@@ -26,83 +26,89 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class ScheduleService {
 
-    private final ScheduleRepository scheduleRepository;
-    private final MusicalRepository musicalRepository;
-    private final MusicalSeatRepository musicalSeatRepository;
-    private final ScheduleSeatRepository scheduleSeatRepository;
+	private final ScheduleRepository scheduleRepository;
+	private final MusicalRepository musicalRepository;
+	private final MusicalSeatRepository musicalSeatRepository;
+	private final ScheduleSeatRepository scheduleSeatRepository;
 
-    @Transactional
-    public Long createSchedule(ScheduleCreateRequestDTO requestDto) {
-        Musical musical = musicalRepository.findById(requestDto.musicalId())
-                .orElseThrow(() -> new EntityNotFoundException("해당 뮤지컬이 존재하지 않습니다."));
+	@Transactional
+	public Long createSchedule(ScheduleCreateRequestDTO requestDto) {
+		Musical musical = musicalRepository.findById(requestDto.musicalId())
+			.orElseThrow(() -> new EntityNotFoundException("해당 뮤지컬이 존재하지 않습니다."));
 
-        int duplicatedSchedulesNum = scheduleRepository.getSchedulesNumByStartTime(requestDto.getStartTime(),
-                requestDto.getEndTime(musical));
-        if (duplicatedSchedulesNum > 0) {
-            throw new IllegalStateException("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
-        }
+		int duplicatedSchedulesNum = scheduleRepository.getSchedulesNumByStartTime(requestDto.getStartTime(),
+			requestDto.getEndTime(musical));
+		if (duplicatedSchedulesNum > 0) {
+			throw new IllegalStateException("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
+		}
 
-        Schedule schedule = scheduleRepository.save(requestDto.toEntity(musical));
+		Schedule schedule = scheduleRepository.save(requestDto.toEntity(musical));
 
-        List<MusicalSeat> musicalSeats = musicalSeatRepository.findAllByMusical(musical);
-        musicalSeats.forEach((musicalSeat -> {
-            ScheduleSeat scheduleSeat = ScheduleSeat.builder()
-                    .isReserved(false)
-                    .schedule(schedule)
-                    .seat(musicalSeat.getSeat())
-                    .seatGrade(musicalSeat.getSeatGrade())
-                    .build();
-            scheduleSeatRepository.save(scheduleSeat);
-        }));
+		List<MusicalSeat> musicalSeats = musicalSeatRepository.findAllByMusical(musical);
+		musicalSeats.forEach((musicalSeat -> {
+			ScheduleSeat scheduleSeat = ScheduleSeat.builder()
+				.isReserved(false)
+				.schedule(schedule)
+				.seat(musicalSeat.getSeat())
+				.seatGrade(musicalSeat.getSeatGrade())
+				.build();
+			scheduleSeatRepository.save(scheduleSeat);
+		}));
 
-        return schedule.getId();
-    }
+		return schedule.getId();
+	}
 
-    @Transactional
-    public void updateSchedule(Long scheduleId, ScheduleUpdateRequestDTO requestDto) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
+	@Transactional
+	public void updateSchedule(Long scheduleId, ScheduleUpdateRequestDTO requestDto) {
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+			.orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
 
-        if (schedule.isDeleted()) {
-            throw new EntityNotFoundException("해당 스케줄이 존재하지 않습니다.");
-        }
+		if (schedule.isDeleted()) {
+			throw new EntityNotFoundException("해당 스케줄이 존재하지 않습니다.");
+		}
 
-        LocalDateTime startTime = requestDto.getStartTime();
-        LocalDateTime endTime = requestDto.getEndTime(schedule.getMusical());
+		LocalDateTime startTime = requestDto.getStartTime();
+		LocalDateTime endTime = requestDto.getEndTime(schedule.getMusical());
 
-        int duplicatedSchedulesNum = scheduleRepository.getDuplicatedScheduleExceptById(
-                scheduleId,
-                startTime,
-                endTime);
-        if (duplicatedSchedulesNum > 0) {
-            throw new IllegalStateException("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
-        }
+		int duplicatedSchedulesNum = scheduleRepository.getDuplicatedScheduleExceptById(
+			scheduleId,
+			startTime,
+			endTime);
+		if (duplicatedSchedulesNum > 0) {
+			throw new IllegalStateException("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
+		}
 
-        schedule.setScheduleTime(startTime, endTime);
-    }
+		schedule.setScheduleTime(startTime, endTime);
+	}
 
-    @Transactional
-    public void deleteSchedule(Long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
+	@Transactional
+	public void deleteSchedule(Long scheduleId) {
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+			.orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
 
-        if (schedule.isDeleted()) {
-            throw new EntityNotFoundException("이미 삭제된 스케줄입니다.");
-        }
+		if (schedule.isDeleted()) {
+			throw new EntityNotFoundException("이미 삭제된 스케줄입니다.");
+		}
 
-        schedule.deleteSchedule();
-    }
+		schedule.deleteSchedule();
+	}
 
-    @Transactional(readOnly = true)
-    public List<ScheduleSeatResponseDTO> findScheduleSeats(Long scheduleId) {
-        List<ScheduleSeat> scheduleSeats = scheduleSeatRepository.findAllByScheduleId(scheduleId);
+	@Transactional(readOnly = true)
+	public List<ScheduleSeatResponseDTO> findScheduleSeats(Long scheduleId) {
+		List<ScheduleSeat> scheduleSeats = scheduleSeatRepository.findAllByScheduleId(scheduleId);
 
-        return scheduleSeats.stream()
-                .map(ScheduleSeatResponseDTO::from)
-                .toList();
-    }
+		return scheduleSeats.stream()
+			.map(ScheduleSeatResponseDTO::from)
+			.toList();
+	}
 
-    public boolean existsByMusical(Musical musical) {
-        return scheduleRepository.existsByMusicalAndIsDeletedFalse(musical);
-    }
+	public boolean existsByMusical(Musical musical) {
+		return scheduleRepository.existsByMusicalAndIsDeletedFalse(musical);
+	}
+
+	public void deleteAllByMusical(Musical musical) {
+		scheduleRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+			.forEach(Schedule::deleteSchedule);
+
+	}
 }

@@ -97,6 +97,10 @@ public class Ticket {
 		this.stadium = stadium;
 	}
 
+	public boolean isReserved() {
+		return this.ticketStatus == TicketStatus.AVAILABLE;
+	}
+
 	public boolean isDeleted() {
 		return this.ticketStatus == TicketStatus.CANCELLED;
 	}

@@ -46,4 +46,9 @@ public class MusicalDetailImageService {
                 }
         );
     }
+
+    public void deleteAllByMusical(Musical musical) {
+        musicalDetailImageRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+            .forEach(MusicalDetailImage::deleteMusicalDetailImage);
+    }
 }

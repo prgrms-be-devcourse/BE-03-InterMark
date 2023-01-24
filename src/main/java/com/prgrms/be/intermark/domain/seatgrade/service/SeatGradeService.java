@@ -40,4 +40,9 @@ public class SeatGradeService {
 					seatGradeRepository.save(createdSeatGrade);
 				});
 	}
+
+	public void deleteAllByMusical(Musical musical) {
+		seatGradeRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+			.forEach(SeatGrade::deleteSeatGrade);
+	}
 }

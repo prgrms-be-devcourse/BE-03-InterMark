@@ -37,7 +37,6 @@ public record ScheduleCreateRequestDTO(
         return Schedule.builder()
                 .startTime(getStartTime())
                 .endTime(getEndTime(musical))
-                .isDeleted(false)
                 .musical(musical)
                 .build();
     }

@@ -57,4 +57,9 @@ public class CastingService {
                     castingRepository.save(casting);
                 });
     }
+
+    public void deleteAllByMusical(Musical musical) {
+        castingRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+            .forEach(Casting::deleteCasting);
+    }
 }

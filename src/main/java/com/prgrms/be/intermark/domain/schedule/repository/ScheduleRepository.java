@@ -1,6 +1,7 @@
 package com.prgrms.be.intermark.domain.schedule.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +26,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     );
 
     boolean existsByMusicalAndIsDeletedFalse(Musical musical);
+
+    List<Schedule> findAllByMusicalAndIsDeletedIsFalse(Musical musical);
 }
