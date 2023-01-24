@@ -99,8 +99,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public PageResponseDTO<User, UserInfoResponseDTO> findAllUser(Pageable pageable) {
-        Page<User> all = userRepository.findByIsDeletedFalse(pageable);
-        return new PageResponseDTO<>(all,
+        Page<User> allUserPage = userRepository.findByIsDeletedFalse(pageable);
+        return new PageResponseDTO<>(allUserPage,
                 UserInfoResponseDTO::from,
                 PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
     }
