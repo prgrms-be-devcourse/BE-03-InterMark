@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,6 +51,8 @@ class UserRepositoryTest {
         assertThat(findUser.get().getId()).isEqualTo(user.getId());
     }
 
+    // TODO : page, size 값이 잘못된 경우에 대한 예외 테스트
+
     @Test
     @DisplayName("모든 유저 조회 시 page와 size에 따른 페이징된 유저의 정보를 조회할 수 있다. (isDeleted 상태가 true인 경우는 제외됨.)")
     public void findByIsDeletedFalseTest() {
@@ -66,7 +67,6 @@ class UserRepositoryTest {
         // when
         Page<User> userPage = userRepository.findByIsDeletedFalse(PageRequest.of(0, 5));
         // then
-        List<User> content = userPage.getContent();
         assertThat(userPage.getTotalPages()).isEqualTo(2);
         assertThat(userPage.getTotalElements()).isEqualTo(7);
         assertThat(userPage.isFirst()).isTrue();

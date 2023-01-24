@@ -1,30 +1,39 @@
 package com.prgrms.be.intermark.common.exception;
 
-import java.time.LocalDateTime;
-
-import javax.validation.ConstraintViolationException;
-
+import com.prgrms.be.intermark.common.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import com.prgrms.be.intermark.common.dto.ErrorResponse;
+import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ErrorResponse entityNotFoundExceptionHandler(EntityNotFoundException exception) {
+		return ErrorResponse.of(
+				HttpStatus.NOT_FOUND,
+				exception.getMessage(),
+				LocalDateTime.now());
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		ErrorResponse errorResponse = ErrorResponse.of(
-			HttpStatus.BAD_REQUEST,
-			e.getMessage(),
-			e.getFieldErrors(),
-			LocalDateTime.now()
+				HttpStatus.BAD_REQUEST,
+				e.getMessage(),
+				e.getFieldErrors(),
+				LocalDateTime.now()
 		);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
