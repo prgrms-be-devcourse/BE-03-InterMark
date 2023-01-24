@@ -48,7 +48,7 @@ public class Schedule {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
-    @Column(name = "is_deleted")
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
     @NotNull
@@ -63,10 +63,10 @@ public class Schedule {
     private List<ScheduleSeat> scheduleSeats = new ArrayList<>();
 
     @Builder
-    public Schedule(LocalDateTime startTime, LocalDateTime endTime, boolean isDeleted, Musical musical) {
+    public Schedule(LocalDateTime startTime, LocalDateTime endTime, Musical musical) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.isDeleted = isDeleted;
+        this.isDeleted = false;
         this.musical = musical;
     }
 

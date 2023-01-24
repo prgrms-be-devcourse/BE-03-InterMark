@@ -1,7 +1,6 @@
 package com.prgrms.be.intermark.domain.schedule.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.validation.Valid;
 
@@ -16,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleFindResponseDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
-import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
+import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTOs;
 
 import lombok.RequiredArgsConstructor;
 
@@ -52,8 +52,14 @@ public class ScheduleController {
     }
 
     @GetMapping("/{scheduleId}/seats")
-    public ResponseEntity<List<ScheduleSeatResponseDTO>> getScheduleSeats(@PathVariable Long scheduleId) {
-        List<ScheduleSeatResponseDTO> scheduleSeats = scheduleService.findScheduleSeats(scheduleId);
+    public ResponseEntity<ScheduleSeatResponseDTOs> getScheduleSeats(@PathVariable Long scheduleId) {
+        ScheduleSeatResponseDTOs scheduleSeats = scheduleService.findScheduleSeats(scheduleId);
         return ResponseEntity.ok(scheduleSeats);
+    }
+
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleFindResponseDTO> getSchedule(@PathVariable Long scheduleId) {
+        ScheduleFindResponseDTO schedule = scheduleService.findSchedule(scheduleId);
+        return ResponseEntity.ok(schedule);
     }
 }
