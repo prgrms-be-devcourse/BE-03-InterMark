@@ -1,12 +1,11 @@
-package com.prgrms.be.intermark.common.dto.page.dto;
+package com.prgrms.be.intermark.common.dto.page;
+
+import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
-
-import org.springframework.data.domain.Page;
-
-import lombok.Getter;
 
 @Getter
 public class PageResponseDTO<E, DTO> {
