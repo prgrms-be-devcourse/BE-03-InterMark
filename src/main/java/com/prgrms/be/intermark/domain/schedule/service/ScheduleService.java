@@ -98,8 +98,8 @@ public class ScheduleService {
         List<ScheduleSeat> scheduleSeats = scheduleSeatRepository.findAllByScheduleId(scheduleId);
 
         return scheduleSeats.stream()
-            .map(ScheduleSeatResponseDTO::from)
-            .toList();
+                .map(ScheduleSeatResponseDTO::from)
+                .toList();
     }
 
     public boolean existsByMusical(Musical musical) {
