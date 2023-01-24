@@ -5,6 +5,7 @@ import java.net.URI;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,6 +39,12 @@ public class ScheduleController {
     public ResponseEntity<Object> updateSchedule(@PathVariable("scheduleId") long scheduleId,
             @RequestBody @Valid ScheduleUpdateRequestDTO requestDto) {
         scheduleService.updateSchedule(scheduleId, requestDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{scheduleId}")
+    public ResponseEntity<Object> deleteSchedule(@PathVariable("scheduleId") long scheduleId) {
+        scheduleService.deleteSchedule(scheduleId);
         return ResponseEntity.noContent().build();
     }
 }
