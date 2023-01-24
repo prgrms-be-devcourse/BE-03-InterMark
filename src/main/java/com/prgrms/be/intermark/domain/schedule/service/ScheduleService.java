@@ -16,6 +16,7 @@ import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
+import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
 
@@ -91,7 +92,16 @@ public class ScheduleService {
 
         schedule.deleteSchedule();
     }
-    
+
+    @Transactional(readOnly = true)
+    public List<ScheduleSeatResponseDTO> findScheduleSeats(Long scheduleId) {
+        List<ScheduleSeat> scheduleSeats = scheduleSeatRepository.findAllByScheduleId(scheduleId);
+
+        return scheduleSeats.stream()
+            .map(ScheduleSeatResponseDTO::from)
+            .toList();
+    }
+
     public boolean existsByMusical(Musical musical) {
         return scheduleRepository.existsByMusicalAndIsDeletedFalse(musical);
     }

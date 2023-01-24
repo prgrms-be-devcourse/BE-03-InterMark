@@ -1,11 +1,13 @@
 package com.prgrms.be.intermark.domain.schedule.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
+import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,5 +49,11 @@ public class ScheduleController {
     public ResponseEntity<Object> deleteSchedule(@PathVariable("scheduleId") long scheduleId) {
         scheduleService.deleteSchedule(scheduleId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{scheduleId}/seats")
+    public ResponseEntity<List<ScheduleSeatResponseDTO>> getScheduleSeats(@PathVariable Long scheduleId) {
+        List<ScheduleSeatResponseDTO> scheduleSeats = scheduleService.findScheduleSeats(scheduleId);
+        return ResponseEntity.ok(scheduleSeats);
     }
 }
