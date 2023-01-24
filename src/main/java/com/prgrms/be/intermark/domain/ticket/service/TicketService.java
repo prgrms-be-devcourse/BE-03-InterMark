@@ -1,5 +1,12 @@
 package com.prgrms.be.intermark.domain.ticket.service;
 
+import java.time.LocalDateTime;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
@@ -7,12 +14,8 @@ import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -43,5 +46,19 @@ public class TicketService {
         scheduleSeat.reserve();
 
         return ticket.getId();
+    }
+
+    @Transactional
+    public void deleteTicket(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+            .orElseThrow(() -> {
+                throw new EntityNotFoundException("존재하지 않는 티켓입니다.");
+            });
+
+        if (ticket.isDeleted()) {
+            throw new EntityNotFoundException("이미 환불된 티켓입니다.");
+        }
+
+        ticket.deleteTicket();
     }
 }
