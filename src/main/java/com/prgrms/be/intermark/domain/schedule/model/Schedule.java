@@ -89,4 +89,8 @@ public class Schedule {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
+    public void deleteSchedule() {
+        isDeleted = true;
+    }
 }
