@@ -101,4 +101,8 @@ public class ScheduleService {
             .map(ScheduleSeatResponseDTO::from)
             .toList();
     }
+
+    public boolean existsByMusical(Musical musical) {
+        return scheduleRepository.existsByMusicalAndIsDeletedFalse(musical);
+    }
 }

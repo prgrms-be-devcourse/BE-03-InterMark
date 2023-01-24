@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.util.Assert;
@@ -96,6 +95,13 @@ public class Ticket {
 		this.seatGrade = seatGrade;
 		this.musical = musical;
 		this.stadium = stadium;
+	}
+
+	public boolean isDeleted() {
+		return this.ticketStatus == TicketStatus.CANCELLED;
+	}
+	public void deleteTicket() {
+		this.ticketStatus = TicketStatus.CANCELLED;
 	}
 
 	public void setUser(User user) {
