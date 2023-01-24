@@ -1,19 +1,20 @@
 package com.prgrms.be.intermark.domain.schedule_seat.repository;
 
-import com.prgrms.be.intermark.domain.schedule.Schedule;
-import com.prgrms.be.intermark.domain.schedule_seat.ScheduleSeat;
-import com.prgrms.be.intermark.domain.seat.Seat;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
+
 public interface ScheduleSeatRepository extends JpaRepository<ScheduleSeat, Long> {
 
-    @Query("select s from ScheduleSeat s where s.seat.id = :seatId and s.schedule.id = :scheduleId")
-    Optional<ScheduleSeat> findByScheduleIdAndSeatId(@Param("seatId") Long seatId, @Param("scheduleId") Long scheduleId);
+    @Query("SELECT ss FROM ScheduleSeat ss LEFT JOIN FETCH ss.schedule sd LEFT JOIN FETCH ss.seat s LEFT JOIN FETCH ss.seatGrade sg LEFT JOIN FETCH sd.musical m LEFT JOIN FETCH m.stadium st WHERE ss.id = :scheduleSeatId")
+    Optional<ScheduleSeat> findByScheduleSeatFetch(@Param("scheduleSeatId") Long scheduleSeatId);
 
-    @Query("select s from ScheduleSeat s where s.schedule.id = :scheduleId ")
-    List<ScheduleSeat> findScheduleSeatsByScheduleId(@Param("scheduleId") Long scheduleId);
+    @Query("SELECT s FROM ScheduleSeat s LEFT JOIN FETCH s.schedule LEFT JOIN FETCH s.seat WHERE s.schedule.id = :scheduleId ")
+    List<ScheduleSeat> findAllByScheduleId(@Param("scheduleId") Long scheduleId);
+
 }
