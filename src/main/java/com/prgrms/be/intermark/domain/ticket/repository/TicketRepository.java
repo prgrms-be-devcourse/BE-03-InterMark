@@ -8,6 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
+
+    boolean existsByMusical(Musical musical);
+
     Page<Ticket> findByUser(User user, Pageable pageable);
 
     Page<Ticket> findByMusical(Musical musical, Pageable pageable);
