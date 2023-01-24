@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.validation.Valid;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,5 +52,14 @@ public class TicketController {
     public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable("ticketId") Long ticketId) {
         TicketResponseDTO ticket = ticketService.getTicketById(ticketId);
         return ResponseEntity.ok(ticket);
+
+    @PostMapping
+    public ResponseEntity<Void> createTicket(@RequestBody @Valid TicketCreateRequestDTO ticketCreateRequestDTO) {
+
+        Long ticketId = ticketService.createTicket(ticketCreateRequestDTO);
+
+        return ResponseEntity.created(
+                URI.create("/api/v1/tickets/" + ticketId)
+        ).build();
     }
 }

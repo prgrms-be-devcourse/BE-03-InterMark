@@ -45,4 +45,18 @@ public class MusicalService {
         return musicalRepository.findMusicalsFetchByMusicalId(musicalId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 뮤지컬입니다."));
     }
+
+	@Transactional
+	public void deleteMusical(Long musicalId) {
+		Musical musical = musicalRepository.findById(musicalId)
+			.orElseThrow(() -> {
+				throw new EntityNotFoundException("존재하지 않는 뮤지컬입니다");
+			});
+
+		if (musical.isDeleted()) {
+			throw new EntityNotFoundException("이미 삭제된 뮤지컬입니다");
+		}
+
+		musical.deleteMusical();
+	}
 }

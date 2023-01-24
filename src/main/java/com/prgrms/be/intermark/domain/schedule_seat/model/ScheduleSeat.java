@@ -62,6 +62,10 @@ public class ScheduleSeat {
         this.seatGrade = seatGrade;
     }
 
+    public void reserve() {
+        this.isReserved = true;
+    }
+
     public void setSchedule(Schedule schedule) {
         Assert.notNull(schedule, "schedule cannot be null");
 
