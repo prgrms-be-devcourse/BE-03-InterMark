@@ -11,6 +11,7 @@ import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +56,12 @@ public class TicketService {
             throw new EntityNotFoundException("해당 뮤지컬이 존재하지 않습니다.");
         }
 
-        Page<Ticket> ticketPage = ticketRepository.findByMusical(musical, pageable);
+        int maxPageNumber = (int) ticketRepository.count() / pageable.getPageSize() - 1;
+        int pageNumber = Math.min(pageable.getPageNumber(), maxPageNumber);
+
+        Page<Ticket> ticketPage = ticketRepository.findByMusical(
+                musical, PageRequest.of(pageNumber, pageable.getPageSize()));
+
         return new PageResponseDTO<>(
                 ticketPage, TicketResponseByMusicalDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
     }
