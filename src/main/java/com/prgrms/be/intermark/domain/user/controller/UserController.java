@@ -21,6 +21,7 @@ import javax.websocket.server.PathParam;
 public class UserController {
 
     private final UserService userService;
+    private final PageService pageService;
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserInfoResponseDTO> findUser(@PathVariable Long userId) {
@@ -32,8 +33,8 @@ public class UserController {
     public ResponseEntity<PageResponseDTO<User, UserInfoResponseDTO>> findUsers(
             @PathParam(value = "page") int page,
             @PathParam(value = "size") int size) {
-        PageResponseDTO<User, UserInfoResponseDTO> users = userService.findAllUser(
-                PageRequest.of(page, size >= 1 && size <= 30 ? size : PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE.getSize()));
+        PageRequest pageRequest = pageService.getPageRequest(PageRequest.of(page, size), (int) userService.countAllUser());
+        PageResponseDTO<User, UserInfoResponseDTO> users = userService.findAllUser(pageRequest);
         return ResponseEntity.ok(users);
     }
 }
