@@ -1,7 +1,7 @@
 package com.prgrms.be.intermark.domain.user.controller;
 
-import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
+import com.prgrms.be.intermark.common.service.page.PageService;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.dto.UserInfoResponseDTO;
 import com.prgrms.be.intermark.domain.user.service.UserService;

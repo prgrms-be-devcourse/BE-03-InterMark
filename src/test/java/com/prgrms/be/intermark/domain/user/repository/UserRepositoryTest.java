@@ -60,8 +60,6 @@ class UserRepositoryTest {
         }
     }
 
-    // TODO : page, size 값이 잘못된 경우에 대한 예외 테스트
-
     @Test
     @DisplayName("Success - 모든 유저 조회 시 유저 페이징 반환 - findByIsDeletedFalse")
     public void findByIsDeletedFalseSuccess() {
