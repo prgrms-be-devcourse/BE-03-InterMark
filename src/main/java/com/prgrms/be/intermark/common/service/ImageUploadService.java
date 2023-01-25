@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 
-public interface UploadImageService {
+public interface ImageUploadService {
 
 	ImageResponseDTO uploadImage(MultipartFile multipartFile);
 

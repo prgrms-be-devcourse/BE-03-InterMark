@@ -15,9 +15,9 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UploadImageServiceImpl implements UploadImageService {
+public class LocalImageUploadService implements ImageUploadService {
 
-	@Value("${file.images}")
+	@Value("${local.images.path}")
 	private String savePath;
 
 	@Override

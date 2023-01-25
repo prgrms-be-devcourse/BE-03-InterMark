@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
-import com.prgrms.be.intermark.common.service.UploadImageServiceImpl;
+import com.prgrms.be.intermark.common.service.ImageUploadService;
 import com.prgrms.be.intermark.domain.casting.service.CastingService;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
@@ -38,7 +38,7 @@ public class MusicalFacadeService {
 	private final StadiumService stadiumService;
 	private final UserService userService;
 	private final SeatGradeService seatGradeService;
-	private final UploadImageServiceImpl uploadImageServiceImpl;
+	private final ImageUploadService uploadImageServiceImpl;
 	private final MusicalDetailImageService musicalDetailImageService;
 	private final MusicalSeatService musicalSeatService;
 	private final CastingService castingService;
