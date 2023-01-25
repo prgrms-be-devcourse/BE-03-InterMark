@@ -38,8 +38,8 @@ class UserServiceTest {
     private final UserService userService = new UserService(userRepository, tokenProvider);
 
     @Test
-    @DisplayName("조회할 유저가 존재하면 유저 이름과 이메일 정보만 DTO로 반환한다.")
-    public void findByIdAndIsDeletedFalseTest() {
+    @DisplayName("Success - 유저 조회 시 존재할 경우 상세정보 반환 - findByIdAndIsDeletedFalse")
+    public void findByIdAndIsDeletedFalseSuccess() {
         // given, when
         when(userRepository.findByIdAndIsDeletedFalse(anyLong()))
                 .thenReturn(Optional.of(user));
@@ -53,11 +53,8 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("조회할 유저가 존재하지 않으면 Exception이 발생한다.")
-    public void findByWrongIdAndIsDeletedFalseTest() {
-        // given, when
-        when(userRepository.findByIdAndIsDeletedFalse(anyLong()))
-                .thenReturn(Optional.empty());
+    @DisplayName("Fail - 유저 존재하지 않는 경우 EntityNotFoundException 발생. - findByIdIsDeletedFalse")
+    public void findByWrongIdAndIsDeletedFalseFail() {
         // then
         assertThatThrownBy(() -> {
             userService.findById(anyLong());
@@ -67,8 +64,8 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("회원탈퇴하지 않은 모든 유저정보를 DTO로 변환하여 조회할 수 있다.")
-    public void findAllUser() {
+    @DisplayName("Success - 모든 유저 페이지 조회 - findAllUser")
+    public void findAllUserSuccess() {
         // given
         List<User> users = List.of(User.builder().social(SocialType.GOOGLE).socialId("1")
                         .role(UserRole.ROLE_USER)
@@ -101,6 +98,7 @@ class UserServiceTest {
                 .thenReturn(userPage);
         PageResponseDTO<User, UserInfoResponseDTO> response = userService.findAllUser(request);
         // then
+        verify(userRepository).findByIsDeletedFalse(request);
         assertThat(response.getNowPage()).isEqualTo(1);
         assertThat(response.getNowPageNumbers()).isEqualTo(List.of(1, 2));
         assertThat(response.isNext()).isFalse();

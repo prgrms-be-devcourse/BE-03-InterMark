@@ -50,11 +50,9 @@ class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    // TODO : 300대 에러가 뜸 -> 유저가 존재하지 않으면 로그인 페이지로 redirect
-
     @Test
-    @DisplayName("유저 조회 성공 시 200과 유저 이름, 이메일을 json body에 반환한다.")
-    void findUserTest() throws Exception {
+    @DisplayName("Success - 유저 조회 성공 시 상태코드 200, 유저 세부정보 반환. - findUser")
+    void findUserSuccess() throws Exception {
         // given
         Long userId = 1L;
         UserInfoResponseDTO userInfoDTO = UserInfoResponseDTO.from(user);
@@ -73,8 +71,8 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("유저 조회 실패 시 404를 반환한다.")
-    void findUserErrorTest() throws Exception {
+    @DisplayName("Fail - 유저 조회 실패 시 상태코드 404 반환. - findUser")
+    void findUserFail() throws Exception {
         // given
         Long userId = 1L;
         when(userService.findById(anyLong())).thenThrow(new EntityNotFoundException("존재하지 않는 사용자입니다."));
@@ -86,5 +84,7 @@ class UserControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("message").value("존재하지 않는 사용자입니다."))
                 .andDo(print());
+        // then
+        verify(userService).findById(anyLong());
     }
 }
