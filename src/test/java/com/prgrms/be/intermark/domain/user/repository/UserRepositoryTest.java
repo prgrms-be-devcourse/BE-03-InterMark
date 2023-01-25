@@ -3,14 +3,12 @@ package com.prgrms.be.intermark.domain.user.repository;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -25,10 +23,10 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Test
-    @DisplayName("Success - 유저 조회 성공 시 세부정보 반환. - findByIdAndIsDeletedFalse")
-    public void findByIdAndIsDeletedFalseSuccess() {
-        // given
+    @Nested
+    @DisplayName("findByIdAndIsDeletedFalse")
+    class FindByIdAndIsDeltedFalse {
+
         User user = User.builder()
                 .social(SocialType.GOOGLE)
                 .socialId("1")
@@ -36,12 +34,30 @@ class UserRepositoryTest {
                 .nickname("이수영")
                 .email("example1@gmail.com")
                 .build();
-        userRepository.save(user);
-        // when
-        Optional<User> findUser = userRepository.findByIdAndIsDeletedFalse(user.getId());
-        // then
-        assertThat(findUser).isPresent();
-        assertThat(findUser.get().getId()).isEqualTo(user.getId());
+
+        @Test
+        @DisplayName("Success - 유저 조회 성공 시 세부정보 반환.")
+        public void findByIdAndIsDeletedFalseSuccess() {
+            // given
+            userRepository.save(user);
+            // when
+            Optional<User> findUser = userRepository.findByIdAndIsDeletedFalse(user.getId());
+            // then
+            assertThat(findUser).isPresent();
+            assertThat(findUser.get().getId()).isEqualTo(user.getId());
+        }
+
+        @Test
+        @DisplayName("Fail - 유저가 삭제 상태인 경우 조회 불가능.")
+        public void findByIdAndIsDeletedFail() {
+            // given
+            user.deleteUser();
+            // when
+            userRepository.save(user);
+            Optional<User> findUser = userRepository.findByIdAndIsDeletedFalse(user.getId());
+            // then
+            assertThat(findUser).isEmpty();
+        }
     }
 
     // TODO : page, size 값이 잘못된 경우에 대한 예외 테스트
@@ -64,24 +80,5 @@ class UserRepositoryTest {
         assertThat(userPage.getTotalElements()).isEqualTo(7);
         assertThat(userPage.isFirst()).isTrue();
         assertThat(userPage.hasNext()).isTrue();
-    }
-
-    @Test
-    @DisplayName("Fail - 유저가 삭제 상태인 경우 조회 불가능. - findByIdAndIsDeletedFalse")
-    public void findByIdAndIsDeletedFail() {
-        // given
-        User user = User.builder()
-                .social(SocialType.GOOGLE)
-                .socialId("1")
-                .role(UserRole.ROLE_USER)
-                .nickname("이수영")
-                .email("example1@gmail.com")
-                .build();
-        user.deleteUser();
-        // when
-        userRepository.save(user);
-        Optional<User> findUser = userRepository.findByIdAndIsDeletedFalse(user.getId());
-        // then
-        assertThat(findUser).isEmpty();
     }
 }
