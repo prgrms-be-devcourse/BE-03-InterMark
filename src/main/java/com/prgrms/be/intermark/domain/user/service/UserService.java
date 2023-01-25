@@ -104,4 +104,8 @@ public class UserService {
                 UserInfoResponseDTO::from,
                 PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
     }
+
+    public long countAllUser() {
+        return userRepository.countByIsDeletedFalse();
+    }
 }
