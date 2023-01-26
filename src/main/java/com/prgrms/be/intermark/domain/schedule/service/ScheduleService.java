@@ -121,7 +121,14 @@ public class ScheduleService {
         return ScheduleFindResponseDTO.from(schedule);
     }
 
-    public boolean existsByMusical(Musical musical) {
-        return scheduleRepository.existsByMusicalAndIsDeletedFalse(musical);
-    }
+	public boolean existsByMusical(Musical musical) {
+		return scheduleRepository.existsByMusicalAndIsDeletedFalse(musical);
+	}
+
+	@Transactional
+	public void deleteAllByMusical(Musical musical) {
+		scheduleRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+			.forEach(Schedule::deleteSchedule);
+
+	}
 }
