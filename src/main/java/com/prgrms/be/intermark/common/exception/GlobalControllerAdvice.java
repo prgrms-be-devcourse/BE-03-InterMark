@@ -18,25 +18,25 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ErrorResponse entityNotFoundExceptionHandler(EntityNotFoundException exception) {
-        return ErrorResponse.of(
-                HttpStatus.NOT_FOUND,
-                exception.getMessage(),
-                LocalDateTime.now());
-    }
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ErrorResponse entityNotFoundExceptionHandler(EntityNotFoundException exception) {
+		return ErrorResponse.of(
+				HttpStatus.NOT_FOUND,
+				exception.getMessage(),
+				LocalDateTime.now());
+	}
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        ErrorResponse errorResponse = ErrorResponse.of(
-                HttpStatus.BAD_REQUEST,
-                e.getMessage(),
-                e.getFieldErrors(),
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.BAD_REQUEST,
+				e.getMessage(),
+				e.getFieldErrors(),
+				LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {

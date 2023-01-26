@@ -9,7 +9,6 @@ public record UserInfoResponseDTO(
         String email
 ) {
     public static UserInfoResponseDTO from(User user) {
-        // TODO : 예매 Dto 이용해서 변환해서 값 반환하기.
         return UserInfoResponseDTO.builder()
                 .username(user.getNickname())
                 .email(user.getEmail())

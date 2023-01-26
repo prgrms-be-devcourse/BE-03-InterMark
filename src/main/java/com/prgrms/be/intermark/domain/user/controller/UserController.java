@@ -20,7 +20,6 @@ import javax.websocket.server.PathParam;
 @RequiredArgsConstructor
 public class UserController {
 
-    // TODO : 발생할 수 있는 EntityNotFoundException에 대한 핸들러 없는 경우 추가.
     private final UserService userService;
     private final PageService pageService;
 
