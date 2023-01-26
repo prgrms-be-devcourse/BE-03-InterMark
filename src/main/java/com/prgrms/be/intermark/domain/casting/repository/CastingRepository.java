@@ -11,5 +11,5 @@ public interface CastingRepository extends JpaRepository<Casting, Long> {
 
     void deleteByMusical(Musical musical);
 
-    List<Casting> findAllByMusicalAndIsDeletedIsFalse(Musical musical);
+    List<Casting> findByMusicalAndIsDeletedIsFalse(Musical musical);
 }

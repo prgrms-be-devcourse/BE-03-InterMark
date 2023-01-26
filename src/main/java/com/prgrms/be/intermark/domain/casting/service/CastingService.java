@@ -60,7 +60,7 @@ public class CastingService {
 
     @Transactional
     public void deleteAllByMusical(Musical musical) {
-        castingRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+        castingRepository.findByMusicalAndIsDeletedIsFalse(musical)
             .forEach(Casting::deleteCasting);
     }
 }
