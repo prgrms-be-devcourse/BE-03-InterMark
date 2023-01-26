@@ -24,6 +24,7 @@ import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
 import com.prgrms.be.intermark.domain.seatgrade.service.SeatGradeService;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.stadium.service.StadiumService;
+import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.service.TicketService;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.service.UserService;
@@ -111,6 +112,21 @@ public class MusicalFacadeService {
 
 	@Transactional
 	public void deleteMusical(Long musicalId) {
-		musicalService.deleteMusical(musicalId);
+		Musical musical = musicalService.findMusicalById(musicalId);
+
+		boolean hasReservedTicket = musical.getTickets()
+			.stream()
+			.anyMatch(Ticket::isReserved);
+
+		if (hasReservedTicket) {
+			throw new RuntimeException("예매된 티켓이 있어 뮤지컬을 삭제할 수 없습니다");
+		}
+
+		musicalService.deleteMusical(musical);
+		castingService.deleteAllByMusical(musical);
+		musicalDetailImageService.deleteAllByMusical(musical);
+		scheduleService.deleteAllByMusical(musical);
+		seatGradeService.deleteAllByMusical(musical);
+		musicalSeatService.deleteAllByMusical(musical);
 	}
 }
