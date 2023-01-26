@@ -1,5 +1,11 @@
 package com.prgrms.be.intermark.common.exception;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+
+import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
+
 import com.prgrms.be.intermark.common.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,13 +85,43 @@ public class GlobalControllerAdvice {
         return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        ErrorResponse errorResponse = ErrorResponse.of(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.NOT_FOUND,
+				e.getMessage(),
+				LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(DateTimeParseException.class)
+	public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException e) {
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.BAD_REQUEST,
+				e.getMessage(),
+				LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.BAD_REQUEST,
+				e.getMessage(),
+				LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleException(Exception e) {
+		ErrorResponse errorResponse = ErrorResponse.of(
+			HttpStatus.INTERNAL_SERVER_ERROR,
+			e.getMessage(),
+			LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }

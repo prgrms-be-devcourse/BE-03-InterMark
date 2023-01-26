@@ -5,5 +5,5 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record ScheduleSeatResponseDTOs(List<ScheduleSeatResponseDTO> scheduleSeatResponseDTOs) {
+public record ScheduleSeatResponseDTOs(List<ScheduleSeatResponseDTO> scheduleSeats) {
 }

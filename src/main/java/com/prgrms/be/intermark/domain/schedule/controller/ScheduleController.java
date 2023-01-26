@@ -1,13 +1,26 @@
 package com.prgrms.be.intermark.domain.schedule.controller;
 
-import com.prgrms.be.intermark.domain.schedule.dto.ScheduleRequestDTO;
-import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import java.net.URI;
 
 import javax.validation.Valid;
-import java.net.URI;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleFindResponseDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
+import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTOs;
+
+import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/api/v1/schedules")
 @RequiredArgsConstructor
@@ -17,19 +30,36 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<Long> createSchedule(@RequestBody @Valid ScheduleRequestDTO scheduleRequestDto) {
-        Long scheduleId = scheduleService.createSchedule(scheduleRequestDto);
+    public ResponseEntity<Object> createSchedule(@RequestBody @Valid ScheduleCreateRequestDTO requestDto) {
+        Long scheduleId = scheduleService.createSchedule(requestDto);
 
         return ResponseEntity
-                .created(URI.create("/schedules/" + scheduleId))
-                .body(scheduleId);
+                .created(URI.create("/api/v1/schedules/" + scheduleId))
+                .build();
     }
 
     @PutMapping("/{scheduleId}")
-    public ResponseEntity<Long> updateSchedule(@PathVariable Long scheduleId,
-                                               @RequestBody @Valid ScheduleRequestDTO scheduleRequestDto) {
-        Long id = scheduleService.updateSchedule(scheduleId, scheduleRequestDto);
+    public ResponseEntity<Object> updateSchedule(@PathVariable("scheduleId") long scheduleId,
+            @RequestBody @Valid ScheduleUpdateRequestDTO requestDto) {
+        scheduleService.updateSchedule(scheduleId, requestDto);
+        return ResponseEntity.noContent().build();
+    }
 
-        return ResponseEntity.ok(id);
+    @DeleteMapping("/{scheduleId}")
+    public ResponseEntity<Object> deleteSchedule(@PathVariable("scheduleId") long scheduleId) {
+        scheduleService.deleteSchedule(scheduleId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{scheduleId}/seats")
+    public ResponseEntity<ScheduleSeatResponseDTOs> getScheduleSeats(@PathVariable Long scheduleId) {
+        ScheduleSeatResponseDTOs scheduleSeats = scheduleService.findScheduleSeats(scheduleId);
+        return ResponseEntity.ok(scheduleSeats);
+    }
+
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleFindResponseDTO> getSchedule(@PathVariable Long scheduleId) {
+        ScheduleFindResponseDTO schedule = scheduleService.findSchedule(scheduleId);
+        return ResponseEntity.ok(schedule);
     }
 }

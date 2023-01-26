@@ -45,6 +45,10 @@ dependencies {
     implementation "ca.pjer:logback-awslogs-appender:1.6.0"
 
     testImplementation('org.springframework.security:spring-security-test')
+
+    // Rest Docs
+    asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
 }
 
 test {

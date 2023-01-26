@@ -1,5 +1,6 @@
 package com.prgrms.be.intermark.domain.user;
 
+import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,8 +11,9 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user",
@@ -58,8 +60,8 @@ public class User {
     @Column(name = "birth")
     private LocalDate birth;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Ticket> tickets = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
     public User(SocialType social, String socialId, String nickname, UserRole role, String email) {
