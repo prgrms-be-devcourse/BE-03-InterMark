@@ -1,7 +1,9 @@
 package com.prgrms.be.intermark.common.dto.page.dto;
 
 public enum PageListIndexSize {
-    MUSICAL_LIST_INDEX_SIZE(10);
+    MUSICAL_LIST_INDEX_SIZE(10),
+    TICKET_LIST_INDEX_SIZE(10),
+    SCHEDULE_LIST_INDEX_SIZE(5);
 
     private final int size;
 

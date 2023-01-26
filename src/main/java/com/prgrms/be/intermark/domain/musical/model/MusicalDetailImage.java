@@ -38,6 +38,9 @@ public class MusicalDetailImage {
     @Column(name = "image_url", nullable = false, length = 2000)
     private String imageUrl;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "musical_id", referencedColumnName = "id", nullable = false)
@@ -48,6 +51,11 @@ public class MusicalDetailImage {
         this.musical = musical;
         this.originalFileName = originalFileName;
         this.imageUrl = imageUrl;
+        this.isDeleted = false;
+    }
+
+    public void deleteMusicalDetailImage() {
+        this.isDeleted = true;
     }
 
     public void setMusical(Musical musical) {

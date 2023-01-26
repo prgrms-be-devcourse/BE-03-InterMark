@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.util.Assert;
@@ -30,8 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "schedule",
-        uniqueConstraints = {@UniqueConstraint(name = "musical_start_time_uk", columnNames = {"musical_id", "start_time"})})
+@Table(name = "schedule")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Schedule {
@@ -48,7 +46,7 @@ public class Schedule {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
-    @Column(name = "is_deleted")
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
     @NotNull
@@ -63,11 +61,15 @@ public class Schedule {
     private List<ScheduleSeat> scheduleSeats = new ArrayList<>();
 
     @Builder
-    public Schedule(LocalDateTime startTime, LocalDateTime endTime, boolean isDeleted, Musical musical) {
+    public Schedule(LocalDateTime startTime, LocalDateTime endTime, Musical musical) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.isDeleted = isDeleted;
+        this.isDeleted = false;
         this.musical = musical;
+    }
+
+    public boolean isOver(LocalDateTime time) {
+        return this.endTime.isBefore(time);
     }
 
     public void setMusical(Musical musical) {
@@ -84,5 +86,9 @@ public class Schedule {
     public void setScheduleTime(LocalDateTime startTime, LocalDateTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public void deleteSchedule() {
+        isDeleted = true;
     }
 }

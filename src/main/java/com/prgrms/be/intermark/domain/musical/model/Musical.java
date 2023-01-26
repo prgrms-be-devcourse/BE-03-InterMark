@@ -130,6 +130,10 @@ public class Musical {
         this.user = user;
     }
 
+    public void deleteMusical() {
+        this.isDeleted = true;
+    }
+
     public void setStadium(Stadium stadium) {
         Assert.notNull(stadium, "Stadium cannot be null");
 
@@ -148,5 +152,19 @@ public class Musical {
 
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public void updateMusical(String title, String thumbnailUrl, ViewRating viewRating, Genre genre, String description, LocalDate startDate,
+                              LocalDate endDate, int runningTime, Stadium stadium, User user) {
+        this.title = title;
+        this.thumbnailUrl = thumbnailUrl;
+        this.viewRating = viewRating;
+        this.genre = genre;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.runningTime = runningTime;
+        this.stadium = stadium;
+        this.user = user;
     }
 }

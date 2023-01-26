@@ -17,11 +17,15 @@ import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical_seat.service.MusicalSeatService;
+import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
 import com.prgrms.be.intermark.domain.seatgrade.service.SeatGradeService;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.stadium.service.StadiumService;
+import com.prgrms.be.intermark.domain.ticket.model.Ticket;
+import com.prgrms.be.intermark.domain.ticket.service.TicketService;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.service.UserService;
 
@@ -39,12 +43,14 @@ public class MusicalFacadeService {
 	private final MusicalDetailImageService musicalDetailImageService;
 	private final MusicalSeatService musicalSeatService;
 	private final CastingService castingService;
+	private final TicketService ticketService;
+	private final ScheduleService scheduleService;
 
 	@Transactional
 	public MusicalCommandResponseDTO create(
-		MusicalCreateRequestDTO createRequestDto,
-		MultipartFile thumbnail,
-		List<MultipartFile> detailImages
+			MusicalCreateRequestDTO createRequestDto,
+			MultipartFile thumbnail,
+			List<MultipartFile> detailImages
 	) {
 		Musical createdMusical = createRequestDto.toEntity();
 
@@ -62,6 +68,36 @@ public class MusicalFacadeService {
 		return MusicalCommandResponseDTO.from(savedMusical);
 	}
 
+	@Transactional
+	public void update(
+			Long musicalId,
+			MusicalUpdateRequestDTO musicalSeatUpdateRequestDTO,
+			MultipartFile thumbnailImage,
+			List<MultipartFile> detailImages
+	) {
+		Musical musical = musicalService.findMusicalById(musicalId);
+
+		if (scheduleService.existsByMusical(musical)) {
+			throw new IllegalArgumentException("이미 뮤지컬의 스케줄이 존재합니다.");
+		}
+
+		if (ticketService.existsByMusical(musical)) {
+			throw new IllegalArgumentException("이미 예약된 뮤지컬입니다.");
+		}
+
+		ImageResponseDTO thumbnailInfo = uploadImageServiceImpl.uploadImage(thumbnailImage);
+		Stadium stadium = stadiumService.findById(musicalSeatUpdateRequestDTO.stadiumId());
+		User manager = userService.findById(musicalSeatUpdateRequestDTO.managerId());
+
+		seatGradeService.update(musicalSeatUpdateRequestDTO.seatGrades(), musical);
+		musicalSeatService.update(musicalSeatUpdateRequestDTO.seats(), musicalSeatUpdateRequestDTO.stadiumId(), musical);
+		castingService.update(musicalSeatUpdateRequestDTO.actors(), musical);
+
+		List<ImageResponseDTO> detailImagesInfo = uploadImageServiceImpl.uploadImages(detailImages);
+		musicalDetailImageService.update(detailImagesInfo, musical);
+		musicalService.updateMusical(musical, musicalSeatUpdateRequestDTO, thumbnailInfo.path(), stadium, manager);
+	}
+
 	@Transactional(readOnly = true)
 	public PageResponseDTO<Musical, MusicalSummaryResponseDTO> findAllMusicals(Pageable pageable) {
 		Page<Musical> musicalPage = musicalService.findAllMusicals(pageable);
@@ -72,5 +108,25 @@ public class MusicalFacadeService {
 	public MusicalDetailResponseDTO findMusicalById(Long musicalId) {
 		Musical musical = musicalService.findMusicalById(musicalId);
 		return MusicalDetailResponseDTO.from(musical);
+	}
+
+	@Transactional
+	public void deleteMusical(Long musicalId) {
+		Musical musical = musicalService.findMusicalById(musicalId);
+
+		boolean hasReservedTicket = musical.getTickets()
+			.stream()
+			.anyMatch(Ticket::isReserved);
+
+		if (hasReservedTicket) {
+			throw new RuntimeException("예매된 티켓이 있어 뮤지컬을 삭제할 수 없습니다");
+		}
+
+		musicalService.deleteMusical(musical);
+		castingService.deleteAllByMusical(musical);
+		musicalDetailImageService.deleteAllByMusical(musical);
+		scheduleService.deleteAllByMusical(musical);
+		seatGradeService.deleteAllByMusical(musical);
+		musicalSeatService.deleteAllByMusical(musical);
 	}
 }

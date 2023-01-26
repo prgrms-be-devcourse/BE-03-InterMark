@@ -10,4 +10,9 @@ import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
 public interface MusicalSeatRepository extends JpaRepository<MusicalSeat, Long> {
 
     List<MusicalSeat> findAllByMusical(Musical musical);
+
+    void deleteByMusical(Musical musical);
+
+    List<MusicalSeat> findByMusicalAndIsDeletedIsFalse(Musical musical);
+
 }

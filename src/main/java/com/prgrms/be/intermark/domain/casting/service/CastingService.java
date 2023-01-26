@@ -19,23 +19,48 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CastingService {
 
-	private final CastingRepository castingRepository;
-	private final ActorRepository actorRepository;
+    private final CastingRepository castingRepository;
+    private final ActorRepository actorRepository;
 
-	@Transactional
-	public void save(List<Long> actorIds, Musical musical) {
-		actorIds
-			.forEach(actorId -> {
-			Actor actor = actorRepository.findById(actorId)
-				.orElseThrow(() -> {
-					throw new EntityNotFoundException("존재하지 않는 배우입니다");
-				});
+    @Transactional
+    public void save(List<Long> actorIds, Musical musical) {
+        actorIds
+                .forEach(actorId -> {
+                    Actor actor = actorRepository.findById(actorId)
+                            .orElseThrow(() -> {
+                                throw new EntityNotFoundException("존재하지 않는 배우입니다");
+                            });
 
-			Casting casting = Casting.builder()
-				.actor(actor)
-				.musical(musical)
-				.build();
-			castingRepository.save(casting);
-		});
-	}
+                    Casting casting = Casting.builder()
+                            .actor(actor)
+                            .musical(musical)
+                            .build();
+                    castingRepository.save(casting);
+                });
+    }
+
+    public void update(List<Long> actorIds, Musical musical) {
+
+        castingRepository.deleteByMusical(musical);
+
+        actorIds
+                .forEach(actorId -> {
+                    Actor actor = actorRepository.findById(actorId)
+                            .orElseThrow(() -> {
+                                throw new EntityNotFoundException("존재하지 않는 배우입니다");
+                            });
+
+                    Casting casting = Casting.builder()
+                            .actor(actor)
+                            .musical(musical)
+                            .build();
+                    castingRepository.save(casting);
+                });
+    }
+
+    @Transactional
+    public void deleteAllByMusical(Musical musical) {
+        castingRepository.findByMusicalAndIsDeletedIsFalse(musical)
+            .forEach(Casting::deleteCasting);
+    }
 }

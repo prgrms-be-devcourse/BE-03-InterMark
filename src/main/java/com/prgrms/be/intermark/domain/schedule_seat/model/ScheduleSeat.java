@@ -3,8 +3,10 @@ package com.prgrms.be.intermark.domain.schedule_seat.model;
 import java.util.Objects;
 
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -51,7 +53,7 @@ public class ScheduleSeat {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_grade_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "seat_grade_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private SeatGrade seatGrade;
 
     @Builder
@@ -60,6 +62,10 @@ public class ScheduleSeat {
         this.schedule = schedule;
         this.seat = seat;
         this.seatGrade = seatGrade;
+    }
+
+    public void reserve() {
+        this.isReserved = true;
     }
 
     public void setSchedule(Schedule schedule) {

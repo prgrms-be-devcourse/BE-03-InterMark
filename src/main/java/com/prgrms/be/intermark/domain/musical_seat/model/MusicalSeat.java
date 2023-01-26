@@ -2,8 +2,11 @@ package com.prgrms.be.intermark.domain.musical_seat.model;
 
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,6 +38,9 @@ public class MusicalSeat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "musical_id", referencedColumnName = "id", nullable = false)
@@ -47,14 +53,19 @@ public class MusicalSeat {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_grade_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "seat_grade_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private SeatGrade seatGrade;
 
     @Builder
     public MusicalSeat(Musical musical, Seat seat, SeatGrade seatGrade) {
+        this.isDeleted = false;
         this.musical = musical;
         this.seat = seat;
         this.seatGrade = seatGrade;
+    }
+
+    public void deleteMusicalSeat() {
+        this.isDeleted = true;
     }
 
     public void setMusical(Musical musical) {

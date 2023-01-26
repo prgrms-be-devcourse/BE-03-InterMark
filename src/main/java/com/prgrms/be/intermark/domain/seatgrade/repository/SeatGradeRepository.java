@@ -1,5 +1,6 @@
 package com.prgrms.be.intermark.domain.seatgrade.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,9 @@ import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 public interface SeatGradeRepository extends JpaRepository<SeatGrade, Long> {
 
 	Optional<SeatGrade> findByNameAndMusical(String name, Musical musical);
+
+	void deleteByMusical(Musical musical);
+
+	List<SeatGrade> findByMusicalAndIsDeletedIsFalse(Musical musical);
+
 }
