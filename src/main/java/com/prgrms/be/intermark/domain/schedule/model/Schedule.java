@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.util.Assert;
@@ -30,8 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "schedule",
-        uniqueConstraints = {@UniqueConstraint(name = "musical_start_time_uk", columnNames = {"musical_id", "start_time"})})
+@Table(name = "schedule")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Schedule {

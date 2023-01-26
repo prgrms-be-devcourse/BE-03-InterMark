@@ -42,8 +42,10 @@ public class ScheduleService {
 		Musical musical = musicalRepository.findById(requestDto.musicalId())
 			.orElseThrow(() -> new EntityNotFoundException("해당 뮤지컬이 존재하지 않습니다."));
 
-		int duplicatedSchedulesNum = scheduleRepository.getSchedulesNumByStartTime(requestDto.getStartTime(),
-			requestDto.getEndTime(musical));
+        int duplicatedSchedulesNum = scheduleRepository.getSchedulesNumByStartTime(
+                requestDto.getStartTime(),
+                requestDto.getEndTime(musical),
+                musical.getStadium());
 		if (duplicatedSchedulesNum > 0) {
 			throw new IllegalStateException("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
 		}
@@ -76,10 +78,11 @@ public class ScheduleService {
 		LocalDateTime startTime = requestDto.getStartTime();
 		LocalDateTime endTime = requestDto.getEndTime(schedule.getMusical());
 
-		int duplicatedSchedulesNum = scheduleRepository.getDuplicatedScheduleExceptById(
-			scheduleId,
-			startTime,
-			endTime);
+        int duplicatedSchedulesNum = scheduleRepository.getDuplicatedScheduleExceptById(
+                scheduleId,
+                startTime,
+                endTime,
+                schedule.getMusical().getStadium());
 		if (duplicatedSchedulesNum > 0) {
 			throw new IllegalStateException("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
 		}
@@ -96,31 +99,31 @@ public class ScheduleService {
 			throw new EntityNotFoundException("이미 삭제된 스케줄입니다.");
 		}
 
-		schedule.deleteSchedule();
-	}
+        schedule.deleteSchedule();
+    }
 
-	@Transactional(readOnly = true)
-	public ScheduleSeatResponseDTOs findScheduleSeats(Long scheduleId) {
-		List<ScheduleSeatResponseDTO> scheduleSeats
-			= scheduleSeatRepository.findAllByScheduleId(scheduleId)
-			.stream()
-			.map(ScheduleSeatResponseDTO::from)
-			.toList();
+    @Transactional(readOnly = true)
+    public ScheduleSeatResponseDTOs findScheduleSeats(Long scheduleId) {
+        List<ScheduleSeatResponseDTO> scheduleSeats
+                = scheduleSeatRepository.findAllByScheduleId(scheduleId)
+                .stream()
+                .map(ScheduleSeatResponseDTO::from)
+                .toList();
 
-		return ScheduleSeatResponseDTOs.builder()
-			.scheduleSeats(scheduleSeats)
-			.build();
-	}
+        return ScheduleSeatResponseDTOs.builder()
+                .scheduleSeats(scheduleSeats)
+                .build();
+    }
 
-	@Transactional(readOnly = true)
-	public ScheduleFindResponseDTO findSchedule(Long scheduleId) {
-		Schedule schedule = scheduleRepository.findById(scheduleId)
-			.orElseThrow(() -> {
-				throw new EntityNotFoundException("존재하지 않는 스케줄입니다.");
-			});
+    @Transactional(readOnly = true)
+    public ScheduleFindResponseDTO findSchedule(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException("존재하지 않는 스케줄입니다.");
+                });
 
-		return ScheduleFindResponseDTO.from(schedule);
-	}
+        return ScheduleFindResponseDTO.from(schedule);
+    }
 
 	@Transactional(readOnly = true)
 	public PageResponseDTO<Schedule, ScheduleFindResponseDTO> findSchedulesByMusical(Long musicalId, Pageable pageable) {
@@ -136,6 +139,13 @@ public class ScheduleService {
 			ScheduleFindResponseDTO::from,
 			PageListIndexSize.SCHEDULE_LIST_INDEX_SIZE
 		);
+	}
+
+	@Transactional
+	public void deleteAllByMusical(Musical musical) {
+		scheduleRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+			.forEach(Schedule::deleteSchedule);
+
 	}
 
     public boolean existsByMusical(Musical musical) {
