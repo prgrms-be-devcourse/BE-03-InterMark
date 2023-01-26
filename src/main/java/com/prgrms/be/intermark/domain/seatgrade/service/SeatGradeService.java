@@ -43,7 +43,7 @@ public class SeatGradeService {
 
 	@Transactional
 	public void deleteAllByMusical(Musical musical) {
-		seatGradeRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+		seatGradeRepository.findByMusicalAndIsDeletedIsFalse(musical)
 			.forEach(SeatGrade::deleteSeatGrade);
 	}
 }

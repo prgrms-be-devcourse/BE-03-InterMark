@@ -143,7 +143,7 @@ public class ScheduleService {
 
 	@Transactional
 	public void deleteAllByMusical(Musical musical) {
-		scheduleRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+		scheduleRepository.findByMusicalAndIsDeletedIsFalse(musical)
 			.forEach(Schedule::deleteSchedule);
 
 	}

@@ -37,5 +37,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     Page<Schedule> findAllByMusical(Musical musical, Pageable pageable);
 
-    List<Schedule> findAllByMusicalAndIsDeletedIsFalse(Musical musical);
+    List<Schedule> findByMusicalAndIsDeletedIsFalse(Musical musical);
 }
