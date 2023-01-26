@@ -13,6 +13,6 @@ public interface MusicalSeatRepository extends JpaRepository<MusicalSeat, Long> 
 
     void deleteByMusical(Musical musical);
 
-    List<MusicalSeat> findAllByMusicalAndIsDeletedIsFalse(Musical musical);
+    List<MusicalSeat> findByMusicalAndIsDeletedIsFalse(Musical musical);
 
 }

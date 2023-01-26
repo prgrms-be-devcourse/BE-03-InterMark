@@ -76,7 +76,7 @@ public class MusicalSeatService {
 
 	@Transactional
 	public void deleteAllByMusical(Musical musical) {
-		musicalSeatRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+		musicalSeatRepository.findByMusicalAndIsDeletedIsFalse(musical)
 			.forEach(MusicalSeat::deleteMusicalSeat);
 	}
 }

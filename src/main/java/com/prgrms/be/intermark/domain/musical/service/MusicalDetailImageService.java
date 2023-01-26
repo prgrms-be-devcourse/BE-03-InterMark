@@ -50,7 +50,7 @@ public class MusicalDetailImageService {
 
     @Transactional
     public void deleteAllByMusical(Musical musical) {
-        musicalDetailImageRepository.findAllByMusicalAndIsDeletedIsFalse(musical)
+        musicalDetailImageRepository.findByMusicalAndIsDeletedIsFalse(musical)
             .forEach(MusicalDetailImage::deleteMusicalDetailImage);
     }
 }

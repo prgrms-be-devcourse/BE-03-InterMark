@@ -14,6 +14,6 @@ public interface SeatGradeRepository extends JpaRepository<SeatGrade, Long> {
 
 	void deleteByMusical(Musical musical);
 
-	List<SeatGrade> findAllByMusicalAndIsDeletedIsFalse(Musical musical);
+	List<SeatGrade> findByMusicalAndIsDeletedIsFalse(Musical musical);
 
 }

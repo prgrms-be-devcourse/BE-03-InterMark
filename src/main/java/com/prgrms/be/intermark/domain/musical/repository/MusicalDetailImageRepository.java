@@ -14,5 +14,5 @@ public interface MusicalDetailImageRepository extends JpaRepository<MusicalDetai
 
     void deleteByMusical(Musical musical);
 
-    List<MusicalDetailImage> findAllByMusicalAndIsDeletedIsFalse(Musical musical);
+    List<MusicalDetailImage> findByMusicalAndIsDeletedIsFalse(Musical musical);
 }
