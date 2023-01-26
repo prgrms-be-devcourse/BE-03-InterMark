@@ -35,16 +35,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MusicalFacadeService {
 
+	private static final String THUMBNAIL_PATH = "musical/thumbnail/";
+	private static final String DETAIL_IMAGES_PATH = "musical/detailImages/";
+
 	private final MusicalService musicalService;
 	private final StadiumService stadiumService;
 	private final UserService userService;
 	private final SeatGradeService seatGradeService;
-	private final ImageUploadService uploadImageServiceImpl;
+	private final ImageUploadService uploadImageService;
 	private final MusicalDetailImageService musicalDetailImageService;
 	private final MusicalSeatService musicalSeatService;
 	private final CastingService castingService;
 	private final TicketService ticketService;
 	private final ScheduleService scheduleService;
+
 
 	@Transactional
 	public MusicalCommandResponseDTO create(
@@ -54,12 +58,12 @@ public class MusicalFacadeService {
 	) {
 		Musical createdMusical = createRequestDto.toEntity();
 
-		ImageResponseDTO thumbnailInfo = uploadImageServiceImpl.uploadImage(thumbnail);
+		ImageResponseDTO thumbnailInfo = uploadImageService.uploadImage(thumbnail, THUMBNAIL_PATH);
 		Stadium stadium = stadiumService.findById(createRequestDto.stadiumId());
 		User manager = userService.findById(createRequestDto.managerId());
 		Musical savedMusical = musicalService.save(createdMusical, thumbnailInfo.path(), stadium, manager);
 
-		List<ImageResponseDTO> detailImagesInfo = uploadImageServiceImpl.uploadImages(detailImages);
+		List<ImageResponseDTO> detailImagesInfo = uploadImageService.uploadImages(detailImages, DETAIL_IMAGES_PATH);
 		musicalDetailImageService.save(detailImagesInfo, savedMusical);
 		seatGradeService.save(createRequestDto.seatGrades(), savedMusical);
 		musicalSeatService.save(createRequestDto.seats(), savedMusical);
@@ -85,7 +89,7 @@ public class MusicalFacadeService {
 			throw new IllegalArgumentException("이미 예약된 뮤지컬입니다.");
 		}
 
-		ImageResponseDTO thumbnailInfo = uploadImageServiceImpl.uploadImage(thumbnailImage);
+		ImageResponseDTO thumbnailInfo = uploadImageService.uploadImage(thumbnailImage, THUMBNAIL_PATH);
 		Stadium stadium = stadiumService.findById(musicalSeatUpdateRequestDTO.stadiumId());
 		User manager = userService.findById(musicalSeatUpdateRequestDTO.managerId());
 
@@ -93,7 +97,7 @@ public class MusicalFacadeService {
 		musicalSeatService.update(musicalSeatUpdateRequestDTO.seats(), musicalSeatUpdateRequestDTO.stadiumId(), musical);
 		castingService.update(musicalSeatUpdateRequestDTO.actors(), musical);
 
-		List<ImageResponseDTO> detailImagesInfo = uploadImageServiceImpl.uploadImages(detailImages);
+		List<ImageResponseDTO> detailImagesInfo = uploadImageService.uploadImages(detailImages, DETAIL_IMAGES_PATH);
 		musicalDetailImageService.update(detailImagesInfo, musical);
 		musicalService.updateMusical(musical, musicalSeatUpdateRequestDTO, thumbnailInfo.path(), stadium, manager);
 	}

@@ -8,7 +8,7 @@ import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 
 public interface ImageUploadService {
 
-	ImageResponseDTO uploadImage(MultipartFile multipartFile);
+	ImageResponseDTO uploadImage(MultipartFile multipartFile, String subPath);
 
-	List<ImageResponseDTO> uploadImages(List<MultipartFile> multipartFiles);
+	List<ImageResponseDTO> uploadImages(List<MultipartFile> multipartFiles, String subPath);
 }
