@@ -41,6 +41,8 @@ jobs:
       -
         name: Push Docker Image
         run: |
+          COMMIT_SHA=$(git rev-parse HEAD)
+          SHORT_SHA=$(echo ${COMMIT_SHA} | cut -c1-7)
           docker push ${{secrets.DOCKER_REPO}}:$SHORT_SHA
           docker tag ${{secrets.DOCKER_REPO}}:$SHORT_SHA ${{secrets.DOCKER_REPO}}:latest
           docker push ${{secrets.DOCKER_REPO}}:latest
