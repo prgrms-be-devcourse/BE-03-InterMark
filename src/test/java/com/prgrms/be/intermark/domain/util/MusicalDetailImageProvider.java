@@ -16,4 +16,12 @@ public class MusicalDetailImageProvider {
                 .build();
     }
 
+    public static MusicalDetailImage createMusicalDetailImage(String originalFileName, String imageUrl, Musical musical) {
+        return MusicalDetailImage.builder()
+                .originalFileName(originalFileName)
+                .imageUrl(imageUrl)
+                .musical(musical)
+                .build();
+    }
+
 }

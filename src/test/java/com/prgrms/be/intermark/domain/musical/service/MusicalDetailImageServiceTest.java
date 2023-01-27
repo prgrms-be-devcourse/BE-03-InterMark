@@ -5,6 +5,7 @@ import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalDetailImageRepository;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.user.User;
+import com.prgrms.be.intermark.domain.util.MusicalDetailImageProvider;
 import com.prgrms.be.intermark.domain.util.MusicalProvider;
 import com.prgrms.be.intermark.domain.util.StadiumProvider;
 import com.prgrms.be.intermark.domain.util.UserProvider;
@@ -44,16 +45,8 @@ class MusicalDetailImageServiceTest {
         @DisplayName("성공 - 정상 뮤지컬 상세 이미지 값이 들어오면 저장에 성공한다")
         void saveSuccess() {
             // given
-            MusicalDetailImage musicalDetailImage1 = MusicalDetailImage.builder()
-                    .originalFileName("업로드 파일1")
-                    .imageUrl("a")
-                    .musical(musical)
-                    .build();
-            MusicalDetailImage musicalDetailImage2 = MusicalDetailImage.builder()
-                    .originalFileName("업로드 파일2")
-                    .imageUrl("ab")
-                    .musical(musical)
-                    .build();
+            MusicalDetailImage musicalDetailImage1 = MusicalDetailImageProvider.createMusicalDetailImage("업로드 파일1", "a", musical);
+            MusicalDetailImage musicalDetailImage2 = MusicalDetailImageProvider.createMusicalDetailImage("업로드 파일2", "b", musical);
             List<MusicalDetailImage> musicalDetailImages = List.of(musicalDetailImage1, musicalDetailImage2);
             when(musicalDetailImageRepository.save(any(MusicalDetailImage.class))).thenReturn(any(MusicalDetailImage.class));
 
