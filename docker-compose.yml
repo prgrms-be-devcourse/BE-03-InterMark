@@ -9,7 +9,7 @@ services:
     volumes:
       - intermark:/var/lib/mysql
   backend:
-    build: .
+    image: ghcr.io/park-se-jun/intermark:latest
     depends_on:
       - mysql
     env_file:
