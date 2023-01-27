@@ -11,6 +11,7 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "social", nullable = false)
     private Social social;
@@ -44,7 +45,7 @@ public class User {
     @Column(name = "nickname", nullable = false, unique = true, length = 20)
     private String nickname;
 
-    @NotBlank
+    @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false, length = 15)
     private UserRole role;
@@ -65,7 +66,7 @@ public class User {
     private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
-    public User(Social social, String socialId, String refreshToken, String nickname, UserRole role, boolean isDeleted, LocalDate birth) {
+    public User(Social social, String socialId, String refreshToken, String nickname, UserRole role, boolean isDeleted, LocalDate birth, String email) {
         this.social = social;
         this.socialId = socialId;
         this.refreshToken = refreshToken;
@@ -73,6 +74,7 @@ public class User {
         this.role = role;
         this.isDeleted = isDeleted;
         this.birth = birth;
+        this.email = email;
     }
 
     public void setBirth(LocalDate birth) {
