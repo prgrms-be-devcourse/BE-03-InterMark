@@ -20,11 +20,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,40 +41,40 @@ class ScheduleServiceTest {
     @Mock
     private MusicalSeatRepository musicalSeatRepository;
 
+    private final Stadium stadium = Stadium.builder()
+            .name("stadium")
+            .address("Korea Seoul")
+            .imageUrl("image")
+            .build();
+
+    private final User user = User.builder()
+            .social(Social.GOOGLE)
+            .socialId("1234")
+            .refreshToken("refreshToken")
+            .nickname("유저")
+            .role(UserRole.ADMIN)
+            .isDeleted(false)
+            .birth(LocalDate.now())
+            .build();
+
+    private final Musical musical = Musical.builder()
+            .title("title")
+            .thumbnailUrl("thumbnail")
+            .viewRating(ViewRating.ALL)
+            .genre(Genre.COMEDY)
+            .description("description")
+            .startDate(LocalDate.now())
+            .endDate(LocalDate.now().plusDays(7))
+            .runningTime(80)
+            .stadium(stadium)
+            .user(user)
+            .build();
+
     @Test
-    @DisplayName("Success - 새로운 스케줄을 등록하면 해당 스케줄 저장 - createSchedule")
+    @DisplayName("Success - 새로운 스케줄을 등록하면 해당 스케줄 저장")
     @Transactional
-    void createSchedule() {
+    void createScheduleSuccess() {
         // given
-        Stadium stadium = Stadium.builder()
-                .name("stadium")
-                .address("Korea Seoul")
-                .imageUrl("image")
-                .build();
-
-        User user = User.builder()
-                .social(Social.GOOGLE)
-                .socialId("1234")
-                .refreshToken("refreshToken")
-                .nickname("유저")
-                .role(UserRole.ADMIN)
-                .isDeleted(false)
-                .birth(LocalDate.now())
-                .build();
-
-        Musical musical = Musical.builder()
-                .title("title")
-                .thumbnailUrl("thumbnail")
-                .viewRating(ViewRating.ALL)
-                .genre(Genre.COMEDY)
-                .description("description")
-                .startDate(LocalDate.now())
-                .endDate(LocalDate.now().plusDays(7))
-                .runningTime(80)
-                .stadium(stadium)
-                .user(user)
-                .build();
-
         ScheduleCreateRequestDTO scheduleCreateRequestDTO = ScheduleCreateRequestDTO.builder()
                 .musicalId(1L)
                 .startTime("2000-01-01 11:00")
@@ -99,7 +101,52 @@ class ScheduleServiceTest {
                 stadium);
         verify(scheduleRepository).save(any());
         verify(musicalSeatRepository).findAllByMusical(any());
+
         assertThat(savedScheduleId).isEqualTo(schedule.getId());
     }
 
+    @Test
+    @DisplayName("Fail - 해당 뮤지컬이 없으면 EntityNotFoundException 발생")
+    @Transactional
+    void notExistedMusicalFail() {
+        // given
+        ScheduleCreateRequestDTO scheduleCreateRequestDTO = ScheduleCreateRequestDTO.builder()
+                .musicalId(any(Long.class))
+                .startTime("2000-01-01 11:00")
+                .build();
+
+        // when - then
+        assertThatThrownBy(() -> scheduleService.createSchedule(scheduleCreateRequestDTO))
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 뮤지컬이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("Fail - 겹치는 스케줄이 있으면 IllegalStateException 발생")
+    @Transactional
+    void duplicatedScheduleFail() {
+        // given
+        ScheduleCreateRequestDTO scheduleCreateRequestDTO = ScheduleCreateRequestDTO.builder()
+                .musicalId(1L)
+                .startTime("2000-01-01 11:00")
+                .build();
+
+        when(musicalRepository.findById(any(Long.class)))
+                .thenReturn(Optional.of(musical));
+        when(scheduleRepository.getSchedulesNumByStartTime(
+                scheduleCreateRequestDTO.getStartTime(),
+                scheduleCreateRequestDTO.getEndTime(musical),
+                stadium
+        )).thenReturn(1);
+
+        // when - then
+        assertThatThrownBy(() -> scheduleService.createSchedule(scheduleCreateRequestDTO))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
+
+        verify(musicalRepository).findById(any(Long.class));
+        verify(scheduleRepository).getSchedulesNumByStartTime(scheduleCreateRequestDTO.getStartTime(),
+                scheduleCreateRequestDTO.getEndTime(musical),
+                stadium);
+    }
 }
