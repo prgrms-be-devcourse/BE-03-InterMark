@@ -2,7 +2,7 @@ name: cd
 
 on: # 이벤트 트리거
   push:
-    branches: [ "develop", "ADD/#126" ]
+    branches: [ "develop" ]
 
 jobs:
   docker-build-and-push-and-deploy:
