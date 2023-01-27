@@ -3,6 +3,7 @@ package com.prgrms.be.intermark.domain.musical.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
@@ -45,5 +46,11 @@ public class MusicalDetailImageService {
                     musicalDetailImageRepository.save(detailImage);
                 }
         );
+    }
+
+    @Transactional
+    public void deleteAllByMusical(Musical musical) {
+        musicalDetailImageRepository.findByMusicalAndIsDeletedIsFalse(musical)
+            .forEach(MusicalDetailImage::deleteMusicalDetailImage);
     }
 }

@@ -1,5 +1,6 @@
 package com.prgrms.be.intermark.domain.musical.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,6 @@ public interface MusicalDetailImageRepository extends JpaRepository<MusicalDetai
     Optional<MusicalDetailImage> findByImageUrl(String url);
 
     void deleteByMusical(Musical musical);
+
+    List<MusicalDetailImage> findByMusicalAndIsDeletedIsFalse(Musical musical);
 }
