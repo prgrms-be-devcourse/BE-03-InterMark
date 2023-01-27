@@ -35,17 +35,15 @@ jobs:
       -
         name: Build Docker Image
         run: |
-          IMAGE_NAME=${{secrets.DOCKER_REPO}}
-          IMAGE_TAG=$(git describe --tags)
-          docker build -t $IMAGE_NAME:$IMAGE_TAG .
+          docker build -t $IMAGE_NAME:$(git describe --tags) .
       -
         name: Push Docker Image
         run: |
-          IMAGE_NAME=${{secrets.DOCKER_REPO}}
-          IMAGE_TAG=$(git describe --tags)
-          docker push $IMAGE_NAME:$IMAGE_TAG
-          docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:latest
+          IMAGE_NAME=
+          IMAGE_TAG=
+          docker push ${{secrets.DOCKER_REPO}}:$(git describe --tags)
+          docker tag ${{secrets.DOCKER_REPO}}:$(git describe --tags) ${{secrets.DOCKER_REPO}}:latest
+          docker push ${{secrets.DOCKER_REPO}}:latest
       -
         name: move docker-compose to ec2
         uses: appleboy/scp-action@master
