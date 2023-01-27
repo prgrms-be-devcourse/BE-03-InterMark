@@ -44,6 +44,7 @@ jobs:
           IMAGE_NAME=${{secrets.DOCKER_REPO}}
           IMAGE_TAG=$(git describe --tags)
           docker push $IMAGE_NAME:$IMAGE_TAG
+          docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
           docker push $IMAGE_NAME:latest
       -
         name: move docker-compose to ec2
