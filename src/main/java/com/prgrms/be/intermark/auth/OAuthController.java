@@ -1,6 +1,6 @@
 package com.prgrms.be.intermark.auth;
 
-import com.prgrms.be.intermark.auth.dto.TokenRefreshResponseDTO;
+import com.prgrms.be.intermark.auth.dto.TokenResponseDTO;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.service.UserService;
 import com.prgrms.be.intermark.util.CookieUtil;
@@ -40,7 +40,7 @@ public class OAuthController {
 
         Claims claims = tokenProvider.getExpiredTokenClaims(accessToken);
         if (Objects.isNull(claims)) {
-            return ResponseEntity.ok(new TokenRefreshResponseDTO(accessToken));
+            return ResponseEntity.ok(new TokenResponseDTO(accessToken));
         }
 
         Long userId = Long.parseLong(claims.getSubject());
@@ -60,7 +60,7 @@ public class OAuthController {
         }
 
         String newAccessToken = tokenProvider.createAceessToken(userId, role);
-        return ResponseEntity.ok(new TokenRefreshResponseDTO(newAccessToken));
+        return ResponseEntity.ok(new TokenResponseDTO(newAccessToken));
     }
 
     @ExceptionHandler(value = EntityNotFoundException.class)

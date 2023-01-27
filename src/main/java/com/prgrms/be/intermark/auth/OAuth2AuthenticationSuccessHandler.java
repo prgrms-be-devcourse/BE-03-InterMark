@@ -1,5 +1,7 @@
 package com.prgrms.be.intermark.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prgrms.be.intermark.auth.dto.TokenResponseDTO;
 import com.prgrms.be.intermark.domain.user.dto.UserIdAndRoleDTO;
 import com.prgrms.be.intermark.domain.user.service.UserService;
 import com.prgrms.be.intermark.util.CookieUtil;
@@ -50,16 +52,19 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             CookieUtil.deleteCookieByName(REFRESH_TOKEN_COOKIE_NAME, request, response);
             CookieUtil.addCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, REFRESH_TOKEN_COOKIE_MAX_AGE, response);
 
-            String loginSuccessJson = generateLoginSuccessJson(aceessToken);
+            ObjectMapper mapper = new ObjectMapper();
+            String loginSuccessJson = mapper.writeValueAsString(generateLoginSuccessJson(aceessToken));
             response.setContentType("application/json;charset=UTF-8");
             response.setContentLength(loginSuccessJson.getBytes(StandardCharsets.UTF_8).length);
             response.getWriter().write(loginSuccessJson);
+            response.getWriter().flush();
+            response.getWriter().close();
         }
 
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
-    private String generateLoginSuccessJson(String accessToken) {
-        return "{\"token\":\"" + accessToken + "\"}";
+    private TokenResponseDTO generateLoginSuccessJson(String accessToken) {
+        return new TokenResponseDTO(accessToken);
     }
 }
