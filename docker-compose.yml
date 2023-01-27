@@ -1,0 +1,21 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0.31
+    ports:
+      - 3306:3306
+    env_file:
+      - env/db.env
+    volumes:
+      - intermark:/var/lib/mysql
+  backend:
+    build: .
+    depends_on:
+      - mysql
+    env_file:
+      - env/spring.env
+    ports:
+      - 8080:8080
+
+volumes:
+  intermark:
