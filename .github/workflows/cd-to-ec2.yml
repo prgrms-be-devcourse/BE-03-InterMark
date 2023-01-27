@@ -27,7 +27,7 @@ jobs:
         run: ./gradlew bootJar
       -
         name: login to ghcr
-        uses: docker/login-actions@v2
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{secrets.GHCR_USERNAME}}
