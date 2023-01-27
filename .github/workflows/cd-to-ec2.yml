@@ -6,7 +6,7 @@ on: # 이벤트 트리거
 
 jobs:
   docker-build-and-push-and-deploy:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
