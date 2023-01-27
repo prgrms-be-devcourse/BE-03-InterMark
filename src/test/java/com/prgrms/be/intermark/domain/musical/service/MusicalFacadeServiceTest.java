@@ -1,21 +1,5 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.actor.model.Gender;
 import com.prgrms.be.intermark.domain.actor.repository.ActorRepository;
@@ -29,10 +13,26 @@ import com.prgrms.be.intermark.domain.seat.model.Seat;
 import com.prgrms.be.intermark.domain.seat.repository.SeatRepository;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.stadium.repository.StadiumRepository;
-import com.prgrms.be.intermark.domain.user.Social;
 import com.prgrms.be.intermark.domain.user.User;
-import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
+import com.prgrms.be.intermark.domain.util.ActorProvider;
+import com.prgrms.be.intermark.domain.util.SeatProvider;
+import com.prgrms.be.intermark.domain.util.StadiumProvider;
+import com.prgrms.be.intermark.domain.util.UserProvider;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -53,53 +53,15 @@ class MusicalFacadeServiceTest {
 	@Autowired
 	private ActorRepository actorRepository;
 
-	private User user;
-	private Stadium stadium;
-	private Seat seat1;
-	private Seat seat2;
-	private Actor actor1;
-	private Actor actor2;
+	private final User user = UserProvider.createUser();
+	private final Stadium stadium = StadiumProvider.createStadium();
+	private final Seat seat1 = SeatProvider.createSeat("A", 1, stadium);
+	private final Seat seat2 = SeatProvider.createSeat("A", 2, stadium);
+	private final Actor actor1 = ActorProvider.createActor("kwon", LocalDate.of(1997, 10, 10), Gender.MALE, "a");
+	private final Actor actor2 = ActorProvider.createActor("kong", LocalDate.of(1996, 1, 1), Gender.MALE, "b");
 
 	@BeforeEach
 	void setUp() {
-		user = User.builder()
-			.birth(LocalDate.of(1997, 10, 10))
-			.social(Social.GOOGLE)
-			.socialId("intermark")
-			.refreshToken("abcdefg")
-			.nickname("인터마크 관리자")
-			.role(UserRole.ADMIN)
-			.isDeleted(false)
-			.email("intermark@gmail.com")
-			.build();
-		stadium = Stadium.builder()
-			.name("예술의 전당")
-			.address("서울특별시")
-			.imageUrl("abcdefg")
-			.build();
-		seat1 = Seat.builder()
-			.stadium(stadium)
-			.rowNum("A")
-			.columnNum(1)
-			.build();
-		seat2 = Seat.builder()
-			.stadium(stadium)
-			.rowNum("A")
-			.columnNum(2)
-			.build();
-		actor1 = Actor.builder()
-			.birth(LocalDate.of(1997, 10, 10))
-			.name("kwon")
-			.gender(Gender.MALE)
-			.profileImageUrl("kwon/image")
-			.build();
-		actor2 = Actor.builder()
-			.birth(LocalDate.of(1996,1, 1))
-			.name("kong")
-			.gender(Gender.MALE)
-			.profileImageUrl("kong/image")
-			.build();
-
 		userRepository.save(user);
 		stadiumRepository.save(stadium);
 		seatRepository.save(seat1);
@@ -109,8 +71,8 @@ class MusicalFacadeServiceTest {
 	}
 
 	@Test
-	@DisplayName("create - 뮤지컬 등록 데이터를 입력하면 등록에 성공한다. - 성공")
-	void create() throws IOException {
+	@DisplayName("성공 - 정상 뮤지컬 등록 데이터를 입력하면 등록에 성공한다. - create")
+	void createSuccess() throws IOException {
 		// given
 		MusicalSeatGradeCreateRequestDTO seatGradeVIP = MusicalSeatGradeCreateRequestDTO.builder()
 			.seatGradeName("VIP")
@@ -163,7 +125,7 @@ class MusicalFacadeServiceTest {
 	}
 
 	private MockMultipartFile getMockMultipartFile(String fileName, String extension, String path) throws IOException {
-		FileInputStream fileInputStream = new FileInputStream(new File(path));
+		FileInputStream fileInputStream = new FileInputStream(path);
 		return new MockMultipartFile(fileName, fileName + "." + extension, extension, fileInputStream);
 	}
 
