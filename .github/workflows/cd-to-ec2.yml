@@ -35,14 +35,12 @@ jobs:
       -
         name: Build Docker Image
         run: |
-          docker build -t $IMAGE_NAME:$(git describe --tags) .
+          docker build -t ${{secrets.DOCKER_REPO}}:${{ GITHUB_SHA }} .
       -
         name: Push Docker Image
         run: |
-          IMAGE_NAME=
-          IMAGE_TAG=
-          docker push ${{secrets.DOCKER_REPO}}:$(git describe --tags)
-          docker tag ${{secrets.DOCKER_REPO}}:$(git describe --tags) ${{secrets.DOCKER_REPO}}:latest
+          docker push ${{secrets.DOCKER_REPO}}:${{ GITHUB_SHA }}
+          docker tag ${{secrets.DOCKER_REPO}}:${{ GITHUB_SHA }} ${{secrets.DOCKER_REPO}}:latest
           docker push ${{secrets.DOCKER_REPO}}:latest
       -
         name: move docker-compose to ec2
