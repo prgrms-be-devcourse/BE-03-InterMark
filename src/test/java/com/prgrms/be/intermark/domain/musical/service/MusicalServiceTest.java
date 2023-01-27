@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -79,32 +80,10 @@ class MusicalServiceTest {
             verify(musicalRepository).save(musical);
         }
 
-        @Test
-        @DisplayName("실패 - 뮤지컬 제목 값이 입력되지 않으면 저장에 실패한다")
-        void saveFailByNoTitle() {
-            // given
-            Musical musical = Musical.builder()
-                    .viewRating(ViewRating.ADULT)
-                    .genre(Genre.DRAMA)
-                    .description("설명")
-                    .startDate(LocalDate.of(2023, 1, 1))
-                    .endDate(LocalDate.of(2023, 2, 1))
-                    .runningTime(60)
-                    .thumbnailUrl(thumbnailUrl)
-                    .stadium(stadium)
-                    .user(user)
-                    .build();
-            when(musicalRepository.save(musical)).thenThrow(ConstraintViolationException.class);
-
-            // when & then
-            Assertions.assertThatThrownBy(() -> musicalService.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
-            verify(musicalRepository).save(musical);
-        }
-
         @ParameterizedTest
-        @ValueSource(strings = {"", " "})
-        @DisplayName("실패 - 뮤지컬 제목 값에 공백이나 빈 값이 입력되면 저장에 실패한다")
+        @NullAndEmptySource
+        @ValueSource(strings = {"  "})
+        @DisplayName("실패 - 뮤지컬 제목 값에 null, 빈 값, 공백이 입력되면 저장에 실패한다")
         void saveFailByWrongTitle(String wrongTitle) {
             // given
             Musical musical = Musical.builder()
@@ -127,32 +106,10 @@ class MusicalServiceTest {
             verify(musicalRepository).save(musical);
         }
 
-        @Test
-        @DisplayName("실패 - 뮤지컬 썸네일 URL 값이 입력되지 않으면 저장에 실패한다")
-        void saveFailByNoThumbnailUrl() {
-            // given
-            Musical musical = Musical.builder()
-                    .title("제목")
-                    .viewRating(ViewRating.ADULT)
-                    .genre(Genre.DRAMA)
-                    .description("설명")
-                    .startDate(LocalDate.of(2023, 1, 1))
-                    .endDate(LocalDate.of(2023, 2, 1))
-                    .runningTime(60)
-                    .stadium(stadium)
-                    .user(user)
-                    .build();
-            when(musicalRepository.save(musical)).thenThrow(ConstraintViolationException.class);
-
-            // when & then
-            Assertions.assertThatThrownBy(() -> musicalService.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
-            verify(musicalRepository).save(musical);
-        }
-
         @ParameterizedTest
-        @ValueSource(strings = {"", " "})
-        @DisplayName("실패 - 뮤지컬 썸네일 URL 값에 공백이나 빈 값이 입력되면 저장에 실패한다")
+        @NullAndEmptySource
+        @ValueSource(strings = {"  "})
+        @DisplayName("실패 - 뮤지컬 썸네일 URL 값에 null, 빈 값, 공백이 입력되면 저장에 실패한다")
         void saveFailByWrongThumbnailUrl(String wrongUrl) {
             // given
             Musical musical = Musical.builder()
@@ -315,7 +272,7 @@ class MusicalServiceTest {
 
         @ParameterizedTest
         @ValueSource(ints = {-1, -100, 0})
-        @DisplayName("실패 - 뮤지컬 상영시간 값이 음수나 0 이 입력되면 저장에 실패한다")
+        @DisplayName("실패 - 뮤지컬 상영시간 값에 음수나 0 이 입력되면 저장에 실패한다")
         void saveFailByWrongRunningTime(int wrongRunningTime) {
             // given
             Musical musical = Musical.builder()
