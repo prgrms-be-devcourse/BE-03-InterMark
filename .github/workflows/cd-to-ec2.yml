@@ -56,6 +56,7 @@ jobs:
           port: ${{ secrets.PORT }}
           source: "docker-compose.yml"
           target: "intermark"
+          overwrite: true
       -
         name: deploy to ec2
         uses: appleboy/ssh-action@v0.1.7
@@ -65,7 +66,7 @@ jobs:
           key: ${{secrets.SSH_KEY}}
           script: |
             cd ./intermark
-            mkdir ./env & ${{secrets.SPRING_ENV}} > ./env/spring.env & ${{secrets.DB_ENV}} > ./env/db.env
+            mkdir ./env & echo ${{secrets.SPRING_ENV}} > ./env/spring.env & echo ${{secrets.DB_ENV}} > ./env/db.env
             docker-compose stop
             docker-compose rm ${{secrets.SERVICES_EXCEPT_DB}}
             docker-compose up -d
