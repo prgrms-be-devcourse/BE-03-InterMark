@@ -22,6 +22,7 @@ jobs:
           distribution: 'corretto'
       - name: set up environment Variable
         run: |
+          mkdir -p env
           echo "${{secrets.SPRING_ENV_LOCAL}}" >> env/spring-local.env
           echo "${{secrets.DB_ENV}}" >> env/db.env
       - name: set up Mysql docker container
