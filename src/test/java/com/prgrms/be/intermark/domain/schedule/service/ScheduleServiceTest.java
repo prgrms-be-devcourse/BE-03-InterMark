@@ -194,7 +194,7 @@ class ScheduleServiceTest {
     @Test
     @DisplayName("Fail - 해당 스케줄이 존재하지 않으면 EntityNotFoundException 발생")
     @Transactional
-    void notExistedScheduleFail() {
+    void notExistedScheduleOnUpdateFail() {
         // given
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         Schedule schedule = Schedule.builder()
@@ -248,6 +248,46 @@ class ScheduleServiceTest {
                 scheduleUpdateRequestDTO.getEndTime(schedule.getMusical()),
                 schedule.getMusical().getStadium()
         );
+    }
+
+    @Test
+    @DisplayName("Success - 스케줄을 삭제하면 schedule.isDeleted 값 변경")
+    @Transactional
+    void deleteScheduleSuccess() {
+        // given
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Schedule schedule = Schedule.builder()
+                .startTime(LocalDateTime.parse("2022-12-31 11:00", formatter))
+                .endTime(LocalDateTime.parse("2022-12-31 12:20", formatter))
+                .musical(musical)
+                .build();
+
+        when(scheduleRepository.findById(schedule.getId())).thenReturn(Optional.of(schedule));
+
+        // when
+        scheduleService.deleteSchedule(schedule.getId());
+
+        // then
+        verify(scheduleRepository).findById(schedule.getId());
+        assertThat(schedule.isDeleted()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("Fail - 스케줄이 존재하지 않으면 EntityNotFoundException 발생")
+    @Transactional
+    void notExistedScheduleOnDeleteFail() {
+        // given
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Schedule schedule = Schedule.builder()
+                .startTime(LocalDateTime.parse("2022-12-31 11:00", formatter))
+                .endTime(LocalDateTime.parse("2022-12-31 12:20", formatter))
+                .musical(musical)
+                .build();
+
+        // when - then
+        assertThatThrownBy(() -> scheduleService.deleteSchedule(schedule.getId()))
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 스케줄이 존재하지 않습니다.");
     }
 
 }
