@@ -133,7 +133,7 @@ class UserControllerTest {
                         .role(UserRole.ROLE_USER)
                         .nickname("이자영").email("example6@gmail.com")
                         .build()), request, 6);
-        PageResponseDTO<User, UserInfoResponseDTO> responseDTOPageResponseDTO = new PageResponseDTO<>(users, UserInfoResponseDTO::from, PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
+        PageResponseDTO<User, UserInfoResponseDTO> responseDTOPageResponseDTO = new PageResponseDTO<>(users, UserInfoResponseDTO::from, PageListIndexSize.USER_LIST_INDEX_SIZE);
         // when
         when(pageService.getPageRequest(any(PageRequest.class), anyInt()))
                 .thenReturn(request);
