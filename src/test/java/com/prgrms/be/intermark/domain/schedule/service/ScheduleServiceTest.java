@@ -6,6 +6,7 @@ import com.prgrms.be.intermark.domain.musical.model.ViewRating;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.musical_seat.repository.MusicalSeatRepository;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -149,4 +152,102 @@ class ScheduleServiceTest {
                 scheduleCreateRequestDTO.getEndTime(musical),
                 stadium);
     }
+
+    @Test
+    @DisplayName("Success - 새로운 시작시간을 입력하면 스케줄 수정")
+    @Transactional
+    void updateScheduleSuccess() {
+        // given
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Schedule schedule = Schedule.builder()
+                .startTime(LocalDateTime.parse("2022-12-31 11:00", formatter))
+                .endTime(LocalDateTime.parse("2022-12-31 12:20", formatter))
+                .musical(musical)
+                .build();
+
+        ScheduleUpdateRequestDTO scheduleUpdateRequestDTO = ScheduleUpdateRequestDTO.builder()
+                .startTime("2022-12-31 21:00").build();
+
+        when(scheduleRepository.findById(schedule.getId())).thenReturn(Optional.of(schedule));
+        when(scheduleRepository.getDuplicatedScheduleExceptById(
+                schedule.getId(),
+                scheduleUpdateRequestDTO.getStartTime(),
+                scheduleUpdateRequestDTO.getEndTime(schedule.getMusical()),
+                schedule.getMusical().getStadium()
+        )).thenReturn(0);
+
+        // when
+        scheduleService.updateSchedule(schedule.getId(), scheduleUpdateRequestDTO);
+
+        // then
+        verify(scheduleRepository).findById(schedule.getId());
+        verify(scheduleRepository).getDuplicatedScheduleExceptById(
+                schedule.getId(),
+                scheduleUpdateRequestDTO.getStartTime(),
+                scheduleUpdateRequestDTO.getEndTime(schedule.getMusical()),
+                schedule.getMusical().getStadium()
+        );
+
+        assertThat(schedule.getStartTime()).isEqualTo(scheduleUpdateRequestDTO.getStartTime());
+    }
+
+    @Test
+    @DisplayName("Fail - 해당 스케줄이 존재하지 않으면 EntityNotFoundException 발생")
+    @Transactional
+    void notExistedScheduleFail() {
+        // given
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Schedule schedule = Schedule.builder()
+                .startTime(LocalDateTime.parse("2022-12-31 11:00", formatter))
+                .endTime(LocalDateTime.parse("2022-12-31 12:20", formatter))
+                .musical(musical)
+                .build();
+
+        ScheduleUpdateRequestDTO scheduleUpdateRequestDTO = ScheduleUpdateRequestDTO.builder()
+                .startTime("2022-12-31 21:00").build();
+
+        // when - then
+        assertThatThrownBy(() -> scheduleService.updateSchedule(schedule.getId(), scheduleUpdateRequestDTO))
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 스케줄이 존재하지 않습니다.");
+    }
+
+
+    @Test
+    @DisplayName("Fail - 겹치는 스케줄이 있으면 IllegalStateException 발생")
+    @Transactional
+    void duplicatedNewScheduleFail() {
+        // given
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Schedule schedule = Schedule.builder()
+                .startTime(LocalDateTime.parse("2022-12-31 11:00", formatter))
+                .endTime(LocalDateTime.parse("2022-12-31 12:20", formatter))
+                .musical(musical)
+                .build();
+
+        ScheduleUpdateRequestDTO scheduleUpdateRequestDTO = ScheduleUpdateRequestDTO.builder()
+                .startTime("2022-12-31 21:00").build();
+
+        when(scheduleRepository.findById(schedule.getId())).thenReturn(Optional.of(schedule));
+        when(scheduleRepository.getDuplicatedScheduleExceptById(
+                schedule.getId(),
+                scheduleUpdateRequestDTO.getStartTime(),
+                scheduleUpdateRequestDTO.getEndTime(schedule.getMusical()),
+                schedule.getMusical().getStadium()
+        )).thenReturn(1);
+
+        // when - then
+        assertThatThrownBy(() -> scheduleService.updateSchedule(schedule.getId(), scheduleUpdateRequestDTO))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("해당 시작 시간에 이미 다른 스케줄이 존재합니다.");
+
+        verify(scheduleRepository).findById(schedule.getId());
+        verify(scheduleRepository).getDuplicatedScheduleExceptById(
+                schedule.getId(),
+                scheduleUpdateRequestDTO.getStartTime(),
+                scheduleUpdateRequestDTO.getEndTime(schedule.getMusical()),
+                schedule.getMusical().getStadium()
+        );
+    }
+
 }
