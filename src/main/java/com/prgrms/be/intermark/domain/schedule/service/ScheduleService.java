@@ -1,17 +1,7 @@
 package com.prgrms.be.intermark.domain.schedule.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import javax.persistence.EntityNotFoundException;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
@@ -25,8 +15,15 @@ import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
 import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTOs;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service

@@ -1,23 +1,11 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
-import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.common.service.UploadImageServiceImpl;
 import com.prgrms.be.intermark.domain.casting.service.CastingService;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.*;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical_seat.service.MusicalSeatService;
 import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
@@ -28,8 +16,14 @@ import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.service.TicketService;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.service.UserService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +50,7 @@ public class MusicalFacadeService {
 
 		ImageResponseDTO thumbnailInfo = uploadImageServiceImpl.uploadImage(thumbnail);
 		Stadium stadium = stadiumService.findById(createRequestDto.stadiumId());
-		User manager = userService.findById(createRequestDto.managerId());
+		User manager = userService.findByIdForFasade(createRequestDto.managerId());
 		Musical savedMusical = musicalService.save(createdMusical, thumbnailInfo.path(), stadium, manager);
 
 		List<ImageResponseDTO> detailImagesInfo = uploadImageServiceImpl.uploadImages(detailImages);
@@ -87,7 +81,7 @@ public class MusicalFacadeService {
 
 		ImageResponseDTO thumbnailInfo = uploadImageServiceImpl.uploadImage(thumbnailImage);
 		Stadium stadium = stadiumService.findById(musicalSeatUpdateRequestDTO.stadiumId());
-		User manager = userService.findById(musicalSeatUpdateRequestDTO.managerId());
+		User manager = userService.findByIdForFasade(musicalSeatUpdateRequestDTO.managerId());
 
 		seatGradeService.update(musicalSeatUpdateRequestDTO.seatGrades(), musical);
 		musicalSeatService.update(musicalSeatUpdateRequestDTO.seats(), musicalSeatUpdateRequestDTO.stadiumId(), musical);
