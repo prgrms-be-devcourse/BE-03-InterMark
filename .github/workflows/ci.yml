@@ -48,11 +48,13 @@ jobs:
           min-coverage-changed-files: 0
           update-comment: true
           title: "현재 코드 커버리지 상황"
-      - name: Publish JaCoCo report
+      - name: move JaCoCo report
         run: |
           echo "publishing jacoco report"
           mkdir -p report
           mv build/reports/jacoco/test/html/* report/
-        artifact:
+      - name: Upload report
+        uses: actions/upload-artifact@v2
+        with:
           name: jacoco-report
           path: report
