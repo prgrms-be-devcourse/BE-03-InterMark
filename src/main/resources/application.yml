@@ -34,7 +34,7 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-# 로그를 debug 레벨로 보고 싶다면 아래의 주석을 해재해 주세
+# 로그를 debug 레벨로 보고 싶다면 아래의 주석을 해재해 주세요 
 #logging:
 #  level:
 #    org.springframework: debug
@@ -51,7 +51,7 @@ cloud:
         name: ${BUCKET_NAME}
         url: ${BUCKET_URL}
     region:
-      static: ap-northeast-요2
+      static: ap-northeast-2
     stack:
       auto: false
 
