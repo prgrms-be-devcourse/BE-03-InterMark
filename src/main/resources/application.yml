@@ -1,7 +1,7 @@
 spring:
 # .env 파일을 통해 환경변수를 설정해주고 싶다면 아래의 주석을 해재해 주세요
 #  config:
-#    import: optional:file:.env[.properties]
+#    import: optional:file:env/spring.env[.properties]
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DB_URL}
@@ -15,10 +15,7 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: profile,email
-  jwt:
-    secret:
-      access: ${JWT_ACCESS_KEY}
-      refresh: ${JWT_REFRESH_KEY}
+
 
   jpa:
     hibernate:
@@ -27,14 +24,19 @@ spring:
       hibernate:
         show-sql: true
         format_sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
 
   servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
-
-# 로그를 debug 레벨로 보고 싶다면 아래의 주석을 해재해 주세요 
+jwt:
+  secret:
+    access: ${JWT_ACCESS_KEY}
+    refresh: ${JWT_REFRESH_KEY}
+# 로그를 debug 레벨로 보고 싶다면 아래의 주석을 해재해 주세
 #logging:
 #  level:
 #    org.springframework: debug
@@ -44,8 +46,8 @@ spring:
 cloud:
   aws:
     credentials:
-      access-key: ${ACCESS_KEY}
-      secret-key: ${SECRET_KEY}
+      accessKey: ${ACCESS_KEY}
+      secretKey: ${SECRET_KEY}
     s3:
       bucket:
         name: ${BUCKET_NAME}
@@ -59,4 +61,5 @@ local:
   images:
     path: ${LOCAL_STORAGE}
 
-
+file:
+  images: ${LOCAL_STORAGE}
