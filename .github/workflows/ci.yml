@@ -2,7 +2,7 @@ name: ci
 
 on: # 이벤트 트리거
   push:
-    branches: [ "develop" ]
+    branches: [ "develop", "fix/#136" ]
   pull_request:
 
 permissions:
@@ -20,6 +20,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
+      - name: set up environment Variable to GITHUB_ENV
+        run: |
+          echo "${{SPRING_ENV_LOCAL}}" >> env/spring-local.env
+          echo "${{DB_ENV}}" >> env/db.env
+      - name: set up Mysql docker container
+        run: docker run --rm -d -it -p 3306:3306 --env-file=env/db.env mysql:8.0.31
       - name: Setup Gradle permission
         run: chmod +x ./gradlew
       - name: Setup Gradle
@@ -31,4 +37,21 @@ jobs:
         if: always()
         with:
           junit_files: '**/build/test-results/test/TEST-*.xml'
-          
+
+      - name: Add coverage comment to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.3
+        with:
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 0
+          min-coverage-changed-files: 0
+          update-comment: true
+          title: "현재 코드 커버리지 상황"
+      - name: Publish JaCoCo report
+        run: |
+          echo "publishing jacoco report"
+          mkdir -p report
+          mv build/reports/jacoco/test/html/* report/
+        artifact:
+          path: report
