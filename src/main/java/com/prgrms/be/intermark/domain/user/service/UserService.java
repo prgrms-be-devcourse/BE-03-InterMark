@@ -91,6 +91,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public User findByIdForFasade(Long userId) {
+        return userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
+    }
+
+    @Transactional(readOnly = true)
     public UserInfoResponseDTO findById(Long userId) {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
@@ -102,7 +108,7 @@ public class UserService {
         Page<User> allUserPage = userRepository.findByIsDeletedFalse(pageable);
         return new PageResponseDTO<>(allUserPage,
                 UserInfoResponseDTO::from,
-                PageListIndexSize.ADMIN_PERFORMANCE_LIST_INDEX_SIZE);
+                PageListIndexSize.USER_LIST_INDEX_SIZE);
     }
 
     public long countAllUser() {
