@@ -8,10 +8,8 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,11 +59,5 @@ public class OAuthController {
 
         String newAccessToken = tokenProvider.createAceessToken(userId, role);
         return ResponseEntity.ok(new TokenResponseDTO(newAccessToken));
-    }
-
-    @ExceptionHandler(value = EntityNotFoundException.class)
-    public ResponseEntity<Object> entityNotFoundExceptionHandler(EntityNotFoundException exception) {
-        return ResponseEntity.badRequest()
-                .body("존재하지 않는 유저입니다.");
     }
 }
