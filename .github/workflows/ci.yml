@@ -20,10 +20,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
-      - name: set up environment Variable to GITHUB_ENV
+      - name: set up environment Variable
         run: |
-          echo "${{SPRING_ENV_LOCAL}}" >> env/spring-local.env
-          echo "${{DB_ENV}}" >> env/db.env
+          echo "${{secrets.SPRING_ENV_LOCAL}}" >> env/spring-local.env
+          echo "${{secrets.DB_ENV}}" >> env/db.env
       - name: set up Mysql docker container
         run: docker run --rm -d -it -p 3306:3306 --env-file=env/db.env mysql:8.0.31
       - name: Setup Gradle permission
@@ -54,4 +54,5 @@ jobs:
           mkdir -p report
           mv build/reports/jacoco/test/html/* report/
         artifact:
+          name: jacoco-report
           path: report
