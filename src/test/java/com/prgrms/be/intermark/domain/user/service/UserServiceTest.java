@@ -58,7 +58,7 @@ class UserServiceTest {
             // then
             verify(userRepository).findByIdAndIsDeletedFalse(anyLong());
             assertAll(
-                    () -> assertThat(findUser.username()).isEqualTo(user.getNickname()),
+                    () -> assertThat(findUser.nickname()).isEqualTo(user.getNickname()),
                     () -> assertThat(findUser.email()).isEqualTo(user.getEmail())
             );
         }
