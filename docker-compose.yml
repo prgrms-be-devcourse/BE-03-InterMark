@@ -1,0 +1,27 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0.31
+    ports:
+      - 3306:3306
+    env_file:
+      - env/db.env
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - intermark:/var/lib/mysql
+    restart: always
+  backend:
+    image: ghcr.io/park-se-jun/intermark:latest
+    depends_on:
+      - mysql
+    env_file:
+      - env/spring.env
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - 8080:8080
+    restart: always
+
+volumes:
+  intermark:

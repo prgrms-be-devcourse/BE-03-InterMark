@@ -105,6 +105,7 @@ class MusicalControllerTest {
             .seats(List.of(musicalSeatVIP, musicalSeatR))
             .build();
 
+    @WithMockUser(username = "1", roles = {"USER"}, password = "")
     @Test
     @DisplayName("성공 - 정상적인 뮤지컬 값이 들어오면 등록에 성공한다 - createMusical")
     void createMusicalSuccess() throws Exception {
@@ -151,13 +152,12 @@ class MusicalControllerTest {
                                 partWithName("thumbnail").description("뮤지컬 썸네일 이미지"),
                                 partWithName("detailImages").description("뮤지컬 상세 이미지 목록")
                         ),
-
                         responseHeaders(
                                 headerWithName("Location").description("생성된 뮤지컬 조회가 가능한 URL"))
                 ));
     }
 
-    @WithMockUser(username = "1",roles = {"USER"},password = "")
+    @WithMockUser(username = "1", roles = {"USER"}, password = "")
     @Test
     @DisplayName("Success - 뮤지컬 리스트 조회 시 뮤지컬 정보 리스트로 반환 - getAllMusicals")
     void getAllMusicalsSuccess() throws Exception {

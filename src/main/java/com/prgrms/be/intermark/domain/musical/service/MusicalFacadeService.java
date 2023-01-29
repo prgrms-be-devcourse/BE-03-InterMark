@@ -3,7 +3,7 @@ package com.prgrms.be.intermark.domain.musical.service;
 import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
-import com.prgrms.be.intermark.common.service.UploadImageService;
+import com.prgrms.be.intermark.common.service.ImageUploadService;
 import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.actor.service.ActorService;
 import com.prgrms.be.intermark.domain.casting.model.Casting;
@@ -37,18 +37,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MusicalFacadeService {
 
-    private final MusicalService musicalService;
-    private final StadiumService stadiumService;
-    private final UserService userService;
-    private final SeatGradeService seatGradeService;
-    private final UploadImageService uploadImageService;
-    private final MusicalDetailImageService musicalDetailImageService;
-    private final MusicalSeatService musicalSeatService;
-    private final CastingService castingService;
-    private final TicketService ticketService;
-    private final ScheduleService scheduleService;
-    private final SeatService seatService;
-    private final ActorService actorService;
+	private static final String THUMBNAIL_PATH = "musical/thumbnail/";
+	private static final String DETAIL_IMAGES_PATH = "musical/detailImages/";
+
+	private final MusicalService musicalService;
+	private final StadiumService stadiumService;
+	private final UserService userService;
+	private final SeatGradeService seatGradeService;
+	private final ImageUploadService imageUploadService;
+	private final MusicalDetailImageService musicalDetailImageService;
+	private final MusicalSeatService musicalSeatService;
+	private final CastingService castingService;
+	private final TicketService ticketService;
+	private final ScheduleService scheduleService;
+	private final SeatService seatService;
+	private final ActorService actorService;
 
     @Transactional
     public Long create(
@@ -58,13 +61,13 @@ public class MusicalFacadeService {
     ) {
         Musical createdMusical = createRequestDto.toEntity();
 
-        ImageResponseDTO thumbnailInfo = uploadImageService.uploadImage(thumbnail);
+        ImageResponseDTO thumbnailInfo = imageUploadService.uploadImage(thumbnail,THUMBNAIL_PATH);
         Stadium stadium = stadiumService.findById(createRequestDto.stadiumId());
         User manager = userService.findByIdForFacade(createRequestDto.managerId());
         setMusicalAssociation(createdMusical, thumbnailInfo, stadium, manager);
         Musical savedMusical = musicalService.save(createdMusical);
 
-        List<ImageResponseDTO> detailImagesInfo = uploadImageService.uploadImages(detailImages);
+        List<ImageResponseDTO> detailImagesInfo = imageUploadService.uploadImages(detailImages,DETAIL_IMAGES_PATH);
         List<MusicalDetailImage> musicalDetailImages = setMusicalDetailImagesAssociation(detailImagesInfo, savedMusical);
         musicalDetailImageService.save(musicalDetailImages);
 
@@ -97,7 +100,7 @@ public class MusicalFacadeService {
             throw new IllegalArgumentException("이미 예약된 뮤지컬입니다.");
         }
 
-        ImageResponseDTO thumbnailInfo = uploadImageService.uploadImage(thumbnailImage);
+        ImageResponseDTO thumbnailInfo = imageUploadService.uploadImage(thumbnailImage,THUMBNAIL_PATH);
         Stadium stadium = stadiumService.findById(musicalSeatUpdateRequestDTO.stadiumId());
         User manager = userService.findByIdForFacade(musicalSeatUpdateRequestDTO.managerId());
 
@@ -105,7 +108,7 @@ public class MusicalFacadeService {
         musicalSeatService.update(musicalSeatUpdateRequestDTO.seats(), musicalSeatUpdateRequestDTO.stadiumId(), musical);
         castingService.update(musicalSeatUpdateRequestDTO.actors(), musical);
 
-        List<ImageResponseDTO> detailImagesInfo = uploadImageService.uploadImages(detailImages);
+        List<ImageResponseDTO> detailImagesInfo = imageUploadService.uploadImages(detailImages, DETAIL_IMAGES_PATH);
         musicalDetailImageService.update(detailImagesInfo, musical);
         musicalService.updateMusical(musical, musicalSeatUpdateRequestDTO, thumbnailInfo.path(), stadium, manager);
     }
