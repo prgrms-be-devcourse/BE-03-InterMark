@@ -72,7 +72,6 @@ class ScheduleServiceTest {
 
     @Test
     @DisplayName("Success - 새로운 스케줄을 등록하면 해당 스케줄 저장")
-    @Transactional
     void createScheduleSuccess() {
         // given
         ScheduleCreateRequestDTO scheduleCreateRequestDTO = ScheduleCreateRequestDTO.builder()
@@ -107,7 +106,6 @@ class ScheduleServiceTest {
 
     @Test
     @DisplayName("Fail - 해당 뮤지컬이 없으면 EntityNotFoundException 발생")
-    @Transactional
     void notExistedMusicalFail() {
         // given
         ScheduleCreateRequestDTO scheduleCreateRequestDTO = ScheduleCreateRequestDTO.builder()
@@ -123,7 +121,6 @@ class ScheduleServiceTest {
 
     @Test
     @DisplayName("Fail - 겹치는 스케줄이 있으면 IllegalStateException 발생")
-    @Transactional
     void duplicatedScheduleFail() {
         // given
         ScheduleCreateRequestDTO scheduleCreateRequestDTO = ScheduleCreateRequestDTO.builder()
@@ -152,7 +149,6 @@ class ScheduleServiceTest {
 
     @Test
     @DisplayName("Success - 새로운 시작시간을 입력하면 스케줄 수정")
-    @Transactional
     void updateScheduleSuccess() {
         // given
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -190,7 +186,6 @@ class ScheduleServiceTest {
 
     @Test
     @DisplayName("Fail - 해당 스케줄이 존재하지 않으면 EntityNotFoundException 발생")
-    @Transactional
     void notExistedScheduleOnUpdateFail() {
         // given
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -212,7 +207,6 @@ class ScheduleServiceTest {
 
     @Test
     @DisplayName("Fail - 겹치는 스케줄이 있으면 IllegalStateException 발생")
-    @Transactional
     void duplicatedNewScheduleFail() {
         // given
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -249,7 +243,6 @@ class ScheduleServiceTest {
 
     @Test
     @DisplayName("Success - 스케줄을 삭제하면 schedule.isDeleted 값 변경")
-    @Transactional
     void deleteScheduleSuccess() {
         // given
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -271,7 +264,6 @@ class ScheduleServiceTest {
 
     @Test
     @DisplayName("Fail - 스케줄이 존재하지 않으면 EntityNotFoundException 발생")
-    @Transactional
     void notExistedScheduleOnDeleteFail() {
         // given
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
