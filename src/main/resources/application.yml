@@ -1,10 +1,10 @@
 spring:
 # .env 파일을 통해 환경변수를 설정해주고 싶다면 아래의 주석을 해재해 주세요
-#  config:
-#    import: optional:file:env/spring.env[.properties]
+  config:
+    import: optional:file:env/spring-local.env[.properties]
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL}
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DATABASE}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   security:
@@ -19,7 +19,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         show-sql: true
@@ -63,3 +63,5 @@ local:
 
 file:
   images: ${LOCAL_STORAGE}
+
+

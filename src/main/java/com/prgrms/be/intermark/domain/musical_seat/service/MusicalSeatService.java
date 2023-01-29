@@ -73,4 +73,10 @@ public class MusicalSeatService {
 			musicalSeatRepository.save(createdMusicalSeat);
 		});
 	}
+
+	@Transactional
+	public void deleteAllByMusical(Musical musical) {
+		musicalSeatRepository.findByMusicalAndIsDeletedIsFalse(musical)
+			.forEach(MusicalSeat::deleteMusicalSeat);
+	}
 }

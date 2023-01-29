@@ -1,11 +1,9 @@
 package com.prgrms.be.intermark.common.page;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
-
+import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
+import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntity;
+import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntityDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,10 +12,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
-import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntity;
-import com.prgrms.be.intermark.common.page.dummyClasses.DummyEntityDTO;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class PageResponseDTOTest {
 
