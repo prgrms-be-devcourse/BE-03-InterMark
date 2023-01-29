@@ -10,7 +10,7 @@ import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
-import com.prgrms.be.intermark.domain.user.Social;
+import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import org.junit.jupiter.api.DisplayName;
@@ -51,13 +51,10 @@ class ScheduleServiceTest {
             .build();
 
     private final User user = User.builder()
-            .social(Social.GOOGLE)
+            .social(SocialType.GOOGLE)
             .socialId("1234")
-            .refreshToken("refreshToken")
             .nickname("유저")
-            .role(UserRole.ADMIN)
-            .isDeleted(false)
-            .birth(LocalDate.now())
+            .role(UserRole.ROLE_ADMIN)
             .build();
 
     private final Musical musical = Musical.builder()
