@@ -56,6 +56,9 @@ public class SeatGrade {
 	@JoinColumn(name = "musical_id", referencedColumnName = "id", nullable = false)
 	private Musical musical;
 
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted;
+
 	@OneToMany(mappedBy = "seatGrade")
 	private List<ScheduleSeat> scheduleSeats = new ArrayList<>();
 
@@ -71,6 +74,11 @@ public class SeatGrade {
 		this.name = name;
 		this.price = price;
 		this.musical = musical;
+		this.isDeleted = false;
+	}
+
+	public void deleteSeatGrade() {
+		this.isDeleted = true;
 	}
 
 	public void setMusical(Musical musical) {

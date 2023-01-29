@@ -11,13 +11,14 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "user",
-        uniqueConstraints = {@UniqueConstraint(name = "social_uk", columnNames = {"social", "social_id"})})
+        uniqueConstraints = {@UniqueConstraint(name = "social_uk", columnNames = {"social_type", "social_id"})})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User {
@@ -26,28 +27,32 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Email
+    @Column(name = "email", nullable = false, unique = true) // 일단 length 제약 없이 두기
+    private String email;
+
+    @Length(min = 2, max = 25)
     @NotBlank
+    @Column(name = "nickname", nullable = false, length = 25)
+    private String nickname;
+
+    @NotNull
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "social", nullable = false)
-    private Social social;
+    @Column(name = "social_type", nullable = false)
+    private SocialType socialType;
 
     @NotBlank
     @Column(name = "social_id", nullable = false, length = 64)
     private String socialId;
 
-    @NotBlank
-    @Column(name = "refresh_token", nullable = false, unique = true)
-    private String refreshToken;
-
-    @Length(min = 2, max = 20)
-    @NotBlank
-    @Column(name = "nickname", nullable = false, unique = true, length = 20)
-    private String nickname;
-
-    @NotBlank
+    @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false, length = 15)
     private UserRole role;
+
+    @Nullable
+    @Column(name = "refresh_token", unique = true)
+    private String refreshToken;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
@@ -56,26 +61,40 @@ public class User {
     @Column(name = "birth")
     private LocalDate birth;
 
-    @NotBlank
-    @Email
-    @Column(name = "email", nullable = false)
-    private String email;
-
     @OneToMany(mappedBy = "user")
     private List<Ticket> tickets = new ArrayList<>();
 
     @Builder
-    public User(Social social, String socialId, String refreshToken, String nickname, UserRole role, boolean isDeleted, LocalDate birth) {
-        this.social = social;
+    public User(SocialType social, String socialId, String nickname, UserRole role, String email) {
+        this.socialType = social;
         this.socialId = socialId;
-        this.refreshToken = refreshToken;
         this.nickname = nickname;
         this.role = role;
-        this.isDeleted = isDeleted;
+        this.isDeleted = false;
+        this.email = email;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setBirth(@Nullable LocalDate birth) {
         this.birth = birth;
     }
 
-    public void setBirth(LocalDate birth) {
-        this.birth = birth;
+    public String getUserRoleKey() {
+        return role.getKey();
+    }
+
+    public void deleteUser() {
+        this.isDeleted = true;
+    }
+
+    public boolean isDeleted() {
+        return this.isDeleted;
     }
 }
