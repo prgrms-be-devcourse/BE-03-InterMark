@@ -82,6 +82,10 @@ public class User {
         this.nickname = nickname;
     }
 
+    public void setBirth(@Nullable LocalDate birth) {
+        this.birth = birth;
+    }
+
     public String getUserRoleKey() {
         return role.getKey();
     }
