@@ -1,0 +1,76 @@
+name: cd
+
+on: # 이벤트 트리거
+  push:
+    branches: [ "develop" ]
+
+jobs:
+  docker-build-and-push-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      -
+        name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+      -
+        name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      -
+        name: setup Gradle permission
+        run: chmod +x gradlew
+      -
+        name: make bootJar
+        run: ./gradlew bootJar
+      -
+        name: login to ghcr
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{secrets.GHCR_USERNAME}}
+          password: ${{secrets.GHCR_TOKEN}}
+      -
+        name: Build Docker Image
+        run: |
+          COMMIT_SHA=$(git rev-parse HEAD)
+          SHORT_SHA=$(echo ${COMMIT_SHA} | cut -c1-7)
+          docker build -t ${{secrets.DOCKER_REPO}}:$SHORT_SHA .
+      -
+        name: Push Docker Image
+        run: |
+          COMMIT_SHA=$(git rev-parse HEAD)
+          SHORT_SHA=$(echo ${COMMIT_SHA} | cut -c1-7)
+          docker push ${{secrets.DOCKER_REPO}}:$SHORT_SHA
+          docker tag ${{secrets.DOCKER_REPO}}:$SHORT_SHA ${{secrets.DOCKER_REPO}}:latest
+          docker push ${{secrets.DOCKER_REPO}}:latest
+      -
+        name: move docker-compose to ec2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{secrets.SSH_KEY}}
+          port: ${{ secrets.PORT }}
+          source: "docker-compose.yml"
+          target: "intermark"
+          overwrite: true
+      -
+        name: deploy to ec2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.SSH_KEY}}
+          script: |
+            cd ./intermark
+            mkdir -p ./env & echo "${{secrets.SPRING_ENV}}" > ./env/spring.env & echo "${{secrets.DB_ENV}}" > ./env/db.env
+            docker-compose stop
+            docker-compose rm ${{secrets.SERVICES_EXCEPT_DB}}
+            docker-compose pull
+            docker-compose up -d
+                      
+        
+

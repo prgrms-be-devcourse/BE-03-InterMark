@@ -1,17 +1,15 @@
 package com.prgrms.be.intermark.common.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
-
+import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
-
-import lombok.RequiredArgsConstructor;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
