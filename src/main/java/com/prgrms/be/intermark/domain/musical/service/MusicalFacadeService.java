@@ -51,7 +51,7 @@ public class MusicalFacadeService {
     private final ActorService actorService;
 
     @Transactional
-    public MusicalCommandResponseDTO create(
+    public Long create(
             MusicalCreateRequestDTO createRequestDto,
             MultipartFile thumbnail,
             List<MultipartFile> detailImages
@@ -77,7 +77,7 @@ public class MusicalFacadeService {
         List<Casting> castings = setCastingsAssociation(createRequestDto.actorIds(), savedMusical);
         castingService.save(castings);
 
-        return MusicalCommandResponseDTO.from(savedMusical);
+        return savedMusical.getId();
     }
 
     @Transactional

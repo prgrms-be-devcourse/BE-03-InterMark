@@ -3,7 +3,6 @@ package com.prgrms.be.intermark.domain.musical.service;
 import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.actor.model.Gender;
 import com.prgrms.be.intermark.domain.actor.repository.ActorRepository;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCommandResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeCreateRequestDTO;
@@ -117,11 +116,11 @@ class MusicalFacadeServiceTest {
 			"src/test/resources/testMusicalDetailImage2.png");
 
 		// when
-		MusicalCommandResponseDTO musicalResponseDTO = musicalFacadeService.create(createRequestDTO,
-			thumbnail, List.of(detailImage1, detailImage2));
+        Long musicalId = musicalFacadeService.create(createRequestDTO,
+                thumbnail, List.of(detailImage1, detailImage2));
 
-		// then
-		assertThat(musicalResponseDTO.id()).isNotNull();
+        // then
+		assertThat(musicalId).isNotNull();
 	}
 
 	private MockMultipartFile getMockMultipartFile(String fileName, String extension, String path) throws IOException {
