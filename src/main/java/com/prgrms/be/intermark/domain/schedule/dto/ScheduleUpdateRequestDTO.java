@@ -5,10 +5,12 @@ import java.time.format.DateTimeFormatter;
 
 import javax.validation.constraints.NotNull;
 
+import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 
+@Builder
 public record ScheduleUpdateRequestDTO(@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String startTime) {
 
     public LocalDateTime toLocalDateTime(String time) {
