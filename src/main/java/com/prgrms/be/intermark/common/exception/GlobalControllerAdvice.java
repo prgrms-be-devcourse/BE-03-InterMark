@@ -1,11 +1,6 @@
 package com.prgrms.be.intermark.common.exception;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
-
+import com.prgrms.be.intermark.common.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -15,7 +10,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import com.prgrms.be.intermark.common.dto.ErrorResponse;
+import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 @RestControllerAdvice
 public class GlobalControllerAdvice {
@@ -23,54 +21,54 @@ public class GlobalControllerAdvice {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		ErrorResponse errorResponse = ErrorResponse.of(
-			HttpStatus.BAD_REQUEST,
-			e.getMessage(),
-			e.getFieldErrors(),
-			LocalDateTime.now()
+				HttpStatus.BAD_REQUEST,
+				e.getMessage(),
+				e.getFieldErrors(),
+				LocalDateTime.now()
 		);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
-		ErrorResponse errorResponse = ErrorResponse.of(
-			HttpStatus.BAD_REQUEST,
-			e.getMessage(),
-			LocalDateTime.now()
-		);
-		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-	}
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
-	@ExceptionHandler(BindException.class)
-	public ResponseEntity<ErrorResponse> handleBindException(BindException e) {
-		ErrorResponse errorResponse = ErrorResponse.of(
-			HttpStatus.BAD_REQUEST,
-			e.getMessage(),
-			e.getFieldErrors(),
-			LocalDateTime.now()
-		);
-		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-	}
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ErrorResponse> handleBindException(BindException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                e.getFieldErrors(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
-	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-		ErrorResponse errorResponse = ErrorResponse.of(
-			HttpStatus.BAD_REQUEST,
-			e.getMessage(),
-			LocalDateTime.now()
-		);
-		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-	}
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
-	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-		ErrorResponse errorResponse = ErrorResponse.of(
-			HttpStatus.METHOD_NOT_ALLOWED,
-			e.getMessage(),
-			LocalDateTime.now()
-		);
-		return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
-	}
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.METHOD_NOT_ALLOWED,
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
+    }
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {

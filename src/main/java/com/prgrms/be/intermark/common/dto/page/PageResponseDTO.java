@@ -1,12 +1,11 @@
-package com.prgrms.be.intermark.common.dto.page.dto;
+package com.prgrms.be.intermark.common.dto.page;
+
+import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
-
-import org.springframework.data.domain.Page;
-
-import lombok.Getter;
 
 @Getter
 public class PageResponseDTO<E, DTO> {
@@ -15,6 +14,8 @@ public class PageResponseDTO<E, DTO> {
     private final boolean isNext;
     private final List<Integer> nowPageNumbers;
     private final int nowPage;
+
+    // TODO : 페이지 쿼리 파라미터 너무 큰 값 들어왔을 때 가능한 마지막 페이지 포여주는 기능 추가.
 
     public PageResponseDTO(Page<E> page, Function<E, DTO> entityToDtoFunction, PageListIndexSize pageListIndexSize) {
         int startPageNumber = calculateStartPageNumber(page, pageListIndexSize);

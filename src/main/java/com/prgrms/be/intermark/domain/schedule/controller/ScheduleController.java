@@ -1,30 +1,19 @@
 package com.prgrms.be.intermark.domain.schedule.controller;
 
-import java.net.URI;
-
-import javax.validation.Valid;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleFindResponseDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
 import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTOs;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.net.URI;
 
 @RequestMapping("/api/v1/schedules")
 @RequiredArgsConstructor

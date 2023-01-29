@@ -1,6 +1,6 @@
 package com.prgrms.be.intermark.domain.musical.controller;
 
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;

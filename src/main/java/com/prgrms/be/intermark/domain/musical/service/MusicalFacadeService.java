@@ -1,8 +1,8 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
 import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
-import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.common.service.UploadImageService;
 import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.actor.service.ActorService;
@@ -60,7 +60,7 @@ public class MusicalFacadeService {
 
         ImageResponseDTO thumbnailInfo = uploadImageService.uploadImage(thumbnail);
         Stadium stadium = stadiumService.findById(createRequestDto.stadiumId());
-        User manager = userService.findById(createRequestDto.managerId());
+        User manager = userService.findByIdForFacade(createRequestDto.managerId());
         setMusicalAssociation(createdMusical, thumbnailInfo, stadium, manager);
         Musical savedMusical = musicalService.save(createdMusical);
 
@@ -99,7 +99,7 @@ public class MusicalFacadeService {
 
         ImageResponseDTO thumbnailInfo = uploadImageService.uploadImage(thumbnailImage);
         Stadium stadium = stadiumService.findById(musicalSeatUpdateRequestDTO.stadiumId());
-        User manager = userService.findById(musicalSeatUpdateRequestDTO.managerId());
+        User manager = userService.findByIdForFacade(musicalSeatUpdateRequestDTO.managerId());
 
         seatGradeService.update(musicalSeatUpdateRequestDTO.seatGrades(), musical);
         musicalSeatService.update(musicalSeatUpdateRequestDTO.seats(), musicalSeatUpdateRequestDTO.stadiumId(), musical);
