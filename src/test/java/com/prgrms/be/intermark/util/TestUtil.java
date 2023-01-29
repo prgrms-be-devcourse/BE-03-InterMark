@@ -4,7 +4,7 @@ import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
-import com.prgrms.be.intermark.domain.user.Social;
+import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 
@@ -28,17 +28,19 @@ public class TestUtil {
                 .build();
     }
 
-    public static User createUser(Social social, String socialId, String refreshToken, String nickname, UserRole role, boolean isDeleted, LocalDate birth, String email) {
-        return User.builder()
-                .social(social)
+    public static User createUser(SocialType socialType, String socialId,  String nickname, UserRole role, boolean isDeleted, LocalDate birth, String email) {
+        User user = User.builder()
+                .social(socialType)
                 .socialId(socialId)
-                .refreshToken(refreshToken)
                 .nickname(nickname)
                 .role(role)
-                .isDeleted(isDeleted)
-                .birth(birth)
                 .email(email)
                 .build();
+        if(isDeleted){
+            user.deleteUser();
+        }
+        user.setBirth(birth);
+        return user;
     }
 
 

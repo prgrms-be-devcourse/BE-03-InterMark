@@ -1,6 +1,6 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
@@ -8,7 +8,7 @@ import com.prgrms.be.intermark.domain.musical.model.ViewRating;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.stadium.repository.StadiumRepository;
-import com.prgrms.be.intermark.domain.user.Social;
+import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
@@ -48,7 +48,7 @@ class MusicalFacadeServiceTest {
     @DisplayName("Success - 뮤지컬 리스트 조회 시 뮤지컬 정보 리스트로 반환 - findAllMusicals")
     void getAllMusicalsSuccess() {
         // given
-        User user = TestUtil.createUser(Social.GOOGLE, "socialId", "refreshToken", "nickname", UserRole.ADMIN, false, LocalDate.now(), "email@naver.com");
+        User user = TestUtil.createUser(SocialType.GOOGLE, "socialId",  "nickname", UserRole.ROLE_ADMIN, false, LocalDate.now(), "email@naver.com");
         Stadium stadium = TestUtil.createStadium("name", "address", "imageUrl");
         userRepository.save(user);
         stadiumRepository.save(stadium);

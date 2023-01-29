@@ -1,7 +1,7 @@
 package com.prgrms.be.intermark.domain.musical.controller;
 
-import com.prgrms.be.intermark.common.dto.page.dto.PageListIndexSize;
-import com.prgrms.be.intermark.common.dto.page.dto.PageResponseDTO;
+import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
@@ -31,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.request.RequestDocumentation;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -51,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(MusicalController.class)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
 class MusicalControllerTest {
@@ -74,6 +75,9 @@ class MusicalControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+
+
+    @WithMockUser(username = "1",roles = {"USER"},password = "")
     @Test
     @DisplayName("Success - 뮤지컬 리스트 조회 시 뮤지컬 정보 리스트로 반환 - getAllMusicals")
     void getAllMusicalsSuccess() throws Exception {
