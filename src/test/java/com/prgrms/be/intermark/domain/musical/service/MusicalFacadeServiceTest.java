@@ -1,16 +1,18 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
+import com.prgrms.be.intermark.domain.actor.dto.ActorResponseDTO;
 import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.actor.model.Gender;
 import com.prgrms.be.intermark.domain.actor.repository.ActorRepository;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
+import com.prgrms.be.intermark.domain.casting.model.Casting;
+import com.prgrms.be.intermark.domain.casting.repository.CastingRepository;
+import com.prgrms.be.intermark.domain.musical.dto.*;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
+import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
+import com.prgrms.be.intermark.domain.musical.repository.MusicalDetailImageRepository;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.seat.model.Seat;
 import com.prgrms.be.intermark.domain.seat.repository.SeatRepository;
@@ -25,6 +27,7 @@ import com.prgrms.be.intermark.domain.util.SeatProvider;
 import com.prgrms.be.intermark.domain.util.StadiumProvider;
 import com.prgrms.be.intermark.domain.util.UserProvider;
 import com.prgrms.be.intermark.util.TestUtil;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -65,6 +69,12 @@ class MusicalFacadeServiceTest {
 
     @Autowired
     private ActorRepository actorRepository;
+
+    @Autowired
+    private CastingRepository castingRepository;
+
+    @Autowired
+    private MusicalDetailImageRepository musicalDetailImageRepository;
 
     private final User user = UserProvider.createUser();
     private final Stadium stadium = StadiumProvider.createStadium();
@@ -168,9 +178,64 @@ class MusicalFacadeServiceTest {
         }
     }
 
+    @Test
+    @DisplayName("Success - 뮤지컬 상세 조회 시 뮤지컬 정보를 반환 - findMusicalById")
+    void getMusicalSuccess() {
+        // given
+        User user = TestUtil.createUser(SocialType.GOOGLE, "socialId", "nickname", UserRole.ROLE_ADMIN, false, LocalDate.now(), "email@naver.com");
+        Stadium stadium = TestUtil.createStadium("name", "address", "imageUrl");
+        Musical musical = TestUtil.createMusical("title", "description", LocalDate.now(), LocalDate.now().plusDays(5),
+                "thumbnailUrl", ViewRating.ALL, Genre.COMEDY, 60, user, stadium);
+        MusicalDetailImage musicalDetailImage = TestUtil.createMusicalDetailImage("imageUrl", "fileName");
+        musicalDetailImage.setMusical(musical);
+        Actor actor = TestUtil.createActor("actorName", LocalDate.now(), "profileUrl", Gender.MALE);
+        Casting casting = TestUtil.createCasting(actor, musical);
+        casting.setActor(actor);
+        casting.setMusical(musical);
+
+        userRepository.save(user);
+        stadiumRepository.save(stadium);
+        musicalRepository.save(musical);
+        musicalDetailImageRepository.save(musicalDetailImage);
+        actorRepository.save(actor);
+        castingRepository.save(casting);
+
+        MusicalDetailResponseDTO answer = MusicalDetailResponseDTO.builder()
+                .musicalTitle(musical.getTitle())
+                .startDate(musical.getStartDate())
+                .endDate(musical.getEndDate())
+                .rate(musical.getViewRating())
+                .genre(musical.getGenre())
+                .thumbnailUrl(musical.getThumbnailUrl())
+                .description(musical.getDescription())
+                .runningTime(musical.getRunningTime())
+                .stadiumName(stadium.getName())
+                .actors(ActorResponseDTO.listFromCastings(List.of(casting)))
+                .images(MusicalDetailImageResponseDTO.listFrom(musical.getDetailImages()))
+                .build();
+
+        // when
+        MusicalDetailResponseDTO result = musicalFacadeService.findMusicalById(musical.getId());
+
+        // then
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(answer);
+
+    }
+
+    @Test
+    @DisplayName("Fail - 뮤지컬 상세 조회 시 존재하지 않는 뮤지컬인 경우 조회 실패 - findMusicalById")
+    void getMusicalFail() {
+        // given
+        Long notExistsMusicalId = 0L;
+
+        // when, then
+        Assertions.assertThrows(EntityNotFoundException.class, () -> musicalFacadeService.findMusicalById(notExistsMusicalId));
+    }
+
     private MockMultipartFile getMockMultipartFile(String fileName, String extension, String path) throws IOException {
         FileInputStream fileInputStream = new FileInputStream(path);
         return new MockMultipartFile(fileName, fileName + "." + extension, extension, fileInputStream);
     }
-
 }

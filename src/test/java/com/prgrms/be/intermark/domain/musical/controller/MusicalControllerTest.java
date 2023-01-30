@@ -3,16 +3,20 @@ package com.prgrms.be.intermark.domain.musical.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
+import com.prgrms.be.intermark.domain.actor.dto.ActorResponseDTO;
+import com.prgrms.be.intermark.domain.actor.model.Actor;
+import com.prgrms.be.intermark.domain.actor.model.Gender;
+import com.prgrms.be.intermark.domain.casting.model.Casting;
+import com.prgrms.be.intermark.domain.musical.dto.*;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
+import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
 import com.prgrms.be.intermark.domain.musical.service.MusicalFacadeService;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
+import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
+import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.util.TestUtil;
 import org.assertj.core.api.Assertions;
 import org.json.JSONArray;
@@ -30,6 +34,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -51,6 +56,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.responseH
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -122,7 +128,8 @@ class MusicalControllerTest {
                 .file(createRequestDto)
                 .file(thumbnail)
                 .file(detailImages1)
-                .file(detailImages2));
+                .file(detailImages2)
+                .with(csrf()));
 
         // then
         verify(musicalFacadeService).create(any(MusicalCreateRequestDTO.class), any(MultipartFile.class), anyList());
@@ -157,7 +164,7 @@ class MusicalControllerTest {
                 ));
     }
 
-    @WithMockUser(username = "1", roles = {"USER"}, password = "")
+    @WithMockUser(username = "1",roles = {"USER"},password = "")
     @Test
     @DisplayName("Success - 뮤지컬 리스트 조회 시 뮤지컬 정보 리스트로 반환 - getAllMusicals")
     void getAllMusicalsSuccess() throws Exception {
@@ -225,5 +232,83 @@ class MusicalControllerTest {
             Assertions.assertThat(result.getData().get(i).startDate()).isEqualTo(startDate);
             Assertions.assertThat(result.getData().get(i).endDate()).isEqualTo(endDate);
         }
+    }
+
+    @WithMockUser(username = "1", roles = {"USER"}, password = "")
+    @Test
+    @DisplayName("Success - 뮤지컬id로 조회 시 뮤지컬 세부 정보 반환 - getMusical")
+    void getMusicalSuccess() throws Exception {
+        // given
+        Long musicalId = 1L;
+        User user = TestUtil.createUser(SocialType.GOOGLE, "socialId", "nickname", UserRole.ROLE_ADMIN, false, LocalDate.now(), "email@naver.com");
+        Stadium stadium = TestUtil.createStadium("name", "address", "imageUrl");
+        Musical musical = TestUtil.createMusical("title", "description", LocalDate.now(), LocalDate.now().plusDays(5),
+                "thumbnailUrl", ViewRating.ALL, Genre.COMEDY, 60, user, stadium);
+        Actor actor = TestUtil.createActor("actorName", LocalDate.now(), "profileUrl", Gender.MALE);
+        Casting casting = TestUtil.createCasting(actor, musical);
+        MusicalDetailImage musicalDetailImage = TestUtil.createMusicalDetailImage("imageUrl", "fileName");
+        musicalDetailImage.setMusical(musical);
+
+        MusicalDetailResponseDTO answer = MusicalDetailResponseDTO.builder()
+                .musicalTitle(musical.getTitle())
+                .startDate(musical.getStartDate())
+                .endDate(musical.getEndDate())
+                .rate(musical.getViewRating())
+                .genre(musical.getGenre())
+                .thumbnailUrl(musical.getThumbnailUrl())
+                .description(musical.getDescription())
+                .runningTime(musical.getRunningTime())
+                .stadiumName(stadium.getName())
+                .actors(ActorResponseDTO.listFromCastings(List.of(casting)))
+                .images(MusicalDetailImageResponseDTO.listFrom(musical.getDetailImages()))
+                .build();
+
+        when(musicalFacadeService.findMusicalById(musicalId))
+                .thenReturn(answer);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/musicals/{musicalId}", musicalId));
+
+        // then
+        verify(musicalFacadeService).findMusicalById(any(Long.class));
+
+        MvcResult mvcResult = resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("musicalTitle").value(answer.musicalTitle()))
+                .andExpect(jsonPath("startDate").value(answer.startDate().toString()))
+                .andExpect(jsonPath("endDate").value(answer.endDate().toString()))
+                .andExpect(jsonPath("rate").value(answer.rate().toString()))
+                .andExpect(jsonPath("genre").value(answer.genre().toString()))
+                .andExpect(jsonPath("thumbnailUrl").value(answer.thumbnailUrl()))
+                .andExpect(jsonPath("description").value(answer.description()))
+                .andExpect(jsonPath("runningTime").value(answer.runningTime()))
+                .andExpect(jsonPath("stadiumName").value(answer.stadiumName()))
+                .andExpect(jsonPath("actors").isArray())
+                .andExpect(jsonPath("images").isArray())
+                .andExpect(jsonPath("actors[0].name").value(answer.actors().get(0).name()))
+                .andExpect(jsonPath("actors[0].profileImage").value(answer.actors().get(0).profileImage()))
+                .andExpect(jsonPath("images[0].musicalDetailImageUrl").value(answer.images().get(0).musicalDetailImageUrl()))
+                .andDo(print())
+                .andDo(document("Find Musical Detail",
+                        pathParameters(
+                                parameterWithName("musicalId").description("조회할 뮤지컬 id")
+                        ),
+                        responseFields(
+                                fieldWithPath("musicalTitle").type(JsonFieldType.STRING).description("뮤지컬 제목"),
+                                fieldWithPath("startDate").type(JsonFieldType.STRING).description("뮤지컬 시작 날짜"),
+                                fieldWithPath("endDate").type(JsonFieldType.STRING).description("뮤지컬 종료 날짜"),
+                                fieldWithPath("rate").type(JsonFieldType.STRING).description("뮤지컬 관람 등급"),
+                                fieldWithPath("genre").type(JsonFieldType.STRING).description("뮤지컬 장르"),
+                                fieldWithPath("thumbnailUrl").type(JsonFieldType.STRING).description("뮤지컬 썸네일 이미지 URL"),
+                                fieldWithPath("description").type(JsonFieldType.STRING).description("뮤지컬 설명"),
+                                fieldWithPath("runningTime").type(JsonFieldType.NUMBER).description("뮤지컬 상영시간"),
+                                fieldWithPath("stadiumName").type(JsonFieldType.STRING).description("공연장 이름"),
+                                fieldWithPath("images").type(JsonFieldType.ARRAY).description("뮤지컬 상세 이미지 리스트"),
+                                fieldWithPath("images[0].musicalDetailImageUrl").type(JsonFieldType.STRING).description("뮤지컬 상세 이미지 URL"),
+                                fieldWithPath("actors").type(JsonFieldType.ARRAY).description("배우에 대한 정보 리스트"),
+                                fieldWithPath("actors[0].name").type(JsonFieldType.STRING).description("배우 이름"),
+                                fieldWithPath("actors[0].profileImage").type(JsonFieldType.STRING).description("배우 프로필 이미지 URL")
+                        )
+                ))
+                .andReturn();
     }
 }
