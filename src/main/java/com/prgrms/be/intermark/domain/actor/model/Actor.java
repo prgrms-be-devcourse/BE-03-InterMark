@@ -31,7 +31,7 @@ public class Actor {
     @Column(name = "birth", nullable = false)
     private LocalDate birth;
 
-    @NotBlank
+    @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(name = "gender", nullable = false, length = 10)
     private Gender gender;
