@@ -118,7 +118,6 @@ class TicketServiceIntegrationTest {
         // then
         Assertions.assertThat(ticketId).isEqualTo(ticket.getId());
         Assertions.assertThat(request.userId()).isEqualTo(ticket.getUser().getId());
-        Assertions.assertThat(request.scheduleSeatId()).isEqualTo(ticket.getSchedule().getId());
     }
 
     @Test
