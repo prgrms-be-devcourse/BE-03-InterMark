@@ -89,4 +89,31 @@ class ScheduleRepositoryTest {
         assertThat(scheduleNum).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("Success - 중복되지 않는 스케줄을 등록하면 0 반환")
+    @Transactional
+    void getSchedulesNumZeroByStartTimeSuccess() {
+        // given
+        LocalDateTime startTime = LocalDateTime.now().plusMinutes(musical.getRunningTime() + 100);
+        Schedule schedule = Schedule.builder()
+                .startTime(startTime)
+                .endTime(startTime.plusMinutes(musical.getRunningTime()))
+                .musical(musical)
+                .build();
+
+        stadiumRepository.save(stadium);
+        userRepository.save(user);
+        musicalRepository.save(musical);
+        scheduleRepository.save(schedule);
+
+        // when
+        int scheduleNum = scheduleRepository.getSchedulesNumByStartTime(
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(10),
+                musical.getStadium());
+
+        // then
+        assertThat(scheduleNum).isEqualTo(0);
+    }
+
 }
