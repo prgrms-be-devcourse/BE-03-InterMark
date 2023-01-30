@@ -12,7 +12,7 @@ import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
 import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
-import com.prgrms.be.intermark.domain.user.Social;
+import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
@@ -59,7 +59,7 @@ class TicketServiceTest {
 
     @BeforeEach
     void init() {
-        user = createUser(Social.GOOGLE, "socialId", "refreshToken", "nickname", UserRole.ADMIN, false, LocalDate.now(), "email@naver.com");
+        user = createUser(SocialType.GOOGLE, "socialId", "nickname", UserRole.ROLE_ADMIN, false, LocalDate.now(), "email@naver.com");
         stadium = createStadium("name", "address", "imageUrl");
         musical = createMusical("title", "description", LocalDate.now(), LocalDate.now().plusDays(5), "thumbnailUrl", ViewRating.ALL, Genre.COMEDY, 60, user, stadium);
         seat = createSeat("A", 1, stadium);
@@ -77,7 +77,7 @@ class TicketServiceTest {
                 .scheduleSeatId(1L)
                 .build();
 
-        when(userRepository.findByIdAndIsDeletedIsFalse(request.userId()))
+        when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
         when(scheduleSeatRepository.findByScheduleSeatFetch(request.scheduleSeatId()))
                 .thenReturn(Optional.of(scheduleSeat));
@@ -88,7 +88,7 @@ class TicketServiceTest {
         ticketService.createTicket(request);
 
         // then
-        verify(userRepository).findByIdAndIsDeletedIsFalse(request.userId());
+        verify(userRepository).findByIdAndIsDeletedFalse(request.userId());
         verify(scheduleSeatRepository).findByScheduleSeatFetch(request.scheduleSeatId());
         verify(ticketRepository).save(any(Ticket.class));
         assertThat(scheduleSeat.isReserved()).isTrue();
@@ -103,7 +103,7 @@ class TicketServiceTest {
                 .scheduleSeatId(1L)
                 .build();
 
-        when(userRepository.findByIdAndIsDeletedIsFalse(request.userId()))
+        when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenThrow(EntityNotFoundException.class);
 
         // when, then
@@ -120,7 +120,7 @@ class TicketServiceTest {
                 .scheduleSeatId(1L)
                 .build();
 
-        when(userRepository.findByIdAndIsDeletedIsFalse(request.userId()))
+        when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
         when(scheduleSeatRepository.findByScheduleSeatFetch(request.userId()))
                 .thenThrow(EntityNotFoundException.class);
@@ -141,7 +141,7 @@ class TicketServiceTest {
 
         ScheduleSeat isReservedScheduleSeat = createScheduleSeat(true, seat, seatGrade, schedule);
 
-        when(userRepository.findByIdAndIsDeletedIsFalse(request.userId()))
+        when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
         when(scheduleSeatRepository.findByScheduleSeatFetch(request.scheduleSeatId()))
                 .thenReturn(Optional.of(isReservedScheduleSeat));
@@ -164,7 +164,7 @@ class TicketServiceTest {
         Schedule pastSchedule = createSchedule(LocalDateTime.now().minusHours(10), LocalDateTime.now().minusHours(8), musical);
         ScheduleSeat pastScheduleSeat = createScheduleSeat(false, seat, seatGrade, pastSchedule);
 
-        when(userRepository.findByIdAndIsDeletedIsFalse(request.userId()))
+        when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
         when(scheduleSeatRepository.findByScheduleSeatFetch(request.scheduleSeatId()))
                 .thenReturn(Optional.of(pastScheduleSeat));

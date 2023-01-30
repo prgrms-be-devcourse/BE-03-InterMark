@@ -19,7 +19,7 @@ import com.prgrms.be.intermark.domain.stadium.repository.StadiumRepository;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
 import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
-import com.prgrms.be.intermark.domain.user.Social;
+import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
@@ -83,7 +83,7 @@ class TicketServiceIntegrationTest {
 
     @BeforeEach
     void init() {
-        user = createUser(Social.GOOGLE, "socialId", "refreshToken", "nickname", UserRole.ADMIN, false, LocalDate.now(), "email@naver.com");
+        user = createUser(SocialType.GOOGLE, "socialId", "nickname", UserRole.ROLE_ADMIN, false, LocalDate.now(), "email@naver.com");
         stadium = createStadium("name", "address", "imageUrl");
         musical = createMusical("title", "description", LocalDate.now(), LocalDate.now().plusDays(5), "thumbnailUrl", ViewRating.ALL, Genre.COMEDY, 60, user, stadium);
         seat = createSeat("A", 1, stadium);

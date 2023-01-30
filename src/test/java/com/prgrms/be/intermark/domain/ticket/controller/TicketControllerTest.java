@@ -1,8 +1,6 @@
 package com.prgrms.be.intermark.domain.ticket.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.prgrms.be.intermark.domain.musical.service.MusicalFacadeService;
-import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
 import com.prgrms.be.intermark.domain.ticket.service.TicketService;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -26,12 +25,13 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.responseH
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(TicketController.class)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
 class TicketControllerTest {
@@ -42,17 +42,12 @@ class TicketControllerTest {
     @MockBean
     private TicketService ticketService;
 
-    @MockBean
-    private MusicalFacadeService musicalFacadeService;
-
-    @MockBean
-    private ScheduleService scheduleService;
-
     @Autowired
     private MockMvc mockMvc;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    @WithMockUser(username = "1", roles = {"ADMIN"}, password = "")
     @Test
     @DisplayName("Success - 예매 등록 시 created 상태 코드 반환 및 Location 에 URI 반환 - createTicket")
     void getAllMusicalsSuccess() throws Exception {
@@ -71,7 +66,7 @@ class TicketControllerTest {
         ResultActions resultActions = mockMvc.perform(
                 post("/api/v1/tickets")
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(request))
+                        .content(mapper.writeValueAsString(request)).with(csrf())
         );
 
         // then
