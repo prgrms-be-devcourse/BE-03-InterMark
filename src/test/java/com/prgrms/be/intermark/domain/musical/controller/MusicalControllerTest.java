@@ -156,6 +156,7 @@ class MusicalControllerTest {
         }
     }
 
+    @WithMockUser(username = "1", roles = {"USER"}, password = "")
     @Test
     @DisplayName("Success - 뮤지컬id로 조회 시 뮤지컬 세부 정보 반환 - getMusical")
     void getMusicalSuccess() throws Exception {
