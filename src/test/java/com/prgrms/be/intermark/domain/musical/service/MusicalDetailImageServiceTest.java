@@ -57,5 +57,22 @@ class MusicalDetailImageServiceTest {
             verify(musicalDetailImageRepository, times(musicalDetailImages.size())).save(any(MusicalDetailImage.class));
         }
 
+
+        @Test
+        @DisplayName("성공 - 해당 뮤지컬의 상세이미지를 전부 삭제한다.")
+        void deleteAllByMusicalSuccess() {
+            // given
+            List<MusicalDetailImage> musicalDetailImages = List.of(mock(MusicalDetailImage.class), mock(MusicalDetailImage.class));
+            when(musicalDetailImageRepository.findByMusicalAndIsDeletedIsFalse(musical)).thenReturn(musicalDetailImages);
+
+            // when
+            musicalDetailImageService.deleteAllByMusical(musical);
+
+            // then
+            verify(musicalDetailImageRepository).findByMusicalAndIsDeletedIsFalse(musical);
+            for (MusicalDetailImage musicalDetailImage : musicalDetailImages) {
+                verify(musicalDetailImage).deleteMusicalDetailImage();
+            }
+        }
     }
 }
