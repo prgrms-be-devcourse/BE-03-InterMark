@@ -116,4 +116,77 @@ class ScheduleRepositoryTest {
         assertThat(scheduleNum).isEqualTo(0);
     }
 
+    @Test
+    @DisplayName("Success - 중복되는 시간으로 수정하면 중복되는 스케줄 수 반환")
+    @Transactional
+    void getDuplicatedScheduleExceptByIdSuccess() {
+        // given
+        Schedule schedule1 = Schedule.builder()
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now().plusMinutes(musical.getRunningTime()))
+                .musical(musical)
+                .build();
+
+        LocalDateTime startTime = LocalDateTime.now().plusMinutes(musical.getRunningTime() + 100);
+        Schedule schedule2 = Schedule.builder()
+                .startTime(startTime)
+                .endTime(startTime.plusMinutes(musical.getRunningTime()))
+                .musical(musical)
+                .build();
+
+        stadiumRepository.save(stadium);
+        userRepository.save(user);
+        musicalRepository.save(musical);
+        scheduleRepository.save(schedule1);
+        scheduleRepository.save(schedule2);
+
+        // when
+        int scheduleNum = scheduleRepository.getDuplicatedScheduleExceptById(
+                schedule2.getId(),
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(musical.getRunningTime()),
+                stadium
+        );
+
+        // then
+        assertThat(scheduleNum).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Success - 중복되지 않는 시간으로 수정하면 0 반환")
+    @Transactional
+    void getDuplicatedScheduleZeroExceptByIdSuccess() {
+        // given
+        Schedule schedule1 = Schedule.builder()
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now().plusMinutes(musical.getRunningTime()))
+                .musical(musical)
+                .build();
+
+        LocalDateTime startTime = LocalDateTime.now().plusMinutes(musical.getRunningTime() + 100);
+        Schedule schedule2 = Schedule.builder()
+                .startTime(startTime)
+                .endTime(startTime.plusMinutes(musical.getRunningTime()))
+                .musical(musical)
+                .build();
+
+        stadiumRepository.save(stadium);
+        userRepository.save(user);
+        musicalRepository.save(musical);
+        scheduleRepository.save(schedule1);
+        scheduleRepository.save(schedule2);
+
+        // when
+        startTime = startTime.plusMinutes(100);
+        int scheduleNum = scheduleRepository.getDuplicatedScheduleExceptById(
+                schedule2.getId(),
+                startTime,
+                startTime.plusMinutes(musical.getRunningTime()),
+                stadium
+        );
+
+        // then
+        assertThat(scheduleNum).isEqualTo(0);
+    }
+
 }
