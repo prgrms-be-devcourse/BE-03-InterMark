@@ -51,6 +51,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.responseH
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -122,7 +123,8 @@ class MusicalControllerTest {
                 .file(createRequestDto)
                 .file(thumbnail)
                 .file(detailImages1)
-                .file(detailImages2));
+                .file(detailImages2)
+                .with(csrf()));
 
         // then
         verify(musicalFacadeService).create(any(MusicalCreateRequestDTO.class), any(MultipartFile.class), anyList());
