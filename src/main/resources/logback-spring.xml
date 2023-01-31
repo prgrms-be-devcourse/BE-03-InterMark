@@ -4,6 +4,7 @@
 
     <springProperty name="AWS_ACCESS_KEY" source="cloud.aws.credentials.accessKey"/>
     <springProperty name="AWS_SECRET_KEY" source="cloud.aws.credentials.secretKey"/>
+    <springProperty name ="REGION" source="cloud.aws.region.static"/>
     <property name="LOG_PATTERN"
               value="%clr(%d{yyyyMMdd HH:mm:ss.SSS}){magenta} %clr([%thread]){blue} %clr(%-5level){} %clr([%logger{0}:%line]){cyan} : %msg %n"/>
 
@@ -14,14 +15,14 @@
     </appender>
     <appender name="AWS_LOG" class="ca.pjer.logback.AwsLogsAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
+            <level>INFO</level>
         </filter>
         <layout>
             <pattern>[%thread] [%date] [%level] [%file:%line] - %msg%n</pattern>
         </layout>
         <logGroupName>InterMark</logGroupName>
         <logStreamUuidPrefix>InterMark-</logStreamUuidPrefix>
-        <logRegion>ap-northeast-2</logRegion>
+        <logRegion>${REGION}</logRegion>
         <maxBatchLogEvents>50</maxBatchLogEvents>
         <maxFlushTimeMillis>30000</maxFlushTimeMillis>
         <maxBlockTimeMillis>5000</maxBlockTimeMillis>

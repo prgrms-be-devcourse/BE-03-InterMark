@@ -5,12 +5,12 @@ import lombok.Builder;
 
 @Builder
 public record UserInfoResponseDTO(
-        String username,
+        String nickname,
         String email
 ) {
     public static UserInfoResponseDTO from(User user) {
         return UserInfoResponseDTO.builder()
-                .username(user.getNickname())
+                .nickname(user.getNickname())
                 .email(user.getEmail())
                 .build();
     }

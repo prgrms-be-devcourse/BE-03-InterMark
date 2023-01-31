@@ -80,6 +80,13 @@ public class User {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+        this.isDeleted = isDeleted;
+        this.birth = birth;
+        this.email = email;
+    }
+
+    public void setBirth(@Nullable LocalDate birth) {
+        this.birth = birth;
     }
 
     public String getUserRoleKey() {
