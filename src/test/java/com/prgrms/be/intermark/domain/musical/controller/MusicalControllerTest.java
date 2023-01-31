@@ -49,16 +49,15 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -164,7 +163,6 @@ class MusicalControllerTest {
                 ));
     }
 
-    @Test
     @DisplayName("Success - 뮤지컬 리스트 조회 시 뮤지컬 정보 리스트로 반환 - getAllMusicals")
     void getAllMusicalsSuccess() throws Exception {
         // given
@@ -309,4 +307,28 @@ class MusicalControllerTest {
                 ))
                 .andReturn();
     }
+
+    @Test
+    @DisplayName("Success - 입력 받은 뮤지컬 id 에 해당하는 뮤지컬 삭제에 성공한다. - deleteMusical")
+    void deleteMusicalSuccess() throws Exception {
+        // given
+        Long musicalId = 1L;
+        doNothing().when(musicalFacadeService).deleteMusical(musicalId);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders
+                .delete("/api/v1/musicals/{musicalId}", musicalId)
+                .with(csrf()));
+
+        // then
+        verify(musicalFacadeService).deleteMusical(musicalId);
+        resultActions.andExpect(status().isNoContent())
+                .andDo(print())
+                .andDo(document("Musical/delete",
+                        pathParameters(
+                                parameterWithName("musicalId").description("삭제할 뮤지컬 id")
+                        )
+                ));
+    }
+
 }

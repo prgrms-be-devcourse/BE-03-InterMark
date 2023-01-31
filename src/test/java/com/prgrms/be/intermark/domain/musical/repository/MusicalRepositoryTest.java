@@ -263,7 +263,6 @@ class MusicalRepositoryTest {
                     .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
-
         @Test
         @DisplayName("Fail - 뮤지컬 Stadium 값이 없으면 저장에 실패한다")
         void saveFailByNoStadium() {

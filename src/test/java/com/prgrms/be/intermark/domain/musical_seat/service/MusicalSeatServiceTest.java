@@ -54,4 +54,20 @@ class MusicalSeatServiceTest {
         verify(musicalSeatRepository, times(musicalSeats.size())).save(any(MusicalSeat.class));
     }
 
+    @Test
+    @DisplayName("Success - 해당 뮤지컬의 뮤지컬 좌석을 전부 삭제한다. - deleteAllByMusical")
+    void deleteAllByMusicalSuccess() {
+        // given
+        List<MusicalSeat> musicalSeats = List.of(mock(MusicalSeat.class), mock(MusicalSeat.class));
+        when(musicalSeatRepository.findByMusicalAndIsDeletedIsFalse(musical)).thenReturn(musicalSeats);
+
+        // when
+        musicalSeatService.deleteAllByMusical(musical);
+
+        // then
+        verify(musicalSeatRepository).findByMusicalAndIsDeletedIsFalse(musical);
+        for (MusicalSeat musicalSeat : musicalSeats) {
+            verify(musicalSeat).deleteMusicalSeat();
+        }
+    }
 }
