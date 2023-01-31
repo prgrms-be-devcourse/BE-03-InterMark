@@ -93,7 +93,7 @@ class UserServiceTest {
             // given, when
             when(userRepository.findByIdAndIsDeletedFalse(anyLong()))
                     .thenReturn(Optional.of(user));
-            User findUser = userService.findByIdForFasade(anyLong());
+            User findUser = userService.findByIdForFacade(anyLong());
             // then
             verify(userRepository).findByIdAndIsDeletedFalse(anyLong());
             MatcherAssert.assertThat(findUser, Matchers.samePropertyValuesAs(user));
@@ -104,7 +104,7 @@ class UserServiceTest {
         public void findByIdForFasadeFail() {
             // then
             assertThatThrownBy(() -> {
-                userService.findByIdForFasade(anyLong());
+                userService.findByIdForFacade(anyLong());
             })
                     .isExactlyInstanceOf(EntityNotFoundException.class)
                     .hasMessage("존재하지 않는 사용자입니다.");
