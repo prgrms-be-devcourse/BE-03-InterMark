@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
+@WithMockUser
 @WebMvcTest(ScheduleController.class)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
@@ -43,7 +44,6 @@ class ScheduleControllerTest {
     @Autowired
     private ObjectMapper mapper = new ObjectMapper();
 
-    @WithMockUser
     @Test
     @DisplayName("Success - 스케줄을 등록하면 저장한 스케줄 URL 반환")
     void createScheduleSuccess() throws Exception {
@@ -79,9 +79,8 @@ class ScheduleControllerTest {
                 );
     }
 
-    @WithMockUser
     @Test
-    @DisplayName("Success - 스케줄을 수정하면 수정한 스케줄 URL 반환")
+    @DisplayName("Success - 스케줄을 수정하면 No Content 반환")
     void updateScheduleSuccess() throws Exception {
         // given
         ScheduleUpdateRequestDTO scheduleUpdateRequestDTO = ScheduleUpdateRequestDTO.builder()
@@ -111,4 +110,29 @@ class ScheduleControllerTest {
                         )
                 );
     }
+
+    @Test
+    @DisplayName("Success - 스케줄을 삭제하면 No Content 반환")
+    void deleteScheduleSuccess() throws Exception {
+        // given
+        long scheduleId = 0L;
+
+        // when
+        ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders
+                .delete("/api/v1/schedules/{scheduleId}", scheduleId)
+                .contentType(MediaType.APPLICATION_JSON).with(csrf())
+        );
+
+        // then
+        resultActions.andExpect(status().isNoContent())
+                .andDo(print())
+                .andDo(document("Delete Schedule",
+                                pathParameters(
+                                        parameterWithName("scheduleId").description("삭제할 스케줄 id")
+                                )
+                        )
+                );
+    }
+
+
 }
