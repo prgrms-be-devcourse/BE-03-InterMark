@@ -73,13 +73,10 @@ class MusicalSeatRepositoryTest {
         void saveSuccess() {
             // given & when
             MusicalSeat savedMusicalSeat = musicalSeatRepository.save(musicalSeat);
+            MusicalSeat findMusicalSeat = musicalSeatRepository.findById(savedMusicalSeat.getId()).get();
 
             // then
-            assertThat(savedMusicalSeat.getId()).isNotNull();
-            assertThat(savedMusicalSeat)
-                    .usingRecursiveComparison()
-                    .ignoringFields("id")
-                    .isEqualTo(musicalSeat);
+            assertThat(findMusicalSeat).isEqualTo(savedMusicalSeat);
         }
 
 

@@ -66,13 +66,10 @@ class CastingRepositoryTest {
         void saveSuccess() {
             // given & when
             Casting savedCasting = castingRepository.save(casting);
+            Casting findCasting = castingRepository.findById(savedCasting.getId()).get();
 
             // then
-            assertThat(savedCasting.getId()).isNotNull();
-            assertThat(savedCasting)
-                    .usingRecursiveComparison()
-                    .ignoringFields("id")
-                    .isEqualTo(casting);
+            assertThat(findCasting).isEqualTo(savedCasting);
         }
 
         @Test

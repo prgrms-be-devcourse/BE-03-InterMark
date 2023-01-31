@@ -60,12 +60,10 @@ class MusicalRepositoryTest {
         void saveSuccess() {
             // given & when
             Musical savedMusical = musicalRepository.save(musical);
+            Musical findMusical = musicalRepository.findById(savedMusical.getId()).get();
 
             // then
-            assertThat(savedMusical.getId()).isNotNull();
-            assertThat(savedMusical).usingRecursiveComparison()
-                    .ignoringFields("id")
-                    .isEqualTo(musical);
+            assertThat(findMusical).isEqualTo(savedMusical);
         }
 
         @ParameterizedTest

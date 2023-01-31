@@ -64,13 +64,10 @@ class MusicalDetailImageRepositoryTest {
         void saveSuccess() {
             // given & when
             MusicalDetailImage savedMusicalDetailImage = musicalDetailImageRepository.save(musicalDetailImage);
+            MusicalDetailImage findMusicalDetailImage = musicalDetailImageRepository.findById(savedMusicalDetailImage.getId()).get();
 
             // then
-            assertThat(savedMusicalDetailImage.getId()).isNotNull();
-            assertThat(savedMusicalDetailImage)
-                    .usingRecursiveComparison()
-                    .ignoringFields("id")
-                    .isEqualTo(musicalDetailImage);
+            assertThat(findMusicalDetailImage).isEqualTo(savedMusicalDetailImage);
         }
 
         @ParameterizedTest

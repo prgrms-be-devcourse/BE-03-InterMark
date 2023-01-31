@@ -142,9 +142,10 @@ class MusicalFacadeServiceTest {
         // when
         Long musicalId = musicalFacadeService.create(createRequestDTO,
                 thumbnail, List.of(detailImage1, detailImage2));
+        Musical findMusical = musicalRepository.findById(musicalId).get();
 
         // then
-        assertThat(musicalId).isNotNull();
+        assertThat(findMusical.getId()).isEqualTo(musicalId);
     }
 
     @Test

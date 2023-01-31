@@ -65,13 +65,10 @@ class SeatGradeRepositoryTest {
         void saveSuccess() {
             // given & when
             SeatGrade savedSeatGrade = seatGradeRepository.save(seatGrade);
+            SeatGrade findSeatGrade = seatGradeRepository.findById(savedSeatGrade.getId()).get();
 
             // then
-            assertThat(savedSeatGrade.getId()).isNotNull();
-            assertThat(savedSeatGrade)
-                    .usingRecursiveComparison()
-                    .ignoringFields("id")
-                    .isEqualTo(seatGrade);
+            assertThat(findSeatGrade).isEqualTo(savedSeatGrade);
         }
 
         @ParameterizedTest
