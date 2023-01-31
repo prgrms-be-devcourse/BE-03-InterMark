@@ -1,7 +1,10 @@
 package com.prgrms.be.intermark.domain.musical.controller;
 
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.*;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.service.MusicalFacadeService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +31,8 @@ public class MusicalController {
 		@RequestPart(required = false) MultipartFile thumbnail,
 		@RequestPart(required = false) List<MultipartFile> detailImages
 	) {
-		MusicalCommandResponseDTO responseDto = musicalFacadeService.create(createRequestDto, thumbnail, detailImages);
-		URI location = URI.create("/api/v1/musicals/" + responseDto.id());
+		Long musicalId = musicalFacadeService.create(createRequestDto, thumbnail, detailImages);
+		URI location = URI.create("/api/v1/musicals/" + musicalId);
 		return ResponseEntity.created(location).build();
 	}
 
