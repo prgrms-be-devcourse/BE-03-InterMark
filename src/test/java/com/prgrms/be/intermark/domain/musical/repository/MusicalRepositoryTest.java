@@ -89,7 +89,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @ParameterizedTest
@@ -113,7 +113,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -134,7 +134,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -155,7 +155,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -176,7 +176,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -197,7 +197,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -218,7 +218,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -239,7 +239,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @ParameterizedTest
@@ -262,7 +262,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
 
@@ -284,7 +284,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -305,7 +305,7 @@ class MusicalRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalRepository.save(musical))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
     }

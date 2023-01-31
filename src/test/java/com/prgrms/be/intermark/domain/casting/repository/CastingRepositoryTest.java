@@ -83,7 +83,7 @@ class CastingRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> castingRepository.save(casting))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -94,7 +94,7 @@ class CastingRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> castingRepository.save(casting))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
     }
 }

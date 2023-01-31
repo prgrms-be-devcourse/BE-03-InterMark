@@ -88,7 +88,7 @@ class SeatGradeRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> seatGradeRepository.save(wrongSeatGrade))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @ParameterizedTest
@@ -104,7 +104,7 @@ class SeatGradeRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> seatGradeRepository.save(wrongSeatGrade))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -118,7 +118,7 @@ class SeatGradeRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> seatGradeRepository.save(wrongSeatGrade))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
     }
 

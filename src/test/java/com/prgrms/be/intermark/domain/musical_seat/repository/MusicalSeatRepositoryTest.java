@@ -91,7 +91,7 @@ class MusicalSeatRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalSeatRepository.save(musicalSeat))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -102,7 +102,7 @@ class MusicalSeatRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalSeatRepository.save(musicalSeat))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
@@ -113,7 +113,7 @@ class MusicalSeatRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalSeatRepository.save(musicalSeat))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
     }
 
