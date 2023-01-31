@@ -51,7 +51,7 @@ class ScheduleControllerTest {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    @DisplayName("Success - 스케줄을 등록하면 저장한 스케줄 URL 반환")
+    @DisplayName("Success - 스케줄을 등록하면 저장한 스케줄 URL 반환 - createScheduleSuccess")
     void createScheduleSuccess() throws Exception {
         // given
         ScheduleCreateRequestDTO scheduleCreateRequestDTO = ScheduleCreateRequestDTO.builder()
@@ -86,7 +86,7 @@ class ScheduleControllerTest {
     }
 
     @Test
-    @DisplayName("Success - 스케줄을 수정하면 수정한 스케줄 URL 반환")
+    @DisplayName("Success - 스케줄을 수정하면 수정한 스케줄 URL 반환 - updateScheduleSuccess")
     void updateScheduleSuccess() throws Exception {
         // given
         ScheduleUpdateRequestDTO scheduleUpdateRequestDTO = ScheduleUpdateRequestDTO.builder()
@@ -118,15 +118,14 @@ class ScheduleControllerTest {
     }
 
     @Test
-    @DisplayName("Success - 스케줄을 삭제하면 No Content 반환")
+    @DisplayName("Success - 스케줄을 삭제하면 No Content 반환 - deleteScheduleSuccess")
     void deleteScheduleSuccess() throws Exception {
         // given
         long scheduleId = 0L;
 
         // when
         ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders
-                .delete("/api/v1/schedules/{scheduleId}", scheduleId)
-                .contentType(MediaType.APPLICATION_JSON).with(csrf())
+                .delete("/api/v1/schedules/{scheduleId}", scheduleId).with(csrf())
         );
 
         // then
