@@ -114,4 +114,11 @@ public class UserService {
     public long countAllUser() {
         return userRepository.countByIsDeletedFalse();
     }
+
+    @Transactional
+    public void delete(Long userId) throws EntityNotFoundException{
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(EntityNotFoundException::new);
+        user.deleteUser();
+    }
 }

@@ -3,6 +3,7 @@ package com.prgrms.be.intermark.common.exception;
 import com.prgrms.be.intermark.common.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -98,6 +99,15 @@ public class GlobalControllerAdvice {
 				LocalDateTime.now()
 		);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e){
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.UNAUTHORIZED,
+				e.getMessage(),
+				LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(Exception.class)
