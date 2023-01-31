@@ -53,15 +53,16 @@ import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(MusicalController.class)
+@WithMockUser(username = "1", roles = {"USER"}, password = "")
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
 class MusicalControllerTest {
@@ -110,9 +111,8 @@ class MusicalControllerTest {
             .seats(List.of(musicalSeatVIP, musicalSeatR))
             .build();
 
-    @WithMockUser(username = "1", roles = {"USER"}, password = "")
     @Test
-    @DisplayName("성공 - 정상적인 뮤지컬 값이 들어오면 등록에 성공한다 - createMusical")
+    @DisplayName("Success 정상적인 뮤지컬 값이 들어오면 등록에 성공한다 - createMusical")
     void createMusicalSuccess() throws Exception {
         // given
         MockMultipartFile createRequestDto = new MockMultipartFile("createRequestDto", "", "application/json", objectMapper.writeValueAsString(musical).getBytes());
@@ -163,8 +163,6 @@ class MusicalControllerTest {
                 ));
     }
 
-    @WithMockUser(username = "1", roles = {"USER"}, password = "")
-    @Test
     @DisplayName("Success - 뮤지컬 리스트 조회 시 뮤지컬 정보 리스트로 반환 - getAllMusicals")
     void getAllMusicalsSuccess() throws Exception {
         // given
@@ -233,7 +231,6 @@ class MusicalControllerTest {
         }
     }
 
-    @WithMockUser(username = "1", roles = {"USER"}, password = "")
     @Test
     @DisplayName("Success - 뮤지컬id로 조회 시 뮤지컬 세부 정보 반환 - getMusical")
     void getMusicalSuccess() throws Exception {
@@ -311,9 +308,8 @@ class MusicalControllerTest {
                 .andReturn();
     }
 
-    @WithMockUser(username = "1", roles = {"USER"}, password = "")
     @Test
-    @DisplayName("성공 - 입력 받은 뮤지컬 id 에 해당하는 뮤지컬 삭제에 성공한다. - deleteMusical")
+    @DisplayName("Success - 입력 받은 뮤지컬 id 에 해당하는 뮤지컬 삭제에 성공한다. - deleteMusical")
     void deleteMusicalSuccess() throws Exception {
         // given
         Long musicalId = 1L;

@@ -60,23 +60,20 @@ class MusicalDetailImageRepositoryTest {
     class Save {
 
         @Test
-        @DisplayName("성공 - 정상 뮤지컬 상세 이미지 값이 들어오면 저장에 성공한다")
+        @DisplayName("Success - 정상 뮤지컬 상세 이미지 값이 들어오면 저장에 성공한다")
         void saveSuccess() {
             // given & when
             MusicalDetailImage savedMusicalDetailImage = musicalDetailImageRepository.save(musicalDetailImage);
+            MusicalDetailImage findMusicalDetailImage = musicalDetailImageRepository.findById(savedMusicalDetailImage.getId()).get();
 
             // then
-            assertThat(savedMusicalDetailImage.getId()).isNotNull();
-            assertThat(savedMusicalDetailImage)
-                    .usingRecursiveComparison()
-                    .ignoringFields("id")
-                    .isEqualTo(musicalDetailImage);
+            assertThat(findMusicalDetailImage).isEqualTo(savedMusicalDetailImage);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {" "})
-        @DisplayName("실패 - 이미지 원래 이름 값이 null, 빈 값, 공백이면 저장에 실패한다")
+        @DisplayName("Fail - 이미지 원래 이름 값이 null, 빈 값, 공백이면 저장에 실패한다")
         void saveFailByWrongOriginalFileName(String wrongOriginalFileName) {
             // given
             MusicalDetailImage wrongMusicalDetailImage = MusicalDetailImage.builder()
@@ -87,13 +84,13 @@ class MusicalDetailImageRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalDetailImageRepository.save(wrongMusicalDetailImage))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {" "})
-        @DisplayName("실패 - 이미지 Url 값이 null, 빈 값, 공백이면 저장에 실패한다")
+        @DisplayName("Fail - 이미지 Url 값이 null, 빈 값, 공백이면 저장에 실패한다")
         void saveFailByWrongImageUrl(String wrongImageUrl) {
             // given
             MusicalDetailImage wrongMusicalDetailImage = MusicalDetailImage.builder()
@@ -104,11 +101,11 @@ class MusicalDetailImageRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalDetailImageRepository.save(wrongMusicalDetailImage))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
-        @DisplayName("실패 - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
         void saveFailByNoMusical() {
             // given
             MusicalDetailImage wrongMusicalDetailImage = MusicalDetailImage.builder()
@@ -118,7 +115,7 @@ class MusicalDetailImageRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> musicalDetailImageRepository.save(wrongMusicalDetailImage))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
     }
 }

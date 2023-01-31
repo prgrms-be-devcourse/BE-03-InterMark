@@ -31,18 +31,17 @@ class MusicalDetailImageServiceTest {
     @Mock
     private MusicalDetailImageRepository musicalDetailImageRepository;
 
+    private final String thumbnailUrl = "https://intermark.com";
+    private final Stadium stadium = StadiumProvider.createStadium();
+    private final User user = UserProvider.createUser();
+    private final Musical musical = MusicalProvider.createMusical(thumbnailUrl, stadium, user);
 
     @Nested
     @DisplayName("save")
     class Save {
 
-        private final String thumbnailUrl = "https://intermark.com";
-        private final Stadium stadium = StadiumProvider.createStadium();
-        private final User user = UserProvider.createUser();
-        private final Musical musical = MusicalProvider.createMusical(thumbnailUrl, stadium, user);
-
         @Test
-        @DisplayName("성공 - 정상 뮤지컬 상세 이미지 값이 들어오면 저장에 성공한다")
+        @DisplayName("Success - 정상 뮤지컬 상세 이미지 값이 들어오면 저장에 성공한다")
         void saveSuccess() {
             // given
             MusicalDetailImage musicalDetailImage1 = MusicalDetailImageProvider.createMusicalDetailImage("업로드 파일1", "a", musical);
@@ -56,23 +55,22 @@ class MusicalDetailImageServiceTest {
             // then
             verify(musicalDetailImageRepository, times(musicalDetailImages.size())).save(any(MusicalDetailImage.class));
         }
+    }
 
+    @Test
+    @DisplayName("Success - 해당 뮤지컬의 상세이미지를 전부 삭제한다. - deleteAllByMusical")
+    void deleteAllByMusicalSuccess() {
+        // given
+        List<MusicalDetailImage> musicalDetailImages = List.of(mock(MusicalDetailImage.class), mock(MusicalDetailImage.class));
+        when(musicalDetailImageRepository.findByMusicalAndIsDeletedIsFalse(musical)).thenReturn(musicalDetailImages);
 
-        @Test
-        @DisplayName("성공 - 해당 뮤지컬의 상세이미지를 전부 삭제한다.")
-        void deleteAllByMusicalSuccess() {
-            // given
-            List<MusicalDetailImage> musicalDetailImages = List.of(mock(MusicalDetailImage.class), mock(MusicalDetailImage.class));
-            when(musicalDetailImageRepository.findByMusicalAndIsDeletedIsFalse(musical)).thenReturn(musicalDetailImages);
+        // when
+        musicalDetailImageService.deleteAllByMusical(musical);
 
-            // when
-            musicalDetailImageService.deleteAllByMusical(musical);
-
-            // then
-            verify(musicalDetailImageRepository).findByMusicalAndIsDeletedIsFalse(musical);
-            for (MusicalDetailImage musicalDetailImage : musicalDetailImages) {
-                verify(musicalDetailImage).deleteMusicalDetailImage();
-            }
+        // then
+        verify(musicalDetailImageRepository).findByMusicalAndIsDeletedIsFalse(musical);
+        for (MusicalDetailImage musicalDetailImage : musicalDetailImages) {
+            verify(musicalDetailImage).deleteMusicalDetailImage();
         }
     }
 }

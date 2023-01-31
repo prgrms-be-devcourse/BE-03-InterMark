@@ -69,51 +69,48 @@ class MusicalSeatRepositoryTest {
     class Save {
 
         @Test
-        @DisplayName("성공 - 정상적인 뮤지컬좌석 값이 입력되면 저장에 성공한다")
+        @DisplayName("Success - 정상적인 뮤지컬좌석 값이 입력되면 저장에 성공한다")
         void saveSuccess() {
             // given & when
             MusicalSeat savedMusicalSeat = musicalSeatRepository.save(musicalSeat);
+            MusicalSeat findMusicalSeat = musicalSeatRepository.findById(savedMusicalSeat.getId()).get();
 
             // then
-            assertThat(savedMusicalSeat.getId()).isNotNull();
-            assertThat(savedMusicalSeat)
-                    .usingRecursiveComparison()
-                    .ignoringFields("id")
-                    .isEqualTo(musicalSeat);
+            assertThat(findMusicalSeat).isEqualTo(savedMusicalSeat);
         }
 
 
         @Test
-        @DisplayName("실패 - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
         void saveFailByNoMusical() {
             // given
             MusicalSeat musicalSeat = MusicalSeatProvider.createMusicalSeat(null, seat, seatGrade);
 
             // when & then
             assertThatThrownBy(() -> musicalSeatRepository.save(musicalSeat))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
-        @DisplayName("실패 - 연관된 좌석 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 좌석 값이 없으면 저장에 실패한다")
         void saveFailByNoSeat() {
             // given
             MusicalSeat musicalSeat = MusicalSeatProvider.createMusicalSeat(musical, null, seatGrade);
 
             // when & then
             assertThatThrownBy(() -> musicalSeatRepository.save(musicalSeat))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
-        @DisplayName("실패 - 연관된 좌석 등급 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 좌석 등급 값이 없으면 저장에 실패한다")
         void saveFailByNoSeatGrade() {
             // given
             MusicalSeat musicalSeat = MusicalSeatProvider.createMusicalSeat(musical, seat, null);
 
             // when & then
             assertThatThrownBy(() -> musicalSeatRepository.save(musicalSeat))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
     }
 

@@ -62,39 +62,36 @@ class CastingRepositoryTest {
     class Save {
 
         @Test
-        @DisplayName("성공 - 정상적인 캐스팅 값이 입력되면 저장에 성공한다")
+        @DisplayName("Success - 정상적인 캐스팅 값이 입력되면 저장에 성공한다")
         void saveSuccess() {
             // given & when
             Casting savedCasting = castingRepository.save(casting);
+            Casting findCasting = castingRepository.findById(savedCasting.getId()).get();
 
             // then
-            assertThat(savedCasting.getId()).isNotNull();
-            assertThat(savedCasting)
-                    .usingRecursiveComparison()
-                    .ignoringFields("id")
-                    .isEqualTo(casting);
+            assertThat(findCasting).isEqualTo(savedCasting);
         }
 
         @Test
-        @DisplayName("실패 - 연관된 배우 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 배우 값이 없으면 저장에 실패한다")
         void saveFailByNoActor() {
             // given
             Casting casting = CastingProvider.createCasting(null, musical);
 
             // when & then
             assertThatThrownBy(() -> castingRepository.save(casting))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
-        @DisplayName("실패 - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
         void saveFailByNoMusical() {
             // given
             Casting casting = CastingProvider.createCasting(actor, null);
 
             // when & then
             assertThatThrownBy(() -> castingRepository.save(casting))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isExactlyInstanceOf(ConstraintViolationException.class);
         }
     }
 }

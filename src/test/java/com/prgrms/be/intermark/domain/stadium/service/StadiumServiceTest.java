@@ -1,13 +1,7 @@
 package com.prgrms.be.intermark.domain.stadium.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Optional;
-
-import javax.persistence.EntityNotFoundException;
-
+import com.prgrms.be.intermark.domain.stadium.model.Stadium;
+import com.prgrms.be.intermark.domain.stadium.repository.StadiumRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,8 +10,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.prgrms.be.intermark.domain.stadium.model.Stadium;
-import com.prgrms.be.intermark.domain.stadium.repository.StadiumRepository;
+import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StadiumServiceTest {
@@ -33,7 +33,7 @@ class StadiumServiceTest {
 	class FindById {
 
 		@Test
-		@DisplayName("성공 - id 로 경기장을 조회하면 Stadium 엔티티 반환한다.")
+		@DisplayName("Success - id 로 경기장을 조회하면 Stadium 엔티티 반환한다.")
 		void findByIdSuccess() {
 			// given
 			Stadium stadium = Stadium.builder()
@@ -53,14 +53,14 @@ class StadiumServiceTest {
 		}
 
 		@Test
-		@DisplayName("실패 - 없는 id 가 입력되면 EntityNotFoundException 반환한다.")
+		@DisplayName("Fail - 없는 id 가 입력되면 EntityNotFoundException 반환한다.")
 		void findByIdFail() {
 			// given
 			when(stadiumRepository.findById(anyLong())).thenReturn(Optional.empty());
 
 			// when & then
 			assertThatThrownBy(() -> stadiumService.findById(anyLong()))
-				.isInstanceOf(EntityNotFoundException.class);
+				.isExactlyInstanceOf(EntityNotFoundException.class);
 		}
 	}
 }

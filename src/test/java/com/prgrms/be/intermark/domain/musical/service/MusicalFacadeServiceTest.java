@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -257,7 +257,7 @@ class MusicalFacadeServiceTest {
     class DeleteMusical {
 
         @Test
-        @DisplayName("성공 - 입력 받은 뮤지컬 id 에 해당하는 뮤지컬 삭제에 성공한다.")
+        @DisplayName("Success - 입력 받은 뮤지컬 id 에 해당하는 뮤지컬 삭제에 성공한다.")
         void deleteMusicalSuccess() {
             // given
             Long musicalId = musicalFacadeService.create(createRequestDTO, thumbnail, List.of(detailImage1, detailImage2));
@@ -286,7 +286,7 @@ class MusicalFacadeServiceTest {
         }
 
         @Test
-        @DisplayName("실패 - 삭제하려는 뮤지컬에 예매된 티켓이 있다면 삭제에 실패한다.")
+        @DisplayName("Fail - 삭제하려는 뮤지컬에 예매된 티켓이 있다면 삭제에 실패한다.")
         void deleteMusicalFail() throws IOException {
             // given
             Long musicalId = musicalFacadeService.create(createRequestDTO, thumbnail, List.of(detailImage1, detailImage2));
@@ -317,5 +317,4 @@ class MusicalFacadeServiceTest {
         FileInputStream fileInputStream = new FileInputStream(path);
         return new MockMultipartFile(fileName, fileName + "." + extension, extension, fileInputStream);
     }
-
 }

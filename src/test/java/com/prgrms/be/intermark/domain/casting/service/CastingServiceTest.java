@@ -1,10 +1,12 @@
 package com.prgrms.be.intermark.domain.casting.service;
 
+import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.casting.model.Casting;
 import com.prgrms.be.intermark.domain.casting.repository.CastingRepository;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.user.User;
+import com.prgrms.be.intermark.domain.util.ActorProvider;
 import com.prgrms.be.intermark.domain.util.MusicalProvider;
 import com.prgrms.be.intermark.domain.util.StadiumProvider;
 import com.prgrms.be.intermark.domain.util.UserProvider;
@@ -33,9 +35,10 @@ class CastingServiceTest {
     private final Stadium stadium = StadiumProvider.createStadium();
     private final User user = UserProvider.createUser();
     private final Musical musical = MusicalProvider.createMusical(thumbnailUrl, stadium, user);
+    private final Actor actor = ActorProvider.createActor();
 
     @Test
-    @DisplayName("성공 - 정상적인 캐스팅 값이 들어오면 저장에 성공한다 - save")
+    @DisplayName("Success - 정상적인 캐스팅 값이 들어오면 저장에 성공한다 - save")
     void saveSuccess() {
         // given
         List<Casting> castings = List.of(mock(Casting.class), mock(Casting.class));
@@ -49,7 +52,7 @@ class CastingServiceTest {
     }
 
     @Test
-    @DisplayName("성공 - 해당 뮤지컬의 캐스팅을 전부 삭제한다.")
+    @DisplayName("Success - 해당 뮤지컬의 캐스팅을 전부 삭제한다. - deleteAllByMusical")
     void deleteAllByMusicalSuccess() {
         // given
         List<Casting> castings = List.of(mock(Casting.class), mock(Casting.class));

@@ -37,8 +37,9 @@ class MusicalServiceTest {
     private final User user = UserProvider.createUser();
     private final Musical musical = MusicalProvider.createMusical(thumbnailUrl, stadium, user);
 
+
     @Test
-    @DisplayName("성공 - 올바른 값이 들어오면 뮤지컬을 저장한다 - save")
+    @DisplayName("Success - 올바른 값이 들어오면 뮤지컬을 저장한다 - save")
     void saveSuccess() {
         // given
         when(musicalRepository.save(musical)).thenReturn(any(Musical.class));
@@ -55,7 +56,7 @@ class MusicalServiceTest {
     class DeleteMusical {
 
         @Test
-        @DisplayName("성공 - 삭제할 뮤지컬이 있으면 삭제에 성공한다.")
+        @DisplayName("Success - 삭제할 뮤지컬이 있으면 삭제에 성공한다.")
         void deleteMusicalSuccess() {
             // given
             when(savedMusical.isDeleted()).thenReturn(false);
@@ -69,7 +70,7 @@ class MusicalServiceTest {
         }
 
         @Test()
-        @DisplayName("실패 - 이미 삭제된 뮤지컬이면 삭제에 실패한다.")
+        @DisplayName("Fail - 이미 삭제된 뮤지컬이면 삭제에 실패한다.")
         void deleteMusicalFail() {
             // given
             when(savedMusical.isDeleted()).thenReturn(true);
