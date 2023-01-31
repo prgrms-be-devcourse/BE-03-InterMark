@@ -2,9 +2,8 @@ package com.prgrms.be.intermark.domain.schedule.dto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.prgrms.be.intermark.domain.musical.model.Musical;
@@ -19,6 +18,13 @@ public record ScheduleCreateRequestDTO(
         @NotNull long musicalId,
         @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String startTime
 ) {
+
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    public ScheduleCreateRequestDTO(@NotNull long musicalId,
+                                    @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String startTime) {
+        this.musicalId = musicalId;
+        this.startTime = startTime;
+    }
 
     public LocalDateTime toLocalDateTime(String time) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
