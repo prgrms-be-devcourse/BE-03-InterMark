@@ -50,4 +50,21 @@ class SeatGradeServiceTest {
         // then
         verify(seatGradeRepository, times(seatGrades.size())).save(any(SeatGrade.class));
     }
+
+    @Test
+    @DisplayName("Success - 해당 뮤지컬의 좌석등급을 전부 삭제한다. - deleteAllByMusical")
+    void deleteAllByMusicalSuccess() {
+        // given
+        List<SeatGrade> seatGrades = List.of(mock(SeatGrade.class), mock(SeatGrade.class));
+        when(seatGradeRepository.findByMusicalAndIsDeletedIsFalse(musical)).thenReturn(seatGrades);
+
+        // when
+        seatGradeService.deleteAllByMusical(musical);
+
+        // then
+        verify(seatGradeRepository).findByMusicalAndIsDeletedIsFalse(musical);
+        for (SeatGrade seatGrade : seatGrades) {
+            verify(seatGrade).deleteSeatGrade();
+        }
+    }
 }

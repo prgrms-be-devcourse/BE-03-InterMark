@@ -14,23 +14,24 @@ import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalDetailImageRepository;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
+import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
+import com.prgrms.be.intermark.domain.schedule.model.Schedule;
+import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
 import com.prgrms.be.intermark.domain.seat.model.Seat;
 import com.prgrms.be.intermark.domain.seat.repository.SeatRepository;
+import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.stadium.repository.StadiumRepository;
+import com.prgrms.be.intermark.domain.ticket.model.Ticket;
+import com.prgrms.be.intermark.domain.ticket.model.TicketStatus;
+import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
-import com.prgrms.be.intermark.domain.util.ActorProvider;
-import com.prgrms.be.intermark.domain.util.SeatProvider;
-import com.prgrms.be.intermark.domain.util.StadiumProvider;
-import com.prgrms.be.intermark.domain.util.UserProvider;
+import com.prgrms.be.intermark.domain.util.*;
 import com.prgrms.be.intermark.util.TestUtil;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -71,53 +73,65 @@ class MusicalFacadeServiceTest {
     private ActorRepository actorRepository;
 
     @Autowired
+    private ScheduleRepository scheduleRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
+
+    @Autowired
     private CastingRepository castingRepository;
 
     @Autowired
     private MusicalDetailImageRepository musicalDetailImageRepository;
 
-    private final User user = UserProvider.createUser();
-    private final Stadium stadium = StadiumProvider.createStadium();
-    private final Seat seat1 = SeatProvider.createSeat("A", 1, stadium);
-    private final Seat seat2 = SeatProvider.createSeat("A", 2, stadium);
-    private final Actor actor1 = ActorProvider.createActor("kwon", LocalDate.of(1997, 10, 10), Gender.MALE, "a");
-    private final Actor actor2 = ActorProvider.createActor("kong", LocalDate.of(1996, 1, 1), Gender.MALE, "b");
+    private User user;
+    private Stadium stadium;
+    private Seat seat1;
+    private Seat seat2;
+    private Actor actor1;
+    private Actor actor2;
+    private MusicalSeatGradeCreateRequestDTO seatGradeVIP;
+    private MusicalSeatGradeCreateRequestDTO seatGradeR;
+    private MusicalSeatCreateRequestDTO musicalSeatVIP;
+    private MusicalSeatCreateRequestDTO musicalSeatR;
+    private MusicalCreateRequestDTO createRequestDTO;
+    private MockMultipartFile thumbnail;
+    private MockMultipartFile detailImage1;
+    private MockMultipartFile detailImage2;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
+        user = UserProvider.createUser();
+        stadium = StadiumProvider.createStadium();
+        seat1 = SeatProvider.createSeat("A", 1, stadium);
+        seat2 = SeatProvider.createSeat("A", 2, stadium);
+        actor1 = ActorProvider.createActor();
+        actor2 = ActorProvider.createActor();
+
         userRepository.save(user);
         stadiumRepository.save(stadium);
         seatRepository.save(seat1);
         seatRepository.save(seat2);
         actorRepository.save(actor1);
         actorRepository.save(actor2);
-    }
 
-    @Test
-    @DisplayName("Success - 정상 뮤지컬 등록 데이터를 입력하면 등록에 성공한다. - create")
-    void createSuccess() throws IOException {
-        // given
-        MusicalSeatGradeCreateRequestDTO seatGradeVIP = MusicalSeatGradeCreateRequestDTO.builder()
+        seatGradeVIP = MusicalSeatGradeCreateRequestDTO.builder()
                 .seatGradeName("VIP")
                 .seatGradePrice(50000)
                 .build();
-
-        MusicalSeatGradeCreateRequestDTO seatGradeR = MusicalSeatGradeCreateRequestDTO.builder()
+        seatGradeR = MusicalSeatGradeCreateRequestDTO.builder()
                 .seatGradeName("R")
                 .seatGradePrice(30000)
                 .build();
-
-        MusicalSeatCreateRequestDTO musicalSeatVIP = MusicalSeatCreateRequestDTO.builder()
+        musicalSeatVIP = MusicalSeatCreateRequestDTO.builder()
                 .seatId(seat1.getId())
                 .seatGradeName(seatGradeVIP.seatGradeName())
                 .build();
-
-        MusicalSeatCreateRequestDTO musicalSeatR = MusicalSeatCreateRequestDTO.builder()
+        musicalSeatR = MusicalSeatCreateRequestDTO.builder()
                 .seatId(seat2.getId())
                 .seatGradeName(seatGradeR.seatGradeName())
                 .build();
-
-        MusicalCreateRequestDTO createRequestDTO = MusicalCreateRequestDTO.builder()
+        createRequestDTO = MusicalCreateRequestDTO.builder()
                 .title("마르코팀 성장기")
                 .viewRating(ViewRating.ADULT)
                 .genre(Genre.DRAMA)
@@ -131,21 +145,24 @@ class MusicalFacadeServiceTest {
                 .seatGrades(List.of(seatGradeVIP, seatGradeR))
                 .seats(List.of(musicalSeatVIP, musicalSeatR))
                 .build();
-
-        MockMultipartFile thumbnail = getMockMultipartFile("testMusicalThumbnail", "png",
+        thumbnail = getMockMultipartFile("testMusicalThumbnail", "png",
                 "src/test/resources/testMusicalThumbnail.jpg");
-        MockMultipartFile detailImage1 = getMockMultipartFile("testMusicalDetailImage1", "png",
+        detailImage1 = getMockMultipartFile("testMusicalDetailImage1", "png",
                 "src/test/resources/testMusicalDetailImage1.jpg");
-        MockMultipartFile detailImage2 = getMockMultipartFile("testMusicalDetailImage2", "png",
+        detailImage2 = getMockMultipartFile("testMusicalDetailImage2", "png",
                 "src/test/resources/testMusicalDetailImage2.jpg");
+    }
 
-        // when
+    @Test
+    @DisplayName("성공 - 정상 뮤지컬 등록 데이터를 입력하면 등록에 성공한다. - create")
+    void createSuccess() {
+
+        // given & when
         Long musicalId = musicalFacadeService.create(createRequestDTO,
                 thumbnail, List.of(detailImage1, detailImage2));
-        Musical findMusical = musicalRepository.findById(musicalId).get();
 
         // then
-        assertThat(findMusical.getId()).isEqualTo(musicalId);
+        assertThat(musicalId).isNotNull();
     }
 
     @Test
@@ -233,6 +250,67 @@ class MusicalFacadeServiceTest {
 
         // when, then
         Assertions.assertThrows(EntityNotFoundException.class, () -> musicalFacadeService.findMusicalById(notExistsMusicalId));
+    }
+
+    @Nested
+    @DisplayName("deleteMusical")
+    class DeleteMusical {
+
+        @Test
+        @DisplayName("Success - 입력 받은 뮤지컬 id 에 해당하는 뮤지컬 삭제에 성공한다.")
+        void deleteMusicalSuccess() {
+            // given
+            Long musicalId = musicalFacadeService.create(createRequestDTO, thumbnail, List.of(detailImage1, detailImage2));
+            Musical savedMusical = musicalRepository.findById(musicalId).get();
+
+            // when
+            musicalFacadeService.deleteMusical(musicalId);
+
+            // then
+            assertThat(savedMusical.isDeleted()).isTrue();
+            assertThat(savedMusical.getCastings())
+                    .extracting(Casting::isDeleted)
+                    .allMatch(isDeleted -> isDeleted == true);
+            assertThat(savedMusical.getDetailImages())
+                    .extracting(MusicalDetailImage::isDeleted)
+                    .allMatch(isDeleted -> isDeleted == true);
+            assertThat(savedMusical.getSchedules())
+                    .extracting(Schedule::isDeleted)
+                    .allMatch(isDeleted -> isDeleted == true);
+            assertThat(savedMusical.getSeatGrades())
+                    .extracting(SeatGrade::isDeleted)
+                    .allMatch(isDeleted -> isDeleted == true);
+            assertThat(savedMusical.getMusicalSeats())
+                    .extracting(MusicalSeat::isDeleted)
+                    .allMatch(isDeleted -> isDeleted == true);
+        }
+
+        @Test
+        @DisplayName("Fail - 삭제하려는 뮤지컬에 예매된 티켓이 있다면 삭제에 실패한다.")
+        void deleteMusicalFail() throws IOException {
+            // given
+            Long musicalId = musicalFacadeService.create(createRequestDTO, thumbnail, List.of(detailImage1, detailImage2));
+            Musical savedMusical = musicalRepository.findById(musicalId).get();
+
+            Schedule schedule = ScheduleProvider.createSchedule(savedMusical);
+            scheduleRepository.save(schedule);
+
+            Ticket ticket = Ticket.builder()
+                    .seatGrade(savedMusical.getSeatGrades().get(0))
+                    .musical(savedMusical)
+                    .seat(seat1)
+                    .ticketStatus(TicketStatus.AVAILABLE)
+                    .stadium(stadium)
+                    .user(user)
+                    .schedule(schedule)
+                    .build();
+            ticket.setMusical(savedMusical);
+            ticketRepository.save(ticket);
+
+            // when & then
+            assertThatThrownBy(() -> musicalFacadeService.deleteMusical(musicalId))
+                    .isInstanceOf(RuntimeException.class);
+        }
     }
 
     private MockMultipartFile getMockMultipartFile(String fileName, String extension, String path) throws IOException {

@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -279,6 +280,23 @@ class ScheduleServiceTest {
         assertThatThrownBy(() -> scheduleService.deleteSchedule(schedule.getId()))
                 .isExactlyInstanceOf(EntityNotFoundException.class)
                 .hasMessage("해당 스케줄이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("성공 - 해당 뮤지컬의 스케줄을 전부 삭제한다.")
+    void deleteAllByMusicalSuccess() {
+        // given
+        List<Schedule> schedules = List.of(mock(Schedule.class), mock(Schedule.class));
+        when(scheduleRepository.findByMusicalAndIsDeletedIsFalse(musical)).thenReturn(schedules);
+
+        // when
+        scheduleService.deleteAllByMusical(musical);
+
+        // then
+        verify(scheduleRepository).findByMusicalAndIsDeletedIsFalse(musical);
+        for (Schedule schedule : schedules) {
+            verify(schedule).deleteSchedule();
+        }
     }
 
 }
