@@ -1,14 +1,12 @@
 package com.prgrms.be.intermark.domain.schedule.dto;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import javax.validation.constraints.NotNull;
-
+import com.prgrms.be.intermark.domain.musical.model.Musical;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.prgrms.be.intermark.domain.musical.model.Musical;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Builder
 public record ScheduleUpdateRequestDTO(@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String startTime) {

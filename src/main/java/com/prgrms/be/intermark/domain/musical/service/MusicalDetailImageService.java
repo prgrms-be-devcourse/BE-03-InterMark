@@ -16,18 +16,9 @@ public class MusicalDetailImageService {
 
     private final MusicalDetailImageRepository musicalDetailImageRepository;
 
-    public void save(List<ImageResponseDTO> imageResponseDTOs, Musical musical) {
-        imageResponseDTOs.forEach(
-                imageResponse -> {
-                    MusicalDetailImage detailImage = MusicalDetailImage.builder()
-                            .musical(musical)
-                            .originalFileName(imageResponse.originalFileName())
-                            .imageUrl(imageResponse.path())
-                            .build();
-
-                    musicalDetailImageRepository.save(detailImage);
-                }
-        );
+    @Transactional
+    public void save(List<MusicalDetailImage> musicalDetailImages) {
+        musicalDetailImages.forEach(musicalDetailImageRepository::save);
     }
 
     public void update(List<ImageResponseDTO> imageResponseDTOs, Musical musical) {

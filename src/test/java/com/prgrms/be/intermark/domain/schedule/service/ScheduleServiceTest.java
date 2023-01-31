@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -37,10 +36,13 @@ class ScheduleServiceTest {
 
     @InjectMocks
     private ScheduleService scheduleService;
+
     @Mock
     private MusicalRepository musicalRepository;
+
     @Mock
     private ScheduleRepository scheduleRepository;
+
     @Mock
     private MusicalSeatRepository musicalSeatRepository;
 
