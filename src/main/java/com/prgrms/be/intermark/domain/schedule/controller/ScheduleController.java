@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 
-@RequestMapping("/api/v1/schedules")
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/schedules")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
