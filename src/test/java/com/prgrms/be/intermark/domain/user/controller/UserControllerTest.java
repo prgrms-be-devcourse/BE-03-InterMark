@@ -13,29 +13,43 @@ import com.prgrms.be.intermark.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(UserController.class)
 @WithMockUser
+@AutoConfigureRestDocs
 class UserControllerTest {
 
     @Autowired
@@ -44,7 +58,7 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @SpyBean
     private TokenProvider tokenProvider;
 
     @MockBean
@@ -151,4 +165,122 @@ class UserControllerTest {
         verify(pageService).getPageRequest(any(PageRequest.class), anyInt());
         verify(userService).findAllUser(any(PageRequest.class));
     }
+
+    @Nested
+    class DeleteUser {
+        static Stream<Arguments> userIdRoleProvider() {
+            return Stream.of(
+                    arguments(1L, UserRole.ROLE_USER),
+                    arguments(1L, UserRole.ROLE_SELLER),
+                    arguments(1L, UserRole.ROLE_ADMIN)
+            );
+        }
+
+        static Stream<Arguments> userIdRoleProviderExceptAdmin() {
+            return Stream.of(
+                    arguments(1L, UserRole.ROLE_USER),
+                    arguments(1L, UserRole.ROLE_SELLER)
+            );
+        }
+
+        static Stream<Arguments> adminUserIdRoleProvider() {
+            return Stream.of(
+                    arguments(1L, UserRole.ROLE_ADMIN)
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("userIdRoleProvider")
+        @DisplayName("Success -유저가 자신의 계정을 삭제 시킨다. 상태코드 204 반환")
+        public void deleteUser_DeleteSelf_Success(Long userId, UserRole userRole) throws Exception {
+            //given
+            String aceessToken = tokenProvider.createAceessToken(userId, userRole);
+            Authentication authenticationByToken = tokenProvider.getAuthentication(aceessToken);
+            doNothing().when(userService).delete(anyLong());
+
+            //when
+            ResultActions resultActions = mockMvc.perform(
+                    delete("/api/v1/users/{userId}", userId)
+                            .header("Authorization", "Bearer " + "{access 토큰}").with(csrf()).with(authentication(authenticationByToken))
+            ).andDo(print());
+            //then
+            resultActions.andExpect(status().isNoContent())
+                    .andDo(
+                            document(
+                                    "deleteUserBySelfSucess",
+                                    requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    )
+                            )
+                    );
+            verify(userService, only()).delete(userId);
+
+        }
+
+
+        @ParameterizedTest
+        @MethodSource("userIdRoleProviderExceptAdmin")
+        @DisplayName("Fail - 관리자가 아닌 유저가 다른유저를 delete 한다. 상태코드 401 반환")
+        public void deleteUser_DiffrentUserId_Fail(Long userId, UserRole role) throws Exception {
+            //given
+            Long targetUserId = userId + 1;
+            String aceessToken = tokenProvider.createAceessToken(userId, role);
+            Authentication authenticationByToken = tokenProvider.getAuthentication(aceessToken);
+            doNothing().when(userService).delete(anyLong());
+
+            //when
+            ResultActions resultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", targetUserId).
+                    with(csrf()).with(authentication(authenticationByToken))
+                    .header("Authorization", "Bearer " + aceessToken)).andDo(print());
+            //then
+            resultActions.andExpect(status().isUnauthorized());
+            verify(userService, never()).delete(targetUserId);
+
+        }
+
+        @ParameterizedTest
+        @MethodSource("adminUserIdRoleProvider")
+        @DisplayName("Success -  관리자가 다른 유저의 계정을 삭제시킨다. 상태코드 204")
+        public void deleteUser_AdminDeleteDiffrentUser_Success(Long userId, UserRole role) throws Exception {
+            //given
+            Long targetUserId = userId + 1;
+            String aceessToken = tokenProvider.createAceessToken(userId, role);
+            Authentication authenticationByToken = tokenProvider.getAuthentication(aceessToken);
+            doNothing().when(userService).delete(anyLong());
+
+            //when
+            ResultActions resultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", targetUserId)
+                    .with(csrf()).with(authentication(authenticationByToken)).header("Authorization", "Bearer " + aceessToken)).andDo(print());
+            //then
+            resultActions.andExpect(status().isNoContent());
+            verify(userService, never()).delete(userId);
+
+        }
+        @ParameterizedTest
+        @MethodSource("adminUserIdRoleProvider")
+        @DisplayName("Fail - 관리자가 삭제되거나 존재하지 않는 유저의 계정을 삭제시킨다. 상태코드 404")
+        public void deleteUser_AdminDeleteAlreadyDeletedOrNotFoundUser_fail(Long userId,UserRole role) throws Exception{
+            //given
+            Long deletedUserId = userId + 1;
+            Long cannotFindUserId = userId + 10;
+            String aceessToken = tokenProvider.createAceessToken(userId, role);
+            Authentication authenticationByToken = tokenProvider.getAuthentication(aceessToken);
+            doThrow(new EntityNotFoundException()).when(userService).delete(deletedUserId);
+            doThrow(new EntityNotFoundException()).when(userService).delete(cannotFindUserId);
+            //when
+            ResultActions deletedUserResultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", deletedUserId)
+                    .with(csrf()).with(authentication(authenticationByToken)).header("Authorization", "Bearer " + aceessToken)).andDo(print());
+            ResultActions cannotFindUserResultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", cannotFindUserId)
+                    .with(csrf()).with(authentication(authenticationByToken)).header("Authorization", "Bearer " + aceessToken)).andDo(print());
+            //then
+            deletedUserResultActions.andExpect(status().isNotFound());
+            cannotFindUserResultActions.andExpect(status().isNotFound());
+
+            verify(userService, times(1)).delete(deletedUserId);
+            verify(userService, times(1)).delete(cannotFindUserId);
+        }
+    }
+
+
+
 }
