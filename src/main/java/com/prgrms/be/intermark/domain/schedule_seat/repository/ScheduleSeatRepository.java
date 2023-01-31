@@ -1,13 +1,14 @@
 package com.prgrms.be.intermark.domain.schedule_seat.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.prgrms.be.intermark.domain.schedule.model.Schedule;
+import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
+import com.prgrms.be.intermark.domain.seat.model.Seat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
+import java.util.List;
+import java.util.Optional;
 
 public interface ScheduleSeatRepository extends JpaRepository<ScheduleSeat, Long> {
 
@@ -17,4 +18,5 @@ public interface ScheduleSeatRepository extends JpaRepository<ScheduleSeat, Long
     @Query("SELECT s FROM ScheduleSeat s LEFT JOIN FETCH s.schedule LEFT JOIN FETCH s.seat WHERE s.schedule.id = :scheduleId ")
     List<ScheduleSeat> findAllByScheduleId(@Param("scheduleId") Long scheduleId);
 
+    Optional<ScheduleSeat> findByScheduleAndSeat(Schedule schedule, Seat seat);
 }

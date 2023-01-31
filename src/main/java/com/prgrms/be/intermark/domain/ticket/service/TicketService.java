@@ -5,8 +5,10 @@ import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.common.service.page.PageService;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
+import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
+import com.prgrms.be.intermark.domain.seat.model.Seat;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseByMusicalDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseByUserDTO;
@@ -115,6 +117,11 @@ public class TicketService {
         if (ticket.isDeleted()) {
             throw new EntityNotFoundException("이미 환불된 티켓입니다.");
         }
+
+        Schedule schedule = ticket.getSchedule();
+        Seat seat = ticket.getSeat();
+        ScheduleSeat scheduleSeat = scheduleSeatRepository.findByScheduleAndSeat(schedule, seat).get();
+        scheduleSeat.refund();
 
         ticket.deleteTicket();
     }
