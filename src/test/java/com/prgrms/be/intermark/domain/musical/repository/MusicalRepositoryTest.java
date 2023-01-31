@@ -56,7 +56,7 @@ class MusicalRepositoryTest {
     class Save {
 
         @Test
-        @DisplayName("성공 - 올바른 값이 들어오면 뮤지컬을 저장한다")
+        @DisplayName("Success - 올바른 값이 들어오면 뮤지컬을 저장한다")
         void saveSuccess() {
             // given & when
             Musical savedMusical = musicalRepository.save(musical);
@@ -71,7 +71,7 @@ class MusicalRepositoryTest {
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"  "})
-        @DisplayName("실패 - 뮤지컬 제목 값에 null, 빈 값, 공백이 입력되면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 제목 값에 null, 빈 값, 공백이 입력되면 저장에 실패한다")
         void saveFailByWrongTitle(String wrongTitle) {
             // given
             Musical musical = Musical.builder()
@@ -95,7 +95,7 @@ class MusicalRepositoryTest {
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"  "})
-        @DisplayName("실패 - 뮤지컬 썸네일 URL 값에 null, 빈 값, 공백이 입력되면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 썸네일 URL 값에 null, 빈 값, 공백이 입력되면 저장에 실패한다")
         void saveFailByWrongThumbnailUrl(String wrongUrl) {
             // given
             Musical musical = Musical.builder()
@@ -117,7 +117,7 @@ class MusicalRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 뮤지컬 관람등급 값이 입력되지 않으면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 관람등급 값이 입력되지 않으면 저장에 실패한다")
         void saveFailByNoViewRating() {
             // given
             Musical musical = Musical.builder()
@@ -138,7 +138,7 @@ class MusicalRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 뮤지컬 장르 값이 입력되지 않으면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 장르 값이 입력되지 않으면 저장에 실패한다")
         void saveFailByNoGenre() {
             // given
             Musical musical = Musical.builder()
@@ -159,7 +159,7 @@ class MusicalRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 뮤지컬 설명 값이 입력되지 않으면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 설명 값이 입력되지 않으면 저장에 실패한다")
         void saveFailByNoDescription() {
             // given
             Musical musical = Musical.builder()
@@ -180,7 +180,7 @@ class MusicalRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 뮤지컬 시작일 값이 입력되지 않으면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 시작일 값이 입력되지 않으면 저장에 실패한다")
         void saveFailByNoStartDate() {
             // given
             Musical musical = Musical.builder()
@@ -201,7 +201,7 @@ class MusicalRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 뮤지컬 종료일 값이 입력되지 않으면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 종료일 값이 입력되지 않으면 저장에 실패한다")
         void saveFailByNoEndDate() {
             // given
             Musical musical = Musical.builder()
@@ -222,7 +222,7 @@ class MusicalRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 뮤지컬 상영시간 값이 입력되지 않으면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 상영시간 값이 입력되지 않으면 저장에 실패한다")
         void saveFailByNoRunningTime() {
             // given
             Musical musical = Musical.builder()
@@ -244,7 +244,7 @@ class MusicalRepositoryTest {
 
         @ParameterizedTest
         @ValueSource(ints = {-1, -100, 0})
-        @DisplayName("실패 - 뮤지컬 상영시간 값에 음수나 0 이 입력되면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 상영시간 값에 음수나 0 이 입력되면 저장에 실패한다")
         void saveFailByWrongRunningTime(int wrongRunningTime) {
             // given
             Musical musical = Musical.builder()
@@ -267,7 +267,7 @@ class MusicalRepositoryTest {
 
 
         @Test
-        @DisplayName("실패 - 뮤지컬 Stadium 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 Stadium 값이 없으면 저장에 실패한다")
         void saveFailByNoStadium() {
             // given
             Musical musical = Musical.builder()
@@ -288,7 +288,7 @@ class MusicalRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 뮤지컬 관리 User 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 뮤지컬 관리 User 값이 없으면 저장에 실패한다")
         void saveFailByNoUser() {
             // given
             Musical musical = Musical.builder()

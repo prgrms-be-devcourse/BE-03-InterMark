@@ -33,7 +33,7 @@ class StadiumServiceTest {
 	class FindById {
 
 		@Test
-		@DisplayName("성공 - id 로 경기장을 조회하면 Stadium 엔티티 반환한다.")
+		@DisplayName("Success - id 로 경기장을 조회하면 Stadium 엔티티 반환한다.")
 		void findByIdSuccess() {
 			// given
 			Stadium stadium = Stadium.builder()
@@ -53,7 +53,7 @@ class StadiumServiceTest {
 		}
 
 		@Test
-		@DisplayName("실패 - 없는 id 가 입력되면 EntityNotFoundException 반환한다.")
+		@DisplayName("Fail - 없는 id 가 입력되면 EntityNotFoundException 반환한다.")
 		void findByIdFail() {
 			// given
 			when(stadiumRepository.findById(anyLong())).thenReturn(Optional.empty());

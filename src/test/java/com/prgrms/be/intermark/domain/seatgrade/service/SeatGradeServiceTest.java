@@ -36,7 +36,7 @@ class SeatGradeServiceTest {
     private final Musical musical = MusicalProvider.createMusical(thumbnailUrl, stadium, user);
 
     @Test
-    @DisplayName("성공 - 정상적인 좌석 등급 값이 들어오면 저장에 성공한다 - save")
+    @DisplayName("Success - 정상적인 좌석 등급 값이 들어오면 저장에 성공한다 - save")
     void saveSuccess() {
         // given
         SeatGrade seatGrade1 = SeatGradeProvider.createSeatGrade("VIP", 10000, musical);

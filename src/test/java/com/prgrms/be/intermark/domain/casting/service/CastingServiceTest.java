@@ -37,7 +37,7 @@ class CastingServiceTest {
     private final Actor actor = ActorProvider.createActor();
 
     @Test
-    @DisplayName("성공 - 정상적인 캐스팅 값이 들어오면 저장에 성공한다 - save")
+    @DisplayName("Success - 정상적인 캐스팅 값이 들어오면 저장에 성공한다 - save")
     void saveSuccess() {
         // given
         Actor actor1 = ActorProvider.createActor("kwon", LocalDate.of(1997, 10, 10), Gender.MALE, "a");

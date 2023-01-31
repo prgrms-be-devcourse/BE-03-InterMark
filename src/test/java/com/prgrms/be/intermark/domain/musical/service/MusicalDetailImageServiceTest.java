@@ -42,7 +42,7 @@ class MusicalDetailImageServiceTest {
         private final Musical musical = MusicalProvider.createMusical(thumbnailUrl, stadium, user);
 
         @Test
-        @DisplayName("성공 - 정상 뮤지컬 상세 이미지 값이 들어오면 저장에 성공한다")
+        @DisplayName("Success - 정상 뮤지컬 상세 이미지 값이 들어오면 저장에 성공한다")
         void saveSuccess() {
             // given
             MusicalDetailImage musicalDetailImage1 = MusicalDetailImageProvider.createMusicalDetailImage("업로드 파일1", "a", musical);

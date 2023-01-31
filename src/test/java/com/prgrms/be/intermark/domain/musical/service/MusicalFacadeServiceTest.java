@@ -94,7 +94,7 @@ class MusicalFacadeServiceTest {
     }
 
     @Test
-    @DisplayName("성공 - 정상 뮤지컬 등록 데이터를 입력하면 등록에 성공한다. - create")
+    @DisplayName("Success - 정상 뮤지컬 등록 데이터를 입력하면 등록에 성공한다. - create")
     void createSuccess() throws IOException {
         // given
         MusicalSeatGradeCreateRequestDTO seatGradeVIP = MusicalSeatGradeCreateRequestDTO.builder()

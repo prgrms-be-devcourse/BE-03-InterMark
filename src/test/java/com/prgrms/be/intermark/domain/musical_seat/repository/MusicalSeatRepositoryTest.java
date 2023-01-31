@@ -69,7 +69,7 @@ class MusicalSeatRepositoryTest {
     class Save {
 
         @Test
-        @DisplayName("성공 - 정상적인 뮤지컬좌석 값이 입력되면 저장에 성공한다")
+        @DisplayName("Success - 정상적인 뮤지컬좌석 값이 입력되면 저장에 성공한다")
         void saveSuccess() {
             // given & when
             MusicalSeat savedMusicalSeat = musicalSeatRepository.save(musicalSeat);
@@ -84,7 +84,7 @@ class MusicalSeatRepositoryTest {
 
 
         @Test
-        @DisplayName("실패 - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
         void saveFailByNoMusical() {
             // given
             MusicalSeat musicalSeat = MusicalSeatProvider.createMusicalSeat(null, seat, seatGrade);
@@ -95,7 +95,7 @@ class MusicalSeatRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 연관된 좌석 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 좌석 값이 없으면 저장에 실패한다")
         void saveFailByNoSeat() {
             // given
             MusicalSeat musicalSeat = MusicalSeatProvider.createMusicalSeat(musical, null, seatGrade);
@@ -106,7 +106,7 @@ class MusicalSeatRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 연관된 좌석 등급 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 좌석 등급 값이 없으면 저장에 실패한다")
         void saveFailByNoSeatGrade() {
             // given
             MusicalSeat musicalSeat = MusicalSeatProvider.createMusicalSeat(musical, seat, null);

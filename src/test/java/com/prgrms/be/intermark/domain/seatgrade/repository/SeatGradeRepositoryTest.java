@@ -61,7 +61,7 @@ class SeatGradeRepositoryTest {
     class Save {
 
         @Test
-        @DisplayName("성공 - 정상 좌석 등급 값이 들어오면 저장에 성공한다")
+        @DisplayName("Success - 정상 좌석 등급 값이 들어오면 저장에 성공한다")
         void saveSuccess() {
             // given & when
             SeatGrade savedSeatGrade = seatGradeRepository.save(seatGrade);
@@ -77,7 +77,7 @@ class SeatGradeRepositoryTest {
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {" "})
-        @DisplayName("실패 - 좌석 등급의 이름으로 null, 빈 값, 공백이 들어오면 저장에 실패한다")
+        @DisplayName("Fail - 좌석 등급의 이름으로 null, 빈 값, 공백이 들어오면 저장에 실패한다")
         void saveFailByWrongName(String wrongName) {
             // given
             SeatGrade wrongSeatGrade = SeatGrade.builder()
@@ -93,7 +93,7 @@ class SeatGradeRepositoryTest {
 
         @ParameterizedTest
         @ValueSource(ints = {-1, -100, 0})
-        @DisplayName("실패 - 좌석 등급의 가격으로 음수, 0 이 들어오면 저장에 실패한다")
+        @DisplayName("Fail - 좌석 등급의 가격으로 음수, 0 이 들어오면 저장에 실패한다")
         void saveFailByWrongPrice(int wrongPrice) {
             // given
             SeatGrade wrongSeatGrade = SeatGrade.builder()
@@ -108,7 +108,7 @@ class SeatGradeRepositoryTest {
         }
 
         @Test
-        @DisplayName("실패 - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
+        @DisplayName("Fail - 연관된 뮤지컬 값이 없으면 저장에 실패한다")
         void saveFailByNoMusical() {
             // given
             SeatGrade wrongSeatGrade = SeatGrade.builder()

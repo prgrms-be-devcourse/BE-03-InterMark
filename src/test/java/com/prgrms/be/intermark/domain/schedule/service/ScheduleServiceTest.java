@@ -36,10 +36,13 @@ class ScheduleServiceTest {
 
     @InjectMocks
     private ScheduleService scheduleService;
+
     @Mock
     private MusicalRepository musicalRepository;
+
     @Mock
     private ScheduleRepository scheduleRepository;
+
     @Mock
     private MusicalSeatRepository musicalSeatRepository;
 

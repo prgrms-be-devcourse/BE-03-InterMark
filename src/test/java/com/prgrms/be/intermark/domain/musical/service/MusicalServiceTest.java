@@ -32,7 +32,7 @@ class MusicalServiceTest {
 
 
     @Test
-    @DisplayName("성공 - 올바른 값이 들어오면 뮤지컬을 저장한다 - save")
+    @DisplayName("Success - 올바른 값이 들어오면 뮤지컬을 저장한다 - save")
     void saveSuccess() {
         // given
         when(musicalRepository.save(musical)).thenReturn(any(Musical.class));
