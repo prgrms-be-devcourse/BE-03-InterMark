@@ -258,7 +258,19 @@ class TicketServiceTest {
         assertThat(responseDto.getNowPage()).isEqualTo(1);
     }
 
-    // 실패 테스트
+    @Test
+    @DisplayName("Fail - 존재하지 않는 유저로 티켓을 조회하면 EntityNotFoundException 발생")
+    void findTicketsByUserFail() {
+        // given
+        PageRequest pageRequest = PageRequest.of(0, tickets.size());
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+
+        // when - then
+        assertThatThrownBy(() -> ticketService.getTicketsByUser(user.getId(), pageRequest))
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 유저가 존재하지 않습니다.");
+    }
 
     @Test
     @DisplayName("Success - 뮤지컬로 티켓을 조회하면 해당 뮤지컬의 티켓 정보 리스트 반환")
