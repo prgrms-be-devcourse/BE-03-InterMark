@@ -308,4 +308,35 @@ class TicketServiceTest {
                 .isExactlyInstanceOf(EntityNotFoundException.class)
                 .hasMessage("해당 뮤지컬이 존재하지 않습니다.");
     }
+
+    @Test
+    @DisplayName("Success - 티켓을 조회하면 티켓 정보 반환")
+    void findTicketSuccess() {
+        // given
+        Ticket ticket = tickets.get(0);
+
+        when(ticketRepository.findById(ticket.getId())).thenReturn(Optional.of(ticket));
+
+        // when
+        TicketResponseDTO responseDto = ticketService.getTicketById(ticket.getId());
+
+        // then
+        verify(ticketRepository).findById(ticket.getId());
+        assertThat(responseDto).isEqualTo(TicketResponseDTO.from(ticket));
+    }
+
+    @Test
+    @DisplayName("Fail - 존재하지 않는 티켓을 조회하면 EntityNotFoundException 발생")
+    void findTicketFail() {
+        // given
+        long notExistedTicketId = 0L;
+        when(ticketRepository.findById(notExistedTicketId)).thenReturn(Optional.empty());
+
+        // when - then
+        assertThatThrownBy(() -> ticketService.getTicketById(notExistedTicketId))
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 티켓이 존재하지 않습니다.");
+
+        verify(ticketRepository).findById(notExistedTicketId);
+    }
 }
