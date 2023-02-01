@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,7 +25,6 @@ public class S3ImageUploadService implements ImageUploadService {
 	private String bucketName;
 
 	@Override
-	@Transactional
 	public ImageResponseDTO uploadImage(MultipartFile multipartFile, String subPath) {
 
 		if (multipartFile.isEmpty()) {
@@ -51,7 +49,6 @@ public class S3ImageUploadService implements ImageUploadService {
 	}
 
 	@Override
-	@Transactional
 	public List<ImageResponseDTO> uploadImages(List<MultipartFile> multipartFiles, String dir) {
 		return multipartFiles.stream()
 			.map(multipartFile -> uploadImage(multipartFile, dir))
