@@ -86,7 +86,7 @@ public class MusicalFacadeService {
     @Transactional
     public void update(
             Long musicalId,
-            MusicalUpdateRequestDTO musicalSeatUpdateRequestDTO,
+            MusicalUpdateRequestDTO musicalUpdateRequestDTO,
             MultipartFile thumbnailImage,
             List<MultipartFile> detailImages
     ) {
@@ -100,17 +100,17 @@ public class MusicalFacadeService {
             throw new IllegalArgumentException("이미 예약된 뮤지컬입니다.");
         }
 
-        ImageResponseDTO thumbnailInfo = imageUploadService.uploadImage(thumbnailImage,THUMBNAIL_PATH);
-        Stadium stadium = stadiumService.findById(musicalSeatUpdateRequestDTO.stadiumId());
-        User manager = userService.findByIdForFacade(musicalSeatUpdateRequestDTO.managerId());
+        ImageResponseDTO thumbnailInfo = imageUploadService.uploadImage(thumbnailImage, THUMBNAIL_PATH);
+        Stadium stadium = stadiumService.findById(musicalUpdateRequestDTO.stadiumId());
+        User manager = userService.findByIdForFacade(musicalUpdateRequestDTO.managerId());
 
-        seatGradeService.update(musicalSeatUpdateRequestDTO.seatGrades(), musical);
-        musicalSeatService.update(musicalSeatUpdateRequestDTO.seats(), musicalSeatUpdateRequestDTO.stadiumId(), musical);
-        castingService.update(musicalSeatUpdateRequestDTO.actors(), musical);
+        seatGradeService.update(musicalUpdateRequestDTO.seatGrades(), musical);
+        musicalSeatService.update(musicalUpdateRequestDTO.seats(), musicalUpdateRequestDTO.stadiumId(), musical);
+        castingService.update(musicalUpdateRequestDTO.actors(), musical);
 
         List<ImageResponseDTO> detailImagesInfo = imageUploadService.uploadImages(detailImages, DETAIL_IMAGES_PATH);
         musicalDetailImageService.update(detailImagesInfo, musical);
-        musicalService.updateMusical(musical, musicalSeatUpdateRequestDTO, thumbnailInfo.path(), stadium, manager);
+        musicalService.updateMusical(musical, musicalUpdateRequestDTO, thumbnailInfo.path(), stadium, manager);
     }
 
     @Transactional(readOnly = true)
