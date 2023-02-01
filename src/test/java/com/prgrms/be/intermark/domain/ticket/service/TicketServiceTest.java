@@ -339,4 +339,35 @@ class TicketServiceTest {
 
         verify(ticketRepository).findById(notExistedTicketId);
     }
+
+    @Test
+    @DisplayName("Success - 티켓을 삭제하면 ")
+    void deleteTicketSuccess() {
+        // given
+        Ticket ticket = tickets.get(0);
+
+        when(ticketRepository.findById(ticket.getId())).thenReturn(Optional.of(ticket));
+
+        // when
+        ticketService.deleteTicket(ticket.getId());
+
+        // then
+        verify(ticketRepository).findById(ticket.getId());
+        assertThat(ticket.isDeleted()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("Fail - 존재하지 않는 티켓을 삭제하면 EntityNotFoundException 발생")
+    void deleteTicketFail() {
+        // given
+        long notExistedTicketId = 0L;
+        when(ticketRepository.findById(notExistedTicketId)).thenReturn(Optional.empty());
+
+        // when - then
+        assertThatThrownBy(() -> ticketService.deleteTicket(notExistedTicketId))
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage("존재하지 않는 티켓입니다.");
+
+        verify(ticketRepository).findById(notExistedTicketId);
+    }
 }
