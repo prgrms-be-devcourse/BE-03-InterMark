@@ -1,5 +1,8 @@
 package com.prgrms.be.intermark.domain.ticket.service;
 
+import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
+import com.prgrms.be.intermark.common.service.page.PageService;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
@@ -10,12 +13,14 @@ import com.prgrms.be.intermark.domain.seat.model.Seat;
 import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
+import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseDTO;
 import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,10 +28,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.prgrms.be.intermark.util.TestUtil.*;
@@ -48,6 +56,9 @@ class TicketServiceTest {
 
     @Mock
     private TicketRepository ticketRepository;
+
+    @Mock
+    private PageService pageService;
 
     User user;
     Stadium stadium;
@@ -173,5 +184,47 @@ class TicketServiceTest {
         assertThatThrownBy(() -> ticketService.createTicket(request))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 스케줄입니다.");
+    }
+
+    @Test
+    @DisplayName("Success - 예매 내역을 전체 조회하면 전체 예매 내역 리스트 반환")
+    void findAllTickets() {
+        // given
+        List<Ticket> tickets = List.of(
+                Ticket.builder()
+                        .user(user)
+                        .schedule(schedule)
+                        .seat(Seat.builder().build())
+                        .seatGrade(SeatGrade.builder().build())
+                        .musical(musical)
+                        .stadium(stadium).build(),
+                Ticket.builder()
+                        .user(user)
+                        .schedule(schedule)
+                        .seat(Seat.builder().build())
+                        .seatGrade(SeatGrade.builder().build())
+                        .musical(musical)
+                        .stadium(stadium).build()
+        );
+
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        PageImpl<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest, tickets.size());
+
+        PageResponseDTO<Ticket, TicketResponseDTO> ticketsResponseDto = new PageResponseDTO<>(
+                ticketPage, TicketResponseDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
+
+        when(ticketRepository.findAll(pageRequest)).thenReturn(ticketPage);
+        when(ticketRepository.count()).thenReturn((long) tickets.size());
+        when(pageService.getPageRequest(pageRequest, tickets.size())).thenReturn(pageRequest);
+
+        // when
+        PageResponseDTO<Ticket, TicketResponseDTO> responseDto = ticketService.getAllTickets(pageRequest);
+
+        // then
+        verify(ticketRepository).findAll(pageRequest);
+        verify(ticketRepository).count();
+        verify(pageService).getPageRequest(pageRequest, tickets.size());
+        assertThat(responseDto.getData()).isEqualTo(ticketsResponseDto.getData());
+        assertThat(responseDto.getNowPage()).isEqualTo(1);
     }
 }
