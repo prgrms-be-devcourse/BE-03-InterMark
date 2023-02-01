@@ -6,6 +6,7 @@ import com.prgrms.be.intermark.common.service.page.PageService;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
+import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
@@ -13,6 +14,7 @@ import com.prgrms.be.intermark.domain.seat.model.Seat;
 import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
+import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseByMusicalDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseByUserDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseDTO;
 import com.prgrms.be.intermark.domain.ticket.model.Ticket;
@@ -51,6 +53,9 @@ class TicketServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private MusicalRepository musicalRepository;
 
     @Mock
     private ScheduleSeatRepository scheduleSeatRepository;
@@ -247,6 +252,31 @@ class TicketServiceTest {
         // when
         PageResponseDTO<Ticket, TicketResponseByUserDTO> responseDto = ticketService.getTicketsByUser(
                 user.getId(), pageRequest);
+
+        // then
+        assertThat(responseDto.getData()).isEqualTo(ticketsResponseDto.getData());
+        assertThat(responseDto.getNowPage()).isEqualTo(1);
+    }
+
+    // 실패 테스트
+
+    @Test
+    @DisplayName("Success - 뮤지컬로 티켓을 조회하면 해당 뮤지컬의 티켓 정보 리스트 반환")
+    void findTicketsByMusicalSuccess() {
+        // given
+        PageRequest pageRequest = PageRequest.of(0, tickets.size());
+        PageImpl<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest, tickets.size());
+        PageResponseDTO<Ticket, TicketResponseByMusicalDTO> ticketsResponseDto = new PageResponseDTO<>(
+                ticketPage, TicketResponseByMusicalDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
+
+        when(musicalRepository.findById(musical.getId())).thenReturn(Optional.of(musical));
+        when(ticketRepository.findByMusical(musical, pageRequest)).thenReturn(ticketPage);
+        when(ticketRepository.countByMusical(musical)).thenReturn((long) tickets.size());
+        when(pageService.getPageRequest(pageRequest, tickets.size())).thenReturn(pageRequest);
+
+        // when
+        PageResponseDTO<Ticket, TicketResponseByMusicalDTO> responseDto = ticketService.getTicketsByMusical(
+                musical.getId(), pageRequest);
 
         // then
         assertThat(responseDto.getData()).isEqualTo(ticketsResponseDto.getData());

@@ -157,4 +157,34 @@ class TicketRepositoryTest {
         List<Ticket> ticketsByUser = tickets.stream().filter(ticket -> ticket.getUser() == user).toList();
         assertThat(usersCnt).isEqualTo(ticketsByUser.size());
     }
+
+    @Test
+    @DisplayName("Success - 뮤지컬로 티켓을 조회하면 해당 뮤지컬 티켓 페이지 반환")
+    @Transactional
+    void findByMusicalSuccess() {
+        // given
+        ticketRepository.saveAll(tickets);
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        PageImpl<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest, tickets.size());
+
+        // when
+        Page<Ticket> foundTickets = ticketRepository.findByMusical(musical, pageRequest);
+
+        // then
+        assertThat(foundTickets).isEqualTo(ticketPage);
+    }
+
+    @Test
+    @DisplayName("Success - 해당 뮤지컬의 티켓의 개수를 조회하면 티켓의 개수 반환")
+    void countByMusicalSuccess() {
+        // given
+        ticketRepository.saveAll(tickets);
+
+        // when
+        long usersCnt = ticketRepository.countByMusical(musical);
+
+        // then
+        List<Ticket> ticketsByMusical = tickets.stream().filter(ticket -> ticket.getMusical() == musical).toList();
+        assertThat(usersCnt).isEqualTo(ticketsByMusical.size());
+    }
 }
