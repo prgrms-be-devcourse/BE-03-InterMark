@@ -121,4 +121,10 @@ public class UserService {
                 .orElseThrow(EntityNotFoundException::new);
         user.deleteUser();
     }
+
+    @Transactional
+    public void updateRole(Long targetUserId, UserRole targetUserRole) {
+        User user = userRepository.findByIdAndIsDeletedFalse(targetUserId).orElseThrow(EntityNotFoundException::new );
+        user.setRole(targetUserRole);
+    }
 }

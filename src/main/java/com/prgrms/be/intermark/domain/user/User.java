@@ -97,4 +97,8 @@ public class User {
     public boolean isDeleted() {
         return this.isDeleted;
     }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
 }
