@@ -294,4 +294,18 @@ class TicketServiceTest {
         assertThat(responseDto.getData()).isEqualTo(ticketsResponseDto.getData());
         assertThat(responseDto.getNowPage()).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("Fail - 존재하지 않는 뮤지컬로 티켓을 조회하면 EntityNotFoundException 발생")
+    void findTicketsByMusicalFail() {
+        // given
+        PageRequest pageRequest = PageRequest.of(0, tickets.size());
+
+        when(musicalRepository.findById(musical.getId())).thenReturn(Optional.empty());
+
+        // when - then
+        assertThatThrownBy(() -> ticketService.getTicketsByMusical(musical.getId(), pageRequest))
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 뮤지컬이 존재하지 않습니다.");
+    }
 }
