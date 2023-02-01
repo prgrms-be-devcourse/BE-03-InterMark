@@ -13,6 +13,7 @@ import com.prgrms.be.intermark.domain.seat.model.Seat;
 import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
+import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseByUserDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseDTO;
 import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
@@ -67,6 +68,7 @@ class TicketServiceTest {
     SeatGrade seatGrade;
     Schedule schedule;
     ScheduleSeat scheduleSeat;
+    List<Ticket> tickets;
 
     @BeforeEach
     void init() {
@@ -77,6 +79,22 @@ class TicketServiceTest {
         seatGrade = createSeatGrade("VIP", 10000, musical);
         schedule = createSchedule(LocalDateTime.now(), LocalDateTime.now().plusHours(2), musical);
         scheduleSeat = createScheduleSeat(false, seat, seatGrade, schedule);
+        tickets = List.of(
+                Ticket.builder()
+                        .user(user)
+                        .schedule(schedule)
+                        .seat(Seat.builder().build())
+                        .seatGrade(SeatGrade.builder().build())
+                        .musical(musical)
+                        .stadium(stadium).build(),
+                Ticket.builder()
+                        .user(user)
+                        .schedule(schedule)
+                        .seat(Seat.builder().build())
+                        .seatGrade(SeatGrade.builder().build())
+                        .musical(musical)
+                        .stadium(stadium).build()
+        );
     }
 
     @Test
@@ -188,25 +206,8 @@ class TicketServiceTest {
 
     @Test
     @DisplayName("Success - 예매 내역을 전체 조회하면 전체 예매 내역 리스트 반환")
-    void findAllTickets() {
+    void findAllTicketsSuccess() {
         // given
-        List<Ticket> tickets = List.of(
-                Ticket.builder()
-                        .user(user)
-                        .schedule(schedule)
-                        .seat(Seat.builder().build())
-                        .seatGrade(SeatGrade.builder().build())
-                        .musical(musical)
-                        .stadium(stadium).build(),
-                Ticket.builder()
-                        .user(user)
-                        .schedule(schedule)
-                        .seat(Seat.builder().build())
-                        .seatGrade(SeatGrade.builder().build())
-                        .musical(musical)
-                        .stadium(stadium).build()
-        );
-
         PageRequest pageRequest = PageRequest.of(0, 2);
         PageImpl<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest, tickets.size());
 
@@ -224,6 +225,30 @@ class TicketServiceTest {
         verify(ticketRepository).findAll(pageRequest);
         verify(ticketRepository).count();
         verify(pageService).getPageRequest(pageRequest, tickets.size());
+        assertThat(responseDto.getData()).isEqualTo(ticketsResponseDto.getData());
+        assertThat(responseDto.getNowPage()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Success - 유저로 티켓을 조회하면 해당 유저가 예매한 티켓 정보 리스트 반환")
+    void findTicketsByUserSuccess() {
+        // given
+        PageRequest pageRequest = PageRequest.of(0, tickets.size());
+        PageImpl<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest, tickets.size());
+
+        PageResponseDTO<Ticket, TicketResponseByUserDTO> ticketsResponseDto = new PageResponseDTO<>(
+                ticketPage, TicketResponseByUserDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(ticketRepository.findByUser(user, pageRequest)).thenReturn(ticketPage);
+        when(ticketRepository.countByUser(user)).thenReturn((long) tickets.size());
+        when(pageService.getPageRequest(pageRequest, tickets.size())).thenReturn(pageRequest);
+
+        // when
+        PageResponseDTO<Ticket, TicketResponseByUserDTO> responseDto = ticketService.getTicketsByUser(
+                user.getId(), pageRequest);
+
+        // then
         assertThat(responseDto.getData()).isEqualTo(ticketsResponseDto.getData());
         assertThat(responseDto.getNowPage()).isEqualTo(1);
     }
