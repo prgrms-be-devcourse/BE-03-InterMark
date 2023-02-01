@@ -39,6 +39,9 @@ public class CastingService {
                             .actor(actor)
                             .musical(musical)
                             .build();
+                    casting.setActor(actor);
+                    casting.setMusical(musical);
+
                     castingRepository.save(casting);
                 });
     }

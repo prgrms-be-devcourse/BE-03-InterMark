@@ -27,10 +27,10 @@ public class MusicalDetailImageService {
         imageResponseDTOs.forEach(
                 imageResponse -> {
                     MusicalDetailImage detailImage = MusicalDetailImage.builder()
-                            .musical(musical)
                             .originalFileName(imageResponse.originalFileName())
                             .imageUrl(imageResponse.path())
                             .build();
+                    detailImage.setMusical(musical);
 
                     musicalDetailImageRepository.save(detailImage);
                 }
