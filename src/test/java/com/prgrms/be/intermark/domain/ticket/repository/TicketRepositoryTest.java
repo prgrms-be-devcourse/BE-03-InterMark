@@ -187,4 +187,18 @@ class TicketRepositoryTest {
         List<Ticket> ticketsByMusical = tickets.stream().filter(ticket -> ticket.getMusical() == musical).toList();
         assertThat(usersCnt).isEqualTo(ticketsByMusical.size());
     }
+
+    @Test
+    @DisplayName("Success - 특정 뮤지컬에 대한 예매의 존재 여부를 조회하면 참 또는 거짓 반환")
+    void isExistTicketByMusical() {
+        // given
+        Ticket ticket = tickets.get(0);
+        ticketRepository.save(ticket);
+
+        // when
+        boolean isExist = ticketRepository.existsByMusical(musical);
+
+        // then
+        assertThat(isExist).isEqualTo(true);
+    }
 }

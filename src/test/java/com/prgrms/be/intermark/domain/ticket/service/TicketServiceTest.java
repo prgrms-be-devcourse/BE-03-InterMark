@@ -370,4 +370,17 @@ class TicketServiceTest {
 
         verify(ticketRepository).findById(notExistedTicketId);
     }
+
+    @Test
+    @DisplayName("Success - 특정 뮤지컬에 대한 예매를 조회하면 참 또는 거짓 반환")
+    void isExistTicketByMusical() {
+        // given
+        when(ticketRepository.existsByMusical(musical)).thenReturn(true);
+
+        // when
+        boolean isExist = ticketService.existsByMusical(musical);
+
+        // then
+        assertThat(isExist).isEqualTo(true);
+    }
 }
