@@ -40,8 +40,8 @@ public class TicketService {
         User user = userRepository.findByIdAndIsDeletedFalse(ticketCreateRequestDTO.userId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 유저입니다."));
 
-        ScheduleSeat scheduleSeat = scheduleSeatRepository.findByScheduleSeatFetch(ticketCreateRequestDTO.scheduleSeatId())
-            .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 스케줄좌석입니다."));
+        ScheduleSeat scheduleSeat = scheduleSeatRepository.findByScheduleSeatFetchWithLock(ticketCreateRequestDTO.scheduleSeatId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 스케줄좌석입니다."));
 
         if (scheduleSeat.isReserved()) {
             throw new IllegalArgumentException("이미 예약된 좌석입니다.");
@@ -60,8 +60,7 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public PageResponseDTO<Ticket, TicketResponseDTO> getAllTickets(Pageable pageable) {
-        PageRequest pageRequest = pageService.getPageRequest(pageable, (int) ticketRepository.count());
-        Page<Ticket> ticketPage = ticketRepository.findAll(pageRequest);
+        Page<Ticket> ticketPage = ticketRepository.findAll(pageable);
 
         return new PageResponseDTO<>(ticketPage, TicketResponseDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
     }
