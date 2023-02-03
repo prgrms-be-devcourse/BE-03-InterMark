@@ -32,7 +32,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
                 .getRegistrationId()
                 .toUpperCase());
         String socialId = oAuth2User.getName();
-        Optional<User> userAlreadyExist = userRepository.findBySocialTypeAndSocialIdIsDeletedFalse(socialType, socialId);
+        Optional<User> userAlreadyExist = userRepository.findBySocialTypeAndSocialIdAndIsDeletedFalse(socialType, socialId);
         if(userAlreadyExist.isPresent()) {
             UserRole role = userAlreadyExist.get().getRole();
             return new CustomUserPrincipal("sub", role, oAuth2User.getAttributes());

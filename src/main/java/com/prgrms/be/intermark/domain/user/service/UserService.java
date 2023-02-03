@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.security.auth.login.AccountExpiredException;
 import java.util.Optional;
 
 import static com.prgrms.be.intermark.auth.constant.JwtConstants.THREE_DAYS_MSEC;
@@ -41,7 +42,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserIdAndRoleDTO join(OAuth2User oauth2User, String social) {
+    public UserIdAndRoleDTO join(OAuth2User oauth2User, String social) throws AccountExpiredException{
         SocialType socialType = SocialType.valueOf(social.toUpperCase());
         String socialId = oauth2User.getName();
         GrantedAuthority[] grantedAuthorities = oauth2User.getAuthorities().toArray(new GrantedAuthority[0]);
@@ -60,6 +61,9 @@ public class UserService {
                     log.info("첫 로그인 감지. 자동 회원가입을 진행합니다.");
                     return userRepository.save(authAttribute.toEntity());
                 });
+        if (foundedUser.isDeleted()) {
+            throw new AccountExpiredException("삭제된 유저입니다.");
+        }
         return new UserIdAndRoleDTO(foundedUser.getId(), foundedUser.getRole());
     }
 
@@ -116,7 +120,7 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(Long userId) throws EntityNotFoundException{
+    public void delete(Long userId) throws EntityNotFoundException {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(EntityNotFoundException::new);
         user.deleteUser();
@@ -124,7 +128,7 @@ public class UserService {
 
     @Transactional
     public void updateRole(Long targetUserId, UserRole targetUserRole) {
-        User user = userRepository.findByIdAndIsDeletedFalse(targetUserId).orElseThrow(EntityNotFoundException::new );
+        User user = userRepository.findByIdAndIsDeletedFalse(targetUserId).orElseThrow(EntityNotFoundException::new);
         user.setRole(targetUserRole);
     }
 }
