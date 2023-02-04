@@ -1,6 +1,11 @@
 package com.prgrms.be.intermark.common.exception;
 
-import com.prgrms.be.intermark.common.dto.ErrorResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+
+import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -10,10 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
+import com.prgrms.be.intermark.common.dto.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalControllerAdvice {
@@ -82,6 +84,16 @@ public class GlobalControllerAdvice {
 
 	@ExceptionHandler(DateTimeParseException.class)
 	public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException e) {
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.BAD_REQUEST,
+				e.getMessage(),
+				LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
 		ErrorResponse errorResponse = ErrorResponse.of(
 				HttpStatus.BAD_REQUEST,
 				e.getMessage(),
