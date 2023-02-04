@@ -1,5 +1,34 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.prgrms.be.intermark.common.config.S3MockConfig;
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.domain.actor.dto.ActorResponseDTO;
 import com.prgrms.be.intermark.domain.actor.model.Actor;
@@ -7,7 +36,12 @@ import com.prgrms.be.intermark.domain.actor.model.Gender;
 import com.prgrms.be.intermark.domain.actor.repository.ActorRepository;
 import com.prgrms.be.intermark.domain.casting.model.Casting;
 import com.prgrms.be.intermark.domain.casting.repository.CastingRepository;
-import com.prgrms.be.intermark.domain.musical.dto.*;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailImageResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
@@ -29,29 +63,19 @@ import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
-import com.prgrms.be.intermark.domain.util.*;
+import com.prgrms.be.intermark.domain.util.ActorProvider;
+import com.prgrms.be.intermark.domain.util.ScheduleProvider;
+import com.prgrms.be.intermark.domain.util.SeatProvider;
+import com.prgrms.be.intermark.domain.util.StadiumProvider;
+import com.prgrms.be.intermark.domain.util.UserProvider;
 import com.prgrms.be.intermark.util.TestUtil;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import io.findify.s3mock.S3Mock;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
+@Import(S3MockConfig.class)
 @SpringBootTest
 @Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MusicalFacadeServiceTest {
 
     @Autowired
@@ -84,6 +108,12 @@ class MusicalFacadeServiceTest {
     @Autowired
     private MusicalDetailImageRepository musicalDetailImageRepository;
 
+    @Autowired
+    private AmazonS3 amazonS3;
+
+    @Autowired
+    private S3Mock s3Mock;
+
     private User user;
     private Stadium stadium;
     private Seat seat1;
@@ -99,8 +129,11 @@ class MusicalFacadeServiceTest {
     private MockMultipartFile detailImage1;
     private MockMultipartFile detailImage2;
 
-    @BeforeEach
+    @BeforeAll
     void setUp() throws IOException {
+        s3Mock.start();
+        amazonS3.createBucket("intermark");
+
         user = UserProvider.createUser();
         stadium = StadiumProvider.createStadium();
         seat1 = SeatProvider.createSeat("A", 1, stadium);
@@ -153,8 +186,14 @@ class MusicalFacadeServiceTest {
                 "src/test/resources/testMusicalDetailImage2.jpg");
     }
 
+    @AfterAll
+    void tearDown() {
+        amazonS3.shutdown();
+        s3Mock.stop();
+    }
+
     @Test
-    @DisplayName("성공 - 정상 뮤지컬 등록 데이터를 입력하면 등록에 성공한다. - create")
+    @DisplayName("Success - 정상 뮤지컬 등록 데이터를 입력하면 등록에 성공한다. - create")
     void createSuccess() {
 
         // given & when
