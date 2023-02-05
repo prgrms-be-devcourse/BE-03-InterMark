@@ -1,6 +1,7 @@
 package com.prgrms.be.intermark.domain.ticket.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -123,8 +124,8 @@ public class TicketService {
 
         Schedule schedule = ticket.getSchedule();
         Seat seat = ticket.getSeat();
-        ScheduleSeat scheduleSeat = scheduleSeatRepository.findByScheduleAndSeat(schedule, seat).get();
-        scheduleSeat.refund();
+        Optional<ScheduleSeat> scheduleSeat = scheduleSeatRepository.findByScheduleAndSeat(schedule, seat);
+        scheduleSeat.ifPresent(ScheduleSeat::refund);
 
         ticket.deleteTicket();
     }
