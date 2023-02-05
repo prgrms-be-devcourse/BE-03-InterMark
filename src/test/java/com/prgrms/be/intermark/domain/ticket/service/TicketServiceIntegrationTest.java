@@ -1,5 +1,21 @@
 package com.prgrms.be.intermark.domain.ticket.service;
 
+import static com.prgrms.be.intermark.util.TestUtil.*;
+import static org.assertj.core.api.Assertions.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
@@ -23,20 +39,6 @@ import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import static com.prgrms.be.intermark.util.TestUtil.*;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -116,8 +118,8 @@ class TicketServiceIntegrationTest {
         Ticket ticket = ticketRepository.findById(ticketId).get();
 
         // then
-        Assertions.assertThat(ticketId).isEqualTo(ticket.getId());
-        Assertions.assertThat(request.userId()).isEqualTo(ticket.getUser().getId());
+        assertThat(ticketId).isEqualTo(ticket.getId());
+        assertThat(request.userId()).isEqualTo(ticket.getUser().getId());
     }
 
     @Test
@@ -181,5 +183,57 @@ class TicketServiceIntegrationTest {
         assertThatThrownBy(() -> ticketService.createTicket(request))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 스케줄입니다.");
+    }
+
+    @Nested
+    @DisplayName("deleteTicket")
+    class DeleteTicket {
+
+        @Test
+        @DisplayName("Success - 입력 받은 티켓 id 에 해당하는 티켓을 환불한다.")
+        void deleteTicketSuccess() {
+           // given
+            TicketCreateRequestDTO request = TicketCreateRequestDTO.builder()
+                    .userId(user.getId())
+                    .scheduleSeatId(scheduleSeat.getId())
+                    .build();
+            Long ticketId = ticketService.createTicket(request);
+            Ticket ticket = ticketRepository.findById(ticketId).get();
+
+            // when
+            ticketService.deleteTicket(ticketId);
+
+           // then
+            assertThat(ticket.isDeleted()).isTrue();
+            assertThat(scheduleSeat.isReserved()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Fail - 입력 받은 티켓 id 가 없으면 티켓을 환불에 실패한다.")
+        void deleteTicketFailByNoTicket() {
+            // given
+            Long notExistId = 0L;
+
+            // when & then
+            assertThatThrownBy(() -> ticketService.deleteTicket(notExistId))
+                    .isExactlyInstanceOf(EntityNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("Fail - 입력 받은 티켓 id 가 이미 환불되었으면 티켓을 환불에 실패한다.")
+        void deleteTicketFailByAlreadyDelete() {
+            // given
+            TicketCreateRequestDTO request = TicketCreateRequestDTO.builder()
+                    .userId(user.getId())
+                    .scheduleSeatId(scheduleSeat.getId())
+                    .build();
+            Long ticketId = ticketService.createTicket(request);
+            ticketService.deleteTicket(ticketId);
+
+            // when & then
+            assertThatThrownBy(() -> ticketService.deleteTicket(ticketId))
+                    .isExactlyInstanceOf(EntityNotFoundException.class);
+
+        }
     }
 }
