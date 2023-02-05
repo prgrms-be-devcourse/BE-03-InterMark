@@ -351,7 +351,7 @@ class TicketServiceTest {
     }
 
     @Test
-    @DisplayName("Success - 티켓을 삭제하면 ")
+    @DisplayName("Success - 티켓을 삭제하면 isDeleted = true 값 변경")
     void deleteTicketSuccess() {
         // given
         Ticket ticket = tickets.get(0);
