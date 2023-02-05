@@ -58,6 +58,8 @@ class ScheduleServiceTest {
 
     @Mock
     private TicketRepository ticketRepository;
+
+    @Mock
     private ScheduleSeatRepository scheduleSeatRepository;
 
     private final Stadium stadium = Stadium.builder()
