@@ -9,10 +9,15 @@ import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
+import com.prgrms.be.intermark.domain.seat.model.Seat;
+import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
 import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
+import com.prgrms.be.intermark.domain.ticket.model.Ticket;
+import com.prgrms.be.intermark.domain.ticket.model.TicketStatus;
+import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
@@ -50,6 +55,9 @@ class ScheduleServiceTest {
 
     @Mock
     private MusicalSeatRepository musicalSeatRepository;
+
+    @Mock
+    private TicketRepository ticketRepository;
 
     @Mock
     private ScheduleSeatRepository scheduleSeatRepository;
@@ -270,6 +278,39 @@ class ScheduleServiceTest {
         // then
         verify(scheduleRepository).findById(schedule.getId());
         assertThat(schedule.isDeleted()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("Fail - 예매 내역이 있는 스케줄을 삭제하면 IllegalStateException 발생")
+    void deleteScheduleHasTicketFail() {
+        // given
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Schedule schedule = Schedule.builder()
+                .startTime(LocalDateTime.parse("2022-12-31 11:00", formatter))
+                .endTime(LocalDateTime.parse("2022-12-31 12:20", formatter))
+                .musical(musical)
+                .build();
+
+        Ticket ticket = Ticket.builder()
+                .ticketStatus(TicketStatus.AVAILABLE)
+                .user(user)
+                .schedule(schedule)
+                .seat(Seat.builder().build())
+                .seatGrade(SeatGrade.builder().build())
+                .musical(musical)
+                .stadium(stadium)
+                .build();
+
+        ticket.setSchedule(schedule);
+
+        when(scheduleRepository.findById(schedule.getId())).thenReturn(Optional.of(schedule));
+
+        // when - then
+        assertThatThrownBy(() -> scheduleService.deleteSchedule(schedule.getId()))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("예매된 스케줄은 삭제할 수 없습니다.");
+
+        verify(scheduleRepository).findById(schedule.getId());
     }
 
     @Test
