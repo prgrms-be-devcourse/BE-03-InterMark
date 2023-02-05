@@ -4,7 +4,6 @@ import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.common.service.page.PageService;
 import static com.prgrms.be.intermark.util.TestUtil.*;
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
@@ -43,27 +42,13 @@ import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
 
-import org.assertj.core.api.Condition;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import static com.prgrms.be.intermark.util.TestUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TicketServiceTest {
@@ -85,7 +70,7 @@ class TicketServiceTest {
 
     @Mock
     private PageService pageService;
-    
+
     private Ticket savedTicket;
 
     @Mock
@@ -408,62 +393,63 @@ class TicketServiceTest {
         // then
         assertThat(isExist).isEqualTo(true);
 
-    @Nested
-    @DisplayName("deleteTicket")
-    class DeleteTicket {
+        @Nested
+        @DisplayName("deleteTicket")
+        class DeleteTicket {
 
-        @Test
-        @DisplayName("Success - 입력 받은 티켓 id 에 해당하는 티켓을 환불한다.")
-        void deleteTicketSuccess() {
-            // given
-            Long ticketId = 1L;
-            when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(savedTicket));
-            when(savedTicket.isDeleted()).thenReturn(false);
-            when(savedTicket.getSchedule()).thenReturn(schedule);
-            when(savedTicket.getSeat()).thenReturn(seat);
-            when(scheduleSeatRepository.findByScheduleAndSeat(schedule, seat)).thenReturn(Optional.of(savedScheduleSeat));
-            doNothing().when(savedScheduleSeat).refund();
-            doNothing().when(savedTicket).deleteTicket();
+            @Test
+            @DisplayName("Success - 입력 받은 티켓 id 에 해당하는 티켓을 환불한다.")
+            void deleteTicketSuccess() {
+                // given
+                Long ticketId = 1L;
+                when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(savedTicket));
+                when(savedTicket.isDeleted()).thenReturn(false);
+                when(savedTicket.getSchedule()).thenReturn(schedule);
+                when(savedTicket.getSeat()).thenReturn(seat);
+                when(scheduleSeatRepository.findByScheduleAndSeat(schedule, seat)).thenReturn(Optional.of(savedScheduleSeat));
+                doNothing().when(savedScheduleSeat).refund();
+                doNothing().when(savedTicket).deleteTicket();
 
-            // when
-            ticketService.deleteTicket(ticketId);
+                // when
+                ticketService.deleteTicket(ticketId);
 
-            // then
-            verify(ticketRepository).findById(ticketId);
-            verify(savedTicket).isDeleted();
-            verify(savedTicket).getSchedule();
-            verify(savedTicket).getSeat();
-            verify(scheduleSeatRepository).findByScheduleAndSeat(schedule, seat);
-            verify(savedScheduleSeat).refund();
-            verify(savedTicket).deleteTicket();
-        }
+                // then
+                verify(ticketRepository).findById(ticketId);
+                verify(savedTicket).isDeleted();
+                verify(savedTicket).getSchedule();
+                verify(savedTicket).getSeat();
+                verify(scheduleSeatRepository).findByScheduleAndSeat(schedule, seat);
+                verify(savedScheduleSeat).refund();
+                verify(savedTicket).deleteTicket();
+            }
 
-        @Test
-        @DisplayName("Fail - 입력 받은 티켓 id 가 없으면 티켓을 환불에 실패한다.")
-        void deleteTicketFailByNoTicket() {
-            // given
-            Long ticketId = 1L;
-            when(ticketRepository.findById(ticketId)).thenReturn(Optional.empty());
+            @Test
+            @DisplayName("Fail - 입력 받은 티켓 id 가 없으면 티켓을 환불에 실패한다.")
+            void deleteTicketFailByNoTicket() {
+                // given
+                Long ticketId = 1L;
+                when(ticketRepository.findById(ticketId)).thenReturn(Optional.empty());
 
-            // when & then
-            assertThatThrownBy(() -> ticketService.deleteTicket(ticketId))
-                    .isExactlyInstanceOf(EntityNotFoundException.class);
-            verify(ticketRepository).findById(ticketId);
-        }
+                // when & then
+                assertThatThrownBy(() -> ticketService.deleteTicket(ticketId))
+                        .isExactlyInstanceOf(EntityNotFoundException.class);
+                verify(ticketRepository).findById(ticketId);
+            }
 
-        @Test
-        @DisplayName("Fail - 입력 받은 티켓 id 가 이미 환불되었으면 티켓을 환불에 실패한다.")
-        void deleteTicketFailByAlreadyDelete() {
-            // given
-            Long ticketId = 1L;
-            when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(savedTicket));
-            when(savedTicket.isDeleted()).thenReturn(true);
+            @Test
+            @DisplayName("Fail - 입력 받은 티켓 id 가 이미 환불되었으면 티켓을 환불에 실패한다.")
+            void deleteTicketFailByAlreadyDelete() {
+                // given
+                Long ticketId = 1L;
+                when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(savedTicket));
+                when(savedTicket.isDeleted()).thenReturn(true);
 
-            // when & then
-            assertThatThrownBy(() -> ticketService.deleteTicket(ticketId))
-                    .isExactlyInstanceOf(EntityNotFoundException.class);
-            verify(ticketRepository).findById(ticketId);
-            verify(savedTicket).isDeleted();
+                // when & then
+                assertThatThrownBy(() -> ticketService.deleteTicket(ticketId))
+                        .isExactlyInstanceOf(EntityNotFoundException.class);
+                verify(ticketRepository).findById(ticketId);
+                verify(savedTicket).isDeleted();
+            }
         }
     }
 }
