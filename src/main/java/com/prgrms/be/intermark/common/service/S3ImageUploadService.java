@@ -1,18 +1,20 @@
 package com.prgrms.be.intermark.common.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Primary
@@ -33,9 +35,12 @@ public class S3ImageUploadService implements ImageUploadService {
 
 		String originalFilename = multipartFile.getOriginalFilename();
 		String savedFileName = createSavedFileName(originalFilename);
+		ObjectMetadata objectMetadata = new ObjectMetadata();
+		objectMetadata.setContentType(multipartFile.getContentType());
 
 		try {
-			amazonS3.putObject(new PutObjectRequest(bucketName, subPath + savedFileName, multipartFile.getInputStream(), new ObjectMetadata()));
+			amazonS3.putObject(new PutObjectRequest(bucketName, subPath + savedFileName, multipartFile.getInputStream(),
+				objectMetadata));
 		} catch (IOException e) {
 			throw new IllegalStateException("이미지를 업로드할 수 없습니다.");
 		}
