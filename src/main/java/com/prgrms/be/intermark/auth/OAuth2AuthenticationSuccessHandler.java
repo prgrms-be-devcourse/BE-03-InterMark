@@ -6,6 +6,7 @@ import com.prgrms.be.intermark.domain.user.dto.UserIdAndRoleDTO;
 import com.prgrms.be.intermark.domain.user.service.UserService;
 import com.prgrms.be.intermark.util.CookieUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -54,6 +55,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             ObjectMapper mapper = new ObjectMapper();
             String loginSuccessJson = mapper.writeValueAsString(generateLoginSuccessJson(aceessToken));
+            response.setStatus(HttpStatus.OK.value());
             response.setContentType("application/json;charset=UTF-8");
             response.setContentLength(loginSuccessJson.getBytes(StandardCharsets.UTF_8).length);
             response.getWriter().write(loginSuccessJson);
