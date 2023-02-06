@@ -123,7 +123,7 @@ class TicketServiceTest {
 
         when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
-        when(scheduleSeatRepository.findByScheduleSeatFetch(request.scheduleSeatId()))
+        when(scheduleSeatRepository.findByScheduleSeatFetchWithLock(request.scheduleSeatId()))
                 .thenReturn(Optional.of(scheduleSeat));
         when(ticketRepository.save(any(Ticket.class)))
                 .thenReturn(any(Ticket.class));
@@ -133,7 +133,7 @@ class TicketServiceTest {
 
         // then
         verify(userRepository).findByIdAndIsDeletedFalse(request.userId());
-        verify(scheduleSeatRepository).findByScheduleSeatFetch(request.scheduleSeatId());
+        verify(scheduleSeatRepository).findByScheduleSeatFetchWithLock(request.scheduleSeatId());
         verify(ticketRepository).save(any(Ticket.class));
         assertThat(scheduleSeat.isReserved()).isTrue();
     }
@@ -166,7 +166,7 @@ class TicketServiceTest {
 
         when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
-        when(scheduleSeatRepository.findByScheduleSeatFetch(request.userId()))
+        when(scheduleSeatRepository.findByScheduleSeatFetchWithLock(request.userId()))
                 .thenThrow(EntityNotFoundException.class);
 
         // when, then
@@ -187,7 +187,7 @@ class TicketServiceTest {
 
         when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
-        when(scheduleSeatRepository.findByScheduleSeatFetch(request.scheduleSeatId()))
+        when(scheduleSeatRepository.findByScheduleSeatFetchWithLock(request.scheduleSeatId()))
                 .thenReturn(Optional.of(isReservedScheduleSeat));
 
         // when, then
@@ -210,7 +210,7 @@ class TicketServiceTest {
 
         when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
-        when(scheduleSeatRepository.findByScheduleSeatFetch(request.scheduleSeatId()))
+        when(scheduleSeatRepository.findByScheduleSeatFetchWithLock(request.scheduleSeatId()))
                 .thenReturn(Optional.of(pastScheduleSeat));
 
         // when, then
