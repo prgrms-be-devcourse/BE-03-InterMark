@@ -26,12 +26,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -43,6 +45,9 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -210,6 +215,7 @@ class UserControllerTest {
                     .andDo(
                             document(
                                     "deleteUserBySelfSucess",
+                                    pathParameters(parameterWithName("userId").description("유저 ID")),
                                     requestHeaders(
                                             headerWithName("Authorization").description("Bearer + {access 토큰}")
                                     )
@@ -235,7 +241,23 @@ class UserControllerTest {
                     with(csrf()).with(authentication(authenticationByToken))
                     .header("Authorization", "Bearer " + aceessToken)).andDo(print());
             //then
-            resultActions.andExpect(status().isUnauthorized());
+            resultActions
+                    .andExpect(status().isUnauthorized())
+                    .andDo(
+                            document("fail-delete-different-user",
+                                    pathParameters(
+                                            parameterWithName("targetId").description("유저 ID")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http상태 코드"),
+                                            fieldWithPath("message").type(JsonFieldType.STRING).description("에러의 메시지"),
+                                            fieldWithPath("errors").type(Arrays.asList(JsonFieldType.ARRAY,JsonFieldType.NULL)).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );
             verify(userService, never()).delete(targetUserId);
 
         }
@@ -254,7 +276,15 @@ class UserControllerTest {
             ResultActions resultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", targetUserId)
                     .with(csrf()).with(authentication(authenticationByToken)).header("Authorization", "Bearer " + aceessToken)).andDo(print());
             //then
-            resultActions.andExpect(status().isNoContent());
+            resultActions.andExpect(status().isNoContent()).
+                    andDo(
+                            document("sucess-delete-by-admin",
+                                    pathParameters(
+                                            parameterWithName("targetId").description("유저 ID")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    )
+                            ));
             verify(userService, never()).delete(userId);
 
         }
@@ -275,7 +305,21 @@ class UserControllerTest {
             ResultActions cannotFindUserResultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", cannotFindUserId)
                     .with(csrf()).with(authentication(authenticationByToken)).header("Authorization", "Bearer " + aceessToken)).andDo(print());
             //then
-            deletedUserResultActions.andExpect(status().isNotFound());
+            deletedUserResultActions.andExpect(status().isNotFound())
+                    .andDo(
+                            document("fail-admin-delete-not-found-user",
+                                    pathParameters(
+                                            parameterWithName("targetId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http 상태 코드"),
+                                            fieldWithPath("message").type(JsonFieldType.NULL).description("에러의 메시지"),
+                                            fieldWithPath("errors").type(JsonFieldType.NULL).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );
             cannotFindUserResultActions.andExpect(status().isNotFound());
 
             verify(userService, times(1)).delete(deletedUserId);
@@ -331,10 +375,21 @@ class UserControllerTest {
                             .with(authentication(authenticationByToken))
                             .header("Authorization", "Bearer " + accessToken).contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateUserAuthorityRequestDTO))
-
                     ).andDo(print());
             //then
-            resultActions.andExpect(status().isOk());
+            resultActions.andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "success-change-authority-by-admin",
+                                    pathParameters(
+                                            parameterWithName("targetUserId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),requestFields(
+                                            fieldWithPath("authority").type(JsonFieldType.STRING).description("ROLE_USER | ROLE_SELLER | ROLE_ADMIN")
+                                    )
+                            )
+                    );
             verify(userService,times(1)).updateRole(targetUserId,targetUserRole);
         }
         @ParameterizedTest
@@ -355,7 +410,24 @@ class UserControllerTest {
                             .content(objectMapper.writeValueAsString(updateUserAuthorityRequestDTO))
                     ).andDo(print());
             //then
-            resultActions.andExpect(status().isNotFound());
+            resultActions.andExpect(status().isNotFound())
+                    .andDo(
+                            document(
+                                    "fail-change-authority-not-found-user-by-admin",
+                                    pathParameters(
+                                            parameterWithName("targetUserId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),requestFields(
+                                            fieldWithPath("authority").type(JsonFieldType.STRING).description("ROLE_USER | ROLE_SELLER | ROLE_ADMIN")
+                                    ),responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http 상태 코드"),
+                                            fieldWithPath("message").type(Arrays.asList(JsonFieldType.STRING,JsonFieldType.NULL)).description("에러의 메시지"),
+                                            fieldWithPath("errors").type(Arrays.asList(JsonFieldType.ARRAY,JsonFieldType.NULL)).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );
             verify(userService,times(1)).updateRole(targetUserId,targetUserRole);
         }
         @ParameterizedTest
@@ -382,7 +454,24 @@ class UserControllerTest {
                             .content(objectMapper.writeValueAsString(updateUserAuthorityRequestDTO))
                     ).andDo(print());
             //then
-            resultActions.andExpect(status().isUnauthorized());
+            resultActions.andExpect(status().isUnauthorized())
+                    .andDo(
+                            document(
+                                    "fail-change-authority-by-unauthorized-user",
+                                    pathParameters(
+                                            parameterWithName("targetUserId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),requestFields(
+                                            fieldWithPath("authority").type(JsonFieldType.STRING).description("ROLE_USER | ROLE_SELLER | ROLE_ADMIN")
+                                    ),responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http 상태 코드"),
+                                            fieldWithPath("message").type(Arrays.asList(JsonFieldType.STRING,JsonFieldType.NULL)).description("에러의 메시지"),
+                                            fieldWithPath("errors").type(Arrays.asList(JsonFieldType.ARRAY,JsonFieldType.NULL)).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );;
             verify(userService,never()).updateRole(targetUserId,targetUserRole);
         }
         @ParameterizedTest
@@ -405,7 +494,22 @@ class UserControllerTest {
                             .content(requestBody)
                     ).andDo(print());
             //then
-            resultActions.andExpect(status().isBadRequest());
+            resultActions.andExpect(status().isBadRequest())
+                    .andDo(
+                            document(
+                                    "fail-wrong-request-body",
+                                    pathParameters(
+                                            parameterWithName("targetId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http 상태 코드"),
+                                            fieldWithPath("message").type(JsonFieldType.STRING).description("에러의 메시지"),
+                                            subsectionWithPath("errors").type(Arrays.asList(JsonFieldType.ARRAY,JsonFieldType.NULL)).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );;
             verify(userService,never()).updateRole(anyLong(),any());
         }
     }
