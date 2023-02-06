@@ -192,7 +192,7 @@ class TicketServiceIntegrationTest {
         @Test
         @DisplayName("Success - 입력 받은 티켓 id 에 해당하는 티켓을 환불한다.")
         void deleteTicketSuccess() {
-           // given
+            // given
             TicketCreateRequestDTO request = TicketCreateRequestDTO.builder()
                     .userId(user.getId())
                     .scheduleSeatId(scheduleSeat.getId())
@@ -203,7 +203,7 @@ class TicketServiceIntegrationTest {
             // when
             ticketService.deleteTicket(ticketId);
 
-           // then
+            // then
             assertThat(ticket.isDeleted()).isTrue();
             assertThat(scheduleSeat.isReserved()).isFalse();
         }

@@ -64,34 +64,34 @@ class ScheduleControllerTest {
 	void createScheduleSuccess() throws Exception {
 		// given
 		ScheduleCreateRequestDTO scheduleCreateRequestDTO = ScheduleCreateRequestDTO.builder()
-			.musicalId(1L)
-			.startTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-			.build();
+				.musicalId(1L)
+				.startTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+				.build();
 
 		long scheduleId = 0L;
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
-			post("/api/v1/schedules")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.registerModule(new JavaTimeModule())
-					.writeValueAsString(scheduleCreateRequestDTO)).with(csrf())
+				post("/api/v1/schedules")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.registerModule(new JavaTimeModule())
+								.writeValueAsString(scheduleCreateRequestDTO)).with(csrf())
 		);
 
 		// then
 		resultActions.andExpect(status().isCreated())
-			.andExpect(header().string("Location", "/api/v1/schedules/" + scheduleId))
-			.andDo(print())
-			.andDo(document("Save Schedule",
-					requestFields(
-						fieldWithPath("musicalId").type(JsonFieldType.NUMBER).description("스케줄을 추가할 뮤지컬 id"),
-						fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작시간 (yyyy-MM-dd HH:mm)")
-					),
-					responseHeaders(
-						headerWithName("Location").description("등록된 스케줄 id를 포함한 URI")
-					)
-				)
-			);
+				.andExpect(header().string("Location", "/api/v1/schedules/" + scheduleId))
+				.andDo(print())
+				.andDo(document("Save Schedule",
+								requestFields(
+										fieldWithPath("musicalId").type(JsonFieldType.NUMBER).description("스케줄을 추가할 뮤지컬 id"),
+										fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작시간 (yyyy-MM-dd HH:mm)")
+								),
+								responseHeaders(
+										headerWithName("Location").description("등록된 스케줄 id를 포함한 URI")
+								)
+						)
+				);
 	}
 
 	@Test
@@ -100,47 +100,47 @@ class ScheduleControllerTest {
 		// given
 		Long scheduleId = 1L;
 		ScheduleSeatResponseDTO scheduleSeat1 = ScheduleSeatResponseDTO.builder()
-			.scheduleId(scheduleId)
-			.seatId(1L)
-			.seatNum("A1")
-			.isReserved(true)
-			.build();
+				.scheduleId(scheduleId)
+				.seatId(1L)
+				.seatNum("A1")
+				.isReserved(true)
+				.build();
 		ScheduleSeatResponseDTO scheduleSeat2 = ScheduleSeatResponseDTO.builder()
-			.scheduleId(scheduleId)
-			.seatId(2L)
-			.seatNum("A2")
-			.isReserved(true)
-			.build();
+				.scheduleId(scheduleId)
+				.seatId(2L)
+				.seatNum("A2")
+				.isReserved(true)
+				.build();
 		ScheduleSeatResponseDTOs scheduleSeats = ScheduleSeatResponseDTOs.builder()
-			.scheduleSeats(List.of(scheduleSeat1, scheduleSeat2))
-			.build();
+				.scheduleSeats(List.of(scheduleSeat1, scheduleSeat2))
+				.build();
 
 		when(scheduleService.findScheduleSeats(scheduleId)).thenReturn(scheduleSeats);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/schedules/{scheduleId}/seats", scheduleId)
-			.accept(MediaType.APPLICATION_JSON)
-			.with(csrf()));
+				.accept(MediaType.APPLICATION_JSON)
+				.with(csrf()));
 
 		// then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("scheduleSeats").isArray())
-			.andExpect(jsonPath("$.scheduleSeats[0].seatId").isNumber())
-			.andExpect(jsonPath("$.scheduleSeats[0].scheduleId").isNumber())
-			.andExpect(jsonPath("$.scheduleSeats[0].isReserved").isBoolean())
-			.andExpect(jsonPath("$.scheduleSeats[0].seatNum").isString())
-			.andDo(print())
-			.andDo(document("ScheduleSeats/get",
-				pathParameters(
-					parameterWithName("scheduleId").description("연관된 스케줄 id")
-				),
-				responseFields(
-					fieldWithPath("scheduleSeats").type(JsonFieldType.ARRAY).description("스케줄 좌석 목록"),
-					fieldWithPath("scheduleSeats[].seatId").type(JsonFieldType.NUMBER).description("연관된 좌석 id"),
-					fieldWithPath("scheduleSeats[].scheduleId").type(JsonFieldType.NUMBER).description("연관된 스케줄 id"),
-					fieldWithPath("scheduleSeats[].isReserved").type(JsonFieldType.BOOLEAN).description("예매 여부"),
-					fieldWithPath("scheduleSeats[].seatNum").type(JsonFieldType.STRING).description("좌석 번호")
-				)));
+				.andExpect(jsonPath("scheduleSeats").isArray())
+				.andExpect(jsonPath("$.scheduleSeats[0].seatId").isNumber())
+				.andExpect(jsonPath("$.scheduleSeats[0].scheduleId").isNumber())
+				.andExpect(jsonPath("$.scheduleSeats[0].isReserved").isBoolean())
+				.andExpect(jsonPath("$.scheduleSeats[0].seatNum").isString())
+				.andDo(print())
+				.andDo(document("ScheduleSeats/get",
+						pathParameters(
+								parameterWithName("scheduleId").description("연관된 스케줄 id")
+						),
+						responseFields(
+								fieldWithPath("scheduleSeats").type(JsonFieldType.ARRAY).description("스케줄 좌석 목록"),
+								fieldWithPath("scheduleSeats[].seatId").type(JsonFieldType.NUMBER).description("연관된 좌석 id"),
+								fieldWithPath("scheduleSeats[].scheduleId").type(JsonFieldType.NUMBER).description("연관된 스케줄 id"),
+								fieldWithPath("scheduleSeats[].isReserved").type(JsonFieldType.BOOLEAN).description("예매 여부"),
+								fieldWithPath("scheduleSeats[].seatNum").type(JsonFieldType.STRING).description("좌석 번호")
+						)));
 	}
 
 	@Test
@@ -148,31 +148,31 @@ class ScheduleControllerTest {
 	void updateScheduleSuccess() throws Exception {
 		// given
 		ScheduleUpdateRequestDTO scheduleUpdateRequestDTO = ScheduleUpdateRequestDTO.builder()
-			.startTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-			.build();
+				.startTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+				.build();
 
 		long scheduleId = 0L;
 
 		// when
 		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders
-			.put("/api/v1/schedules/{scheduleId}", scheduleId)
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(mapper.registerModule(new JavaTimeModule())
-				.writeValueAsString(scheduleUpdateRequestDTO)).with(csrf())
+				.put("/api/v1/schedules/{scheduleId}", scheduleId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.registerModule(new JavaTimeModule())
+						.writeValueAsString(scheduleUpdateRequestDTO)).with(csrf())
 		);
 
 		// then
 		resultActions.andExpect(status().isNoContent())
-			.andDo(print())
-			.andDo(document("Update Schedule",
-					pathParameters(
-						parameterWithName("scheduleId").description("수정할 스케줄 id")
-					),
-					requestFields(
-						fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작시간 (yyyy-MM-dd HH:mm)")
-					)
-				)
-			);
+				.andDo(print())
+				.andDo(document("Update Schedule",
+								pathParameters(
+										parameterWithName("scheduleId").description("수정할 스케줄 id")
+								),
+								requestFields(
+										fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작시간 (yyyy-MM-dd HH:mm)")
+								)
+						)
+				);
 	}
 
 	@Test
@@ -183,18 +183,18 @@ class ScheduleControllerTest {
 
 		// when
 		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders
-			.delete("/api/v1/schedules/{scheduleId}", scheduleId).with(csrf())
+				.delete("/api/v1/schedules/{scheduleId}", scheduleId).with(csrf())
 		);
 
 		// then
 		resultActions.andExpect(status().isNoContent())
-			.andDo(print())
-			.andDo(document("Delete Schedule",
-					pathParameters(
-						parameterWithName("scheduleId").description("삭제할 스케줄 id")
-					)
-				)
-			);
+				.andDo(print())
+				.andDo(document("Delete Schedule",
+								pathParameters(
+										parameterWithName("scheduleId").description("삭제할 스케줄 id")
+								)
+						)
+				);
 	}
 
 	@Nested

@@ -64,6 +64,12 @@ public class MusicalSeat {
         this.seatGrade = seatGrade;
     }
 
+    public void updateMusicalSeat(Musical musical, Seat seat, SeatGrade seatGrade) {
+        setMusical(musical);
+        setSeat(seat);
+        setSeatGrade(seatGrade);
+    }
+
     public void deleteMusicalSeat() {
         this.isDeleted = true;
     }

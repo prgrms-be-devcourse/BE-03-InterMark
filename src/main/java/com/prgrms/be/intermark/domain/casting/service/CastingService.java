@@ -1,16 +1,19 @@
 package com.prgrms.be.intermark.domain.casting.service;
 
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.actor.repository.ActorRepository;
 import com.prgrms.be.intermark.domain.casting.model.Casting;
 import com.prgrms.be.intermark.domain.casting.repository.CastingRepository;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,9 @@ public class CastingService {
                             .actor(actor)
                             .musical(musical)
                             .build();
+                    casting.setActor(actor);
+                    casting.setMusical(musical);
+
                     castingRepository.save(casting);
                 });
     }

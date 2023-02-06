@@ -1,5 +1,15 @@
 package com.prgrms.be.intermark.domain.schedule.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
@@ -15,15 +25,9 @@ import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
 import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTOs;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -90,14 +94,20 @@ public class ScheduleService {
 	@Transactional
 	public void deleteSchedule(Long scheduleId) {
 		Schedule schedule = scheduleRepository.findById(scheduleId)
-			.orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
+				.orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
+
+		List<Ticket> tickets = schedule.getTickets().stream().filter((Ticket::isReserved)).toList();
+
+		if (tickets.size() > 0) {
+			throw new IllegalStateException("예매된 스케줄은 삭제할 수 없습니다.");
+		}
 
 		if (schedule.isDeleted()) {
 			throw new EntityNotFoundException("이미 삭제된 스케줄입니다.");
 		}
 
-        schedule.deleteSchedule();
-    }
+		schedule.deleteSchedule();
+	}
 
     @Transactional(readOnly = true)
     public ScheduleSeatResponseDTOs findScheduleSeats(Long scheduleId) {

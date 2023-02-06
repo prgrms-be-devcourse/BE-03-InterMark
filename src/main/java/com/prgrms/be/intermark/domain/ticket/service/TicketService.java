@@ -1,6 +1,7 @@
 package com.prgrms.be.intermark.domain.ticket.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -45,8 +46,8 @@ public class TicketService {
         User user = userRepository.findByIdAndIsDeletedFalse(ticketCreateRequestDTO.userId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 유저입니다."));
 
-        ScheduleSeat scheduleSeat = scheduleSeatRepository.findByScheduleSeatFetch(ticketCreateRequestDTO.scheduleSeatId())
-            .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 스케줄좌석입니다."));
+        ScheduleSeat scheduleSeat = scheduleSeatRepository.findByScheduleSeatFetchWithLock(ticketCreateRequestDTO.scheduleSeatId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 스케줄좌석입니다."));
 
         if (scheduleSeat.isReserved()) {
             throw new IllegalArgumentException("이미 예약된 좌석입니다.");
@@ -67,7 +68,6 @@ public class TicketService {
     public PageResponseDTO<Ticket, TicketResponseDTO> getAllTickets(Pageable pageable) {
         PageRequest pageRequest = pageService.getPageRequest(pageable, (int) ticketRepository.count());
         Page<Ticket> ticketPage = ticketRepository.findAll(pageRequest);
-
         return new PageResponseDTO<>(ticketPage, TicketResponseDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
     }
 
@@ -113,9 +113,9 @@ public class TicketService {
     @Transactional
     public void deleteTicket(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
-            .orElseThrow(() -> {
-                throw new EntityNotFoundException("존재하지 않는 티켓입니다.");
-            });
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException("존재하지 않는 티켓입니다.");
+                });
 
         if (ticket.isDeleted()) {
             throw new EntityNotFoundException("이미 환불된 티켓입니다.");
@@ -123,8 +123,8 @@ public class TicketService {
 
         Schedule schedule = ticket.getSchedule();
         Seat seat = ticket.getSeat();
-        ScheduleSeat scheduleSeat = scheduleSeatRepository.findByScheduleAndSeat(schedule, seat).get();
-        scheduleSeat.refund();
+        Optional<ScheduleSeat> scheduleSeat = scheduleSeatRepository.findByScheduleAndSeat(schedule, seat);
+        scheduleSeat.ifPresent(ScheduleSeat::refund);
 
         ticket.deleteTicket();
     }
