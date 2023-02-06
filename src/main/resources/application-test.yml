@@ -1,0 +1,67 @@
+spring:
+# .env 파일을 통해 환경변수를 설정해주고 싶다면 아래의 주석을 해재해 주세요
+  config:
+    import: optional:file:env/spring-local.env[.properties]
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DATABASE}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: profile,email
+
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show-sql: true
+        format_sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+jwt:
+  secret:
+    access: ${JWT_ACCESS_KEY}
+    refresh: ${JWT_REFRESH_KEY}
+# 로그를 debug 레벨로 보고 싶다면 아래의 주석을 해재해 주세
+#logging:
+#  level:
+#    org.springframework: debug
+#    org.hibernate.SQL: debug
+#    org.hibernate.type: trace
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${ACCESS_KEY}
+      secretKey: ${SECRET_KEY}
+    s3:
+      bucket:
+        name: ${BUCKET_NAME}
+        url: ${BUCKET_URL}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+local:
+  images:
+    path: ${LOCAL_STORAGE}
+
+file:
+  images: ${LOCAL_STORAGE}
+
+
