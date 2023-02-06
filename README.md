@@ -37,9 +37,9 @@
 |------------------------------------------------------------|-----------------------------------------------------------|------------------------------------------------------------|-------------------------------------------------------------------|
 | AWS EC2                                                    | AWS S3                                                    | AWS RDS                                                    | AWS CloudWatch                                                    |
 
-| <img width="120" height="80" src=".github/readme/gitactions.png"> | <img width="120" height="80" src=".github/readme/docker.png"> | <img width="120" height="80" src=".github/readme/jacoco.jpeg"> |
-|-------------------------------------------------------------------|---------------------------------------------------------------|----------------------------------------------------------------|
-| Git Actions                                                       | Docker                                                        | Jacoco                                                         |
+| <img width="120" height="80" src=".github/readme/gitactions.png"> | <img width="120" height="80" src=".github/readme/docker.png"> | <img width="120" height="80" src=".github/readme/jacoco.jpeg"> | <img width="80" height="80" src=".github/readme/ghcr.png"> |
+|-------------------------------------------------------------------|-------------------------------------------------------------------|---------------------------------------------------------------|----------------------------------------------------------------|
+| Git Actions                                                       | Docker                                                        | Jacoco                                                         |github<br> container<br> repository                                   |
 
 ### 3. 협업툴
 
@@ -48,7 +48,9 @@
 | Notion                                                       | Slack                                                       | Github                                                       |
 
 ## 🗺️ 프로젝트 기술 아키텍처
-- 추후 추가할 예정.
+
+<img width = "100%" src=".github/readme/intermark-arch.png">
+
 ## 🔗 ER Diagram
 
 <img src=".github/readme/erd.png">  
