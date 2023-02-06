@@ -18,6 +18,7 @@ import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,6 +50,12 @@ class TicketServiceTest {
     @Mock
     private TicketRepository ticketRepository;
 
+    @Mock
+    private Ticket savedTicket;
+
+    @Mock
+    private ScheduleSeat savedScheduleSeat;
+
     User user;
     Stadium stadium;
     Musical musical;
@@ -79,7 +86,7 @@ class TicketServiceTest {
 
         when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
-        when(scheduleSeatRepository.findByScheduleSeatFetch(request.scheduleSeatId()))
+        when(scheduleSeatRepository.findByScheduleSeatFetchWithLock(request.scheduleSeatId()))
                 .thenReturn(Optional.of(scheduleSeat));
         when(ticketRepository.save(any(Ticket.class)))
                 .thenReturn(any(Ticket.class));
@@ -89,7 +96,7 @@ class TicketServiceTest {
 
         // then
         verify(userRepository).findByIdAndIsDeletedFalse(request.userId());
-        verify(scheduleSeatRepository).findByScheduleSeatFetch(request.scheduleSeatId());
+        verify(scheduleSeatRepository).findByScheduleSeatFetchWithLock(request.scheduleSeatId());
         verify(ticketRepository).save(any(Ticket.class));
         assertThat(scheduleSeat.isReserved()).isTrue();
     }
@@ -122,7 +129,7 @@ class TicketServiceTest {
 
         when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
-        when(scheduleSeatRepository.findByScheduleSeatFetch(request.userId()))
+        when(scheduleSeatRepository.findByScheduleSeatFetchWithLock(request.userId()))
                 .thenThrow(EntityNotFoundException.class);
 
         // when, then
@@ -143,7 +150,7 @@ class TicketServiceTest {
 
         when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
-        when(scheduleSeatRepository.findByScheduleSeatFetch(request.scheduleSeatId()))
+        when(scheduleSeatRepository.findByScheduleSeatFetchWithLock(request.scheduleSeatId()))
                 .thenReturn(Optional.of(isReservedScheduleSeat));
 
         // when, then
@@ -166,12 +173,71 @@ class TicketServiceTest {
 
         when(userRepository.findByIdAndIsDeletedFalse(request.userId()))
                 .thenReturn(Optional.of(user));
-        when(scheduleSeatRepository.findByScheduleSeatFetch(request.scheduleSeatId()))
+        when(scheduleSeatRepository.findByScheduleSeatFetchWithLock(request.scheduleSeatId()))
                 .thenReturn(Optional.of(pastScheduleSeat));
 
         // when, then
         assertThatThrownBy(() -> ticketService.createTicket(request))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 스케줄입니다.");
+    }
+
+    @Nested
+    @DisplayName("deleteTicket")
+    class DeleteTicket {
+
+        @Test
+        @DisplayName("Success - 입력 받은 티켓 id 에 해당하는 티켓을 환불한다.")
+        void deleteTicketSuccess() {
+            // given
+            Long ticketId = 1L;
+            when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(savedTicket));
+            when(savedTicket.isDeleted()).thenReturn(false);
+            when(savedTicket.getSchedule()).thenReturn(schedule);
+            when(savedTicket.getSeat()).thenReturn(seat);
+            when(scheduleSeatRepository.findByScheduleAndSeat(schedule, seat)).thenReturn(Optional.of(savedScheduleSeat));
+            doNothing().when(savedScheduleSeat).refund();
+            doNothing().when(savedTicket).deleteTicket();
+
+            // when
+            ticketService.deleteTicket(ticketId);
+
+            // then
+            verify(ticketRepository).findById(ticketId);
+            verify(savedTicket).isDeleted();
+            verify(savedTicket).getSchedule();
+            verify(savedTicket).getSeat();
+            verify(scheduleSeatRepository).findByScheduleAndSeat(schedule, seat);
+            verify(savedScheduleSeat).refund();
+            verify(savedTicket).deleteTicket();
+        }
+
+        @Test
+        @DisplayName("Fail - 입력 받은 티켓 id 가 없으면 티켓을 환불에 실패한다.")
+        void deleteTicketFailByNoTicket() {
+            // given
+            Long ticketId = 1L;
+            when(ticketRepository.findById(ticketId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> ticketService.deleteTicket(ticketId))
+                    .isExactlyInstanceOf(EntityNotFoundException.class);
+            verify(ticketRepository).findById(ticketId);
+        }
+
+        @Test
+        @DisplayName("Fail - 입력 받은 티켓 id 가 이미 환불되었으면 티켓을 환불에 실패한다.")
+        void deleteTicketFailByAlreadyDelete() {
+            // given
+            Long ticketId = 1L;
+            when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(savedTicket));
+            when(savedTicket.isDeleted()).thenReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> ticketService.deleteTicket(ticketId))
+                    .isExactlyInstanceOf(EntityNotFoundException.class);
+            verify(ticketRepository).findById(ticketId);
+            verify(savedTicket).isDeleted();
+        }
     }
 }
