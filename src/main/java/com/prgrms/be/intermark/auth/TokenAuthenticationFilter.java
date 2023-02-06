@@ -2,11 +2,14 @@ package com.prgrms.be.intermark.auth;
 
 
 import com.prgrms.be.intermark.domain.user.User;
+import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -33,11 +36,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         if (tokenProvider.validate(accessToken)) {
             Authentication authentication = tokenProvider.getAuthentication(accessToken);
-            User userInToken = (User) authentication.getPrincipal();
-            Optional<User> optionalUserInDB = userRepository.findByIdAndIsDeletedFalse(userInToken.getId());
+            UserDetails userInToken = (UserDetails) authentication.getPrincipal();
+            Long userIdInToken = Long.parseLong(userInToken.getUsername());
+            UserRole userRoleInToken = UserRole.valueOf(userInToken.getAuthorities().toArray(new GrantedAuthority[0])[0].toString());
+            Optional<User> optionalUserInDB = userRepository.findByIdAndIsDeletedFalse(userIdInToken);
             if(optionalUserInDB.isPresent()){
                 User userInDB = optionalUserInDB.get();
-                if(userInDB.getId() == userInToken.getId() && userInDB.getRole() == userInToken.getRole()){
+                if(userInDB.getId() == userIdInToken && userInDB.getRole() == userRoleInToken){
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
