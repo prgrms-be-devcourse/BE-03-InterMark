@@ -1,5 +1,25 @@
 package com.prgrms.be.intermark.domain.schedule.service;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
@@ -9,28 +29,18 @@ import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
+import com.prgrms.be.intermark.domain.seat.model.Seat;
+import com.prgrms.be.intermark.domain.seatgrade.model.SeatGrade;
+import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
+import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
+import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
 import com.prgrms.be.intermark.domain.stadium.model.Stadium;
+import com.prgrms.be.intermark.domain.ticket.model.Ticket;
+import com.prgrms.be.intermark.domain.ticket.model.TicketStatus;
+import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleServiceTest {
@@ -46,6 +56,12 @@ class ScheduleServiceTest {
 
     @Mock
     private MusicalSeatRepository musicalSeatRepository;
+
+    @Mock
+    private TicketRepository ticketRepository;
+
+    @Mock
+    private ScheduleSeatRepository scheduleSeatRepository;
 
     private final Stadium stadium = Stadium.builder()
             .name("stadium")
@@ -266,6 +282,39 @@ class ScheduleServiceTest {
     }
 
     @Test
+    @DisplayName("Fail - 예매 내역이 있는 스케줄을 삭제하면 IllegalStateException 발생")
+    void deleteScheduleHasTicketFail() {
+        // given
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Schedule schedule = Schedule.builder()
+                .startTime(LocalDateTime.parse("2022-12-31 11:00", formatter))
+                .endTime(LocalDateTime.parse("2022-12-31 12:20", formatter))
+                .musical(musical)
+                .build();
+
+        Ticket ticket = Ticket.builder()
+                .ticketStatus(TicketStatus.AVAILABLE)
+                .user(user)
+                .schedule(schedule)
+                .seat(Seat.builder().build())
+                .seatGrade(SeatGrade.builder().build())
+                .musical(musical)
+                .stadium(stadium)
+                .build();
+
+        ticket.setSchedule(schedule);
+
+        when(scheduleRepository.findById(schedule.getId())).thenReturn(Optional.of(schedule));
+
+        // when - then
+        assertThatThrownBy(() -> scheduleService.deleteSchedule(schedule.getId()))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("예매된 스케줄은 삭제할 수 없습니다.");
+
+        verify(scheduleRepository).findById(schedule.getId());
+    }
+
+    @Test
     @DisplayName("Fail - 스케줄이 존재하지 않으면 EntityNotFoundException 발생")
     void notExistedScheduleOnDeleteFail() {
         // given
@@ -283,7 +332,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("성공 - 해당 뮤지컬의 스케줄을 전부 삭제한다.")
+    @DisplayName("Success - 해당 뮤지컬의 스케줄을 전부 삭제한다.")
     void deleteAllByMusicalSuccess() {
         // given
         List<Schedule> schedules = List.of(mock(Schedule.class), mock(Schedule.class));
@@ -299,4 +348,26 @@ class ScheduleServiceTest {
         }
     }
 
+    @Test
+    @DisplayName("Success - 해당 스케줄의 좌석 정보를 모두 조회한다. - findScheduleSeats")
+    void findScheduleSeatsSuccess() {
+        // Given
+        Long scheduleId = 1L;
+        ScheduleSeat scheduleSeat1 = mock(ScheduleSeat.class);
+        ScheduleSeat scheduleSeat2 = mock(ScheduleSeat.class);
+        List<ScheduleSeat> scheduleSeats = List.of(scheduleSeat1, scheduleSeat2);
+
+        try (MockedStatic<ScheduleSeatResponseDTO> scheduleSeatResponseDTO = mockStatic(ScheduleSeatResponseDTO.class)) {
+            when(scheduleSeatRepository.findAllByScheduleId(scheduleId)).thenReturn(scheduleSeats);
+            scheduleSeatResponseDTO.when(() -> ScheduleSeatResponseDTO.from(any(ScheduleSeat.class)))
+                    .thenReturn(any(ScheduleSeatResponseDTO.class));
+
+            // when
+            scheduleService.findScheduleSeats(scheduleId);
+
+            // then
+            verify(scheduleSeatRepository).findAllByScheduleId(scheduleId);
+            scheduleSeatResponseDTO.verify(() -> ScheduleSeatResponseDTO.from(any(ScheduleSeat.class)), times(scheduleSeats.size()));
+        }
+    }
 }
