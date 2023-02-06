@@ -48,7 +48,7 @@
 | Notion                                                       | Slack                                                       | Github                                                       |
 
 ## 🗺️ 프로젝트 기술 아키텍처
-
+- 추후 추가할 예정.
 ## 🔗 ER Diagram
 
 <img src=".github/readme/erd.png">  
