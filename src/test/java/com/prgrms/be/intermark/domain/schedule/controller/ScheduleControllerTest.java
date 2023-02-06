@@ -1,13 +1,24 @@
 package com.prgrms.be.intermark.domain.schedule.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
-import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
-import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
-import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
-import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTOs;
+import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +33,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleFindResponseDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.service.ScheduleService;
+import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTO;
+import com.prgrms.be.intermark.domain.schedule_seat.dto.ScheduleSeatResponseDTOs;
 
 @WebMvcTest(ScheduleController.class)
 @WithMockUser
@@ -194,4 +197,72 @@ class ScheduleControllerTest {
 				);
 	}
 
+	@Nested
+	@DisplayName("getSchedule")
+	class GetSchedule {
+
+		@Test
+		@DisplayName("Success - 해당 스케줄 상세 정보를 조회 성공 시 200 Ok")
+		void getScheduleSuccess() throws Exception {
+			// given
+			Long scheduleId = 1L;
+			ScheduleFindResponseDTO findScheduleInfo = ScheduleFindResponseDTO.builder()
+				.isDeleted(false)
+				.musicalName("인터마크")
+				.stadiumName("프로그래머스 교육장")
+				.startTime(LocalDateTime.of(2023, 3, 15, 18, 30))
+				.endTime(LocalDateTime.of(2023, 3, 15, 19, 0))
+				.build();
+
+			when(scheduleService.findSchedule(scheduleId)).thenReturn(findScheduleInfo);
+
+			// when
+		ResultActions resultActions = mockMvc.perform(get("/api/v1/schedules/{scheduleId}", scheduleId)
+				.accept(MediaType.APPLICATION_JSON)
+				.with(csrf())
+			);
+
+			// then
+			resultActions.andExpect(status().isOk())
+				.andExpect(jsonPath("isDeleted").isBoolean())
+				.andExpect(jsonPath("musicalName").isString())
+				.andExpect(jsonPath("stadiumName").isString())
+				.andExpect(jsonPath("startTime").isString())
+				.andExpect(jsonPath("endTime").isString())
+				.andDo(print())
+				.andDo(document("Schedule/get",
+					pathParameters(
+						parameterWithName("scheduleId").description("조회할 스케줄 id")
+					),
+					responseFields(
+						fieldWithPath("isDeleted").type(JsonFieldType.BOOLEAN).description("삭제 여부"),
+						fieldWithPath("musicalName").type(JsonFieldType.STRING).description("연관된 뮤지컬 제목"),
+						fieldWithPath("stadiumName").type(JsonFieldType.STRING).description("연관된 공연장 이름"),
+						fieldWithPath("startTime").type(JsonFieldType.STRING).description("뮤지컬 시작 시간"),
+						fieldWithPath("endTime").type(JsonFieldType.STRING).description("뮤지컬 종료 시간")
+					)));
+		}
+
+		@Test
+		@DisplayName("Fail - 조회하고자 하는 스케줄이 없을 시 404 Not Found")
+		void getScheduleFail() throws Exception {
+			// given
+			Long scheduleId = 1L;
+			doThrow(EntityNotFoundException.class).when(scheduleService).findSchedule(scheduleId);
+
+			// when
+			ResultActions resultActions = mockMvc.perform(get("/api/v1/schedules/{scheduleId}", scheduleId)
+				.accept(MediaType.APPLICATION_JSON)
+				.with(csrf())
+			);
+
+			// then
+			resultActions.andExpect(status().isNotFound())
+				.andDo(print())
+				.andDo(document("Schedule/get",
+					pathParameters(
+						parameterWithName("scheduleId").description("조회할 스케줄 id")
+					)));
+		}
+	}
 }

@@ -1,23 +1,22 @@
 package com.prgrms.be.intermark.domain.musical.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
-import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
-import com.prgrms.be.intermark.domain.actor.dto.ActorResponseDTO;
-import com.prgrms.be.intermark.domain.actor.model.Actor;
-import com.prgrms.be.intermark.domain.actor.model.Gender;
-import com.prgrms.be.intermark.domain.casting.model.Casting;
-import com.prgrms.be.intermark.domain.musical.dto.*;
-import com.prgrms.be.intermark.domain.musical.model.Genre;
-import com.prgrms.be.intermark.domain.musical.model.Musical;
-import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
-import com.prgrms.be.intermark.domain.musical.model.ViewRating;
-import com.prgrms.be.intermark.domain.musical.service.MusicalFacadeService;
-import com.prgrms.be.intermark.domain.stadium.model.Stadium;
-import com.prgrms.be.intermark.domain.user.SocialType;
-import com.prgrms.be.intermark.domain.user.User;
-import com.prgrms.be.intermark.domain.user.UserRole;
-import com.prgrms.be.intermark.util.TestUtil;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.assertj.core.api.Assertions;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,24 +43,32 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
+import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
+import com.prgrms.be.intermark.domain.actor.dto.ActorResponseDTO;
+import com.prgrms.be.intermark.domain.actor.model.Actor;
+import com.prgrms.be.intermark.domain.actor.model.Gender;
+import com.prgrms.be.intermark.domain.casting.model.Casting;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailImageResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.model.Genre;
+import com.prgrms.be.intermark.domain.musical.model.Musical;
+import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
+import com.prgrms.be.intermark.domain.musical.model.ViewRating;
+import com.prgrms.be.intermark.domain.musical.service.MusicalFacadeService;
+import com.prgrms.be.intermark.domain.stadium.model.Stadium;
+import com.prgrms.be.intermark.domain.user.SocialType;
+import com.prgrms.be.intermark.domain.user.User;
+import com.prgrms.be.intermark.domain.user.UserRole;
+import com.prgrms.be.intermark.util.TestUtil;
 
 @WebMvcTest(MusicalController.class)
 @WithMockUser(username = "1", roles = {"USER"}, password = "")

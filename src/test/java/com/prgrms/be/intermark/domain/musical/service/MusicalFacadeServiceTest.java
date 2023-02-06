@@ -1,5 +1,33 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.amazonaws.services.s3.AmazonS3;
 import com.prgrms.be.intermark.common.config.S3MockConfig;
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
@@ -9,7 +37,15 @@ import com.prgrms.be.intermark.domain.actor.model.Gender;
 import com.prgrms.be.intermark.domain.actor.repository.ActorRepository;
 import com.prgrms.be.intermark.domain.casting.model.Casting;
 import com.prgrms.be.intermark.domain.casting.repository.CastingRepository;
-import com.prgrms.be.intermark.domain.musical.dto.*;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailImageResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatUpdateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
@@ -31,29 +67,15 @@ import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
-import com.prgrms.be.intermark.domain.util.*;
+import com.prgrms.be.intermark.domain.util.ActorProvider;
+import com.prgrms.be.intermark.domain.util.MusicalProvider;
+import com.prgrms.be.intermark.domain.util.ScheduleProvider;
+import com.prgrms.be.intermark.domain.util.SeatProvider;
+import com.prgrms.be.intermark.domain.util.StadiumProvider;
+import com.prgrms.be.intermark.domain.util.UserProvider;
 import com.prgrms.be.intermark.util.TestUtil;
+
 import io.findify.s3mock.S3Mock;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityNotFoundException;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @Import(S3MockConfig.class)
 @SpringBootTest
