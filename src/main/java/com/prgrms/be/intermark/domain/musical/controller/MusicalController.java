@@ -53,11 +53,11 @@ public class MusicalController {
 	@PutMapping(value = "/{musicalId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Void> updateMusical(
 			@PathVariable Long musicalId,
-			@RequestPart @Valid MusicalUpdateRequestDTO musicalSeatUpdateRequestDTO,
+			@RequestPart @Valid MusicalUpdateRequestDTO musicalUpdateRequestDTO,
 			@RequestPart MultipartFile thumbnail,
 			@RequestPart List<MultipartFile> detailImages
 	) {
-		musicalFacadeService.update(musicalId, musicalSeatUpdateRequestDTO, thumbnail, detailImages);
+		musicalFacadeService.update(musicalId, musicalUpdateRequestDTO, thumbnail, detailImages);
 
 		return ResponseEntity.noContent().build();
 	}

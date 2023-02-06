@@ -91,7 +91,7 @@ public class ScheduleService {
 	@Transactional
 	public void deleteSchedule(Long scheduleId) {
 		Schedule schedule = scheduleRepository.findById(scheduleId)
-			.orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
+				.orElseThrow(() -> new EntityNotFoundException("해당 스케줄이 존재하지 않습니다."));
 
 		List<Ticket> tickets = schedule.getTickets().stream().filter((Ticket::isReserved)).toList();
 
@@ -103,8 +103,8 @@ public class ScheduleService {
 			throw new EntityNotFoundException("이미 삭제된 스케줄입니다.");
 		}
 
-        schedule.deleteSchedule();
-    }
+		schedule.deleteSchedule();
+	}
 
     @Transactional(readOnly = true)
     public ScheduleSeatResponseDTOs findScheduleSeats(Long scheduleId) {

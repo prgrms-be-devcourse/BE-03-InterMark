@@ -1,32 +1,5 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityNotFoundException;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.amazonaws.services.s3.AmazonS3;
 import com.prgrms.be.intermark.common.config.S3MockConfig;
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
@@ -36,12 +9,7 @@ import com.prgrms.be.intermark.domain.actor.model.Gender;
 import com.prgrms.be.intermark.domain.actor.repository.ActorRepository;
 import com.prgrms.be.intermark.domain.casting.model.Casting;
 import com.prgrms.be.intermark.domain.casting.repository.CastingRepository;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailImageResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeCreateRequestDTO;
-import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.*;
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
@@ -63,14 +31,29 @@ import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
 import com.prgrms.be.intermark.domain.user.repository.UserRepository;
-import com.prgrms.be.intermark.domain.util.ActorProvider;
-import com.prgrms.be.intermark.domain.util.ScheduleProvider;
-import com.prgrms.be.intermark.domain.util.SeatProvider;
-import com.prgrms.be.intermark.domain.util.StadiumProvider;
-import com.prgrms.be.intermark.domain.util.UserProvider;
+import com.prgrms.be.intermark.domain.util.*;
 import com.prgrms.be.intermark.util.TestUtil;
-
 import io.findify.s3mock.S3Mock;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityNotFoundException;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @Import(S3MockConfig.class)
 @SpringBootTest
@@ -145,41 +128,41 @@ class MusicalFacadeServiceTest {
 		actorRepository.save(actor2);
 
 		seatGradeVIP = MusicalSeatGradeCreateRequestDTO.builder()
-			.seatGradeName("VIP")
-			.seatGradePrice(50000)
-			.build();
+				.seatGradeName("VIP")
+				.seatGradePrice(50000)
+				.build();
 		seatGradeR = MusicalSeatGradeCreateRequestDTO.builder()
-			.seatGradeName("R")
-			.seatGradePrice(30000)
-			.build();
+				.seatGradeName("R")
+				.seatGradePrice(30000)
+				.build();
 		musicalSeatVIP = MusicalSeatCreateRequestDTO.builder()
-			.seatId(seat1.getId())
-			.seatGradeName(seatGradeVIP.seatGradeName())
-			.build();
+				.seatId(seat1.getId())
+				.seatGradeName(seatGradeVIP.seatGradeName())
+				.build();
 		musicalSeatR = MusicalSeatCreateRequestDTO.builder()
-			.seatId(seat2.getId())
-			.seatGradeName(seatGradeR.seatGradeName())
-			.build();
+				.seatId(seat2.getId())
+				.seatGradeName(seatGradeR.seatGradeName())
+				.build();
 		createRequestDTO = MusicalCreateRequestDTO.builder()
-			.title("마르코팀 성장기")
-			.viewRating(ViewRating.ADULT)
-			.genre(Genre.DRAMA)
-			.description("마르코팀의 성장기입니다.")
-			.startDate(LocalDate.of(2022, 10, 12))
-			.endDate(LocalDate.of(2023, 3, 15))
-			.runningTime(100)
-			.managerId(user.getId())
-			.stadiumId(stadium.getId())
-			.actorIds(List.of(actor1.getId(), actor2.getId()))
-			.seatGrades(List.of(seatGradeVIP, seatGradeR))
-			.seats(List.of(musicalSeatVIP, musicalSeatR))
-			.build();
+				.title("마르코팀 성장기")
+				.viewRating(ViewRating.ADULT)
+				.genre(Genre.DRAMA)
+				.description("마르코팀의 성장기입니다.")
+				.startDate(LocalDate.of(2022, 10, 12))
+				.endDate(LocalDate.of(2023, 3, 15))
+				.runningTime(100)
+				.managerId(user.getId())
+				.stadiumId(stadium.getId())
+				.actorIds(List.of(actor1.getId(), actor2.getId()))
+				.seatGrades(List.of(seatGradeVIP, seatGradeR))
+				.seats(List.of(musicalSeatVIP, musicalSeatR))
+				.build();
 		thumbnail = getMockMultipartFile("testMusicalThumbnail", "png",
-			"src/test/resources/testMusicalThumbnail.jpg");
+				"src/test/resources/testMusicalThumbnail.jpg");
 		detailImage1 = getMockMultipartFile("testMusicalDetailImage1", "png",
-			"src/test/resources/testMusicalDetailImage1.jpg");
+				"src/test/resources/testMusicalDetailImage1.jpg");
 		detailImage2 = getMockMultipartFile("testMusicalDetailImage2", "png",
-			"src/test/resources/testMusicalDetailImage2.jpg");
+				"src/test/resources/testMusicalDetailImage2.jpg");
 	}
 
 	@AfterAll
@@ -194,7 +177,7 @@ class MusicalFacadeServiceTest {
 
 		// given & when
 		Long musicalId = musicalFacadeService.create(createRequestDTO,
-			thumbnail, List.of(detailImage1, detailImage2));
+				thumbnail, List.of(detailImage1, detailImage2));
 
 		// then
 		assertThat(musicalId).isNotNull();
@@ -205,7 +188,7 @@ class MusicalFacadeServiceTest {
 	void getAllMusicalsSuccess() {
 		// given
 		User user = TestUtil.createUser(SocialType.GOOGLE, "socialId", "nickname", UserRole.ROLE_ADMIN, false,
-			LocalDate.now(), "email@naver.com");
+				LocalDate.now(), "email@naver.com");
 		Stadium stadium = TestUtil.createStadium("name", "address", "imageUrl");
 		userRepository.save(user);
 		stadiumRepository.save(stadium);
@@ -213,8 +196,8 @@ class MusicalFacadeServiceTest {
 		List<MusicalSummaryResponseDTO> musicals = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			Musical musical = TestUtil.createMusical("title" + i, "description" + i, LocalDate.now(),
-				LocalDate.now().plusDays(i), "thumnail" + i,
-				ViewRating.ALL, Genre.COMEDY, 60 + i, user, stadium);
+					LocalDate.now().plusDays(i), "thumnail" + i,
+					ViewRating.ALL, Genre.COMEDY, 60 + i, user, stadium);
 
 			musicalRepository.save(musical);
 
@@ -228,8 +211,8 @@ class MusicalFacadeServiceTest {
 		// then
 		for (int i = 0; i < musicals.size(); i++) {
 			assertThat(musicals.get(i))
-				.usingRecursiveComparison()
-				.isEqualTo(result.getData().get(i));
+					.usingRecursiveComparison()
+					.isEqualTo(result.getData().get(i));
 		}
 	}
 
@@ -238,10 +221,10 @@ class MusicalFacadeServiceTest {
 	void getMusicalSuccess() {
 		// given
 		User user = TestUtil.createUser(SocialType.GOOGLE, "socialId", "nickname", UserRole.ROLE_ADMIN, false,
-			LocalDate.now(), "email@naver.com");
+				LocalDate.now(), "email@naver.com");
 		Stadium stadium = TestUtil.createStadium("name", "address", "imageUrl");
 		Musical musical = TestUtil.createMusical("title", "description", LocalDate.now(), LocalDate.now().plusDays(5),
-			"thumbnailUrl", ViewRating.ALL, Genre.COMEDY, 60, user, stadium);
+				"thumbnailUrl", ViewRating.ALL, Genre.COMEDY, 60, user, stadium);
 		MusicalDetailImage musicalDetailImage = TestUtil.createMusicalDetailImage("imageUrl", "fileName");
 		musicalDetailImage.setMusical(musical);
 		Actor actor = TestUtil.createActor("actorName", LocalDate.now(), "profileUrl", Gender.MALE);
@@ -257,26 +240,26 @@ class MusicalFacadeServiceTest {
 		castingRepository.save(casting);
 
 		MusicalDetailResponseDTO answer = MusicalDetailResponseDTO.builder()
-			.musicalTitle(musical.getTitle())
-			.startDate(musical.getStartDate())
-			.endDate(musical.getEndDate())
-			.rate(musical.getViewRating())
-			.genre(musical.getGenre())
-			.thumbnailUrl(musical.getThumbnailUrl())
-			.description(musical.getDescription())
-			.runningTime(musical.getRunningTime())
-			.stadiumName(stadium.getName())
-			.actors(ActorResponseDTO.listFromCastings(List.of(casting)))
-			.images(MusicalDetailImageResponseDTO.listFrom(musical.getDetailImages()))
-			.build();
+				.musicalTitle(musical.getTitle())
+				.startDate(musical.getStartDate())
+				.endDate(musical.getEndDate())
+				.rate(musical.getViewRating())
+				.genre(musical.getGenre())
+				.thumbnailUrl(musical.getThumbnailUrl())
+				.description(musical.getDescription())
+				.runningTime(musical.getRunningTime())
+				.stadiumName(stadium.getName())
+				.actors(ActorResponseDTO.listFromCastings(List.of(casting)))
+				.images(MusicalDetailImageResponseDTO.listFrom(musical.getDetailImages()))
+				.build();
 
 		// when
 		MusicalDetailResponseDTO result = musicalFacadeService.findMusicalById(musical.getId());
 
 		// then
 		assertThat(result)
-			.usingRecursiveComparison()
-			.isEqualTo(answer);
+				.usingRecursiveComparison()
+				.isEqualTo(answer);
 
 	}
 
@@ -288,7 +271,7 @@ class MusicalFacadeServiceTest {
 
 		// when, then
 		Assertions.assertThrows(EntityNotFoundException.class,
-			() -> musicalFacadeService.findMusicalById(notExistsMusicalId));
+				() -> musicalFacadeService.findMusicalById(notExistsMusicalId));
 	}
 
 	@Nested
@@ -300,7 +283,7 @@ class MusicalFacadeServiceTest {
 		void deleteMusicalSuccess() {
 			// given
 			Long musicalId = musicalFacadeService.create(createRequestDTO, thumbnail,
-				List.of(detailImage1, detailImage2));
+					List.of(detailImage1, detailImage2));
 			Musical savedMusical = musicalRepository.findById(musicalId).get();
 
 			// when
@@ -309,20 +292,20 @@ class MusicalFacadeServiceTest {
 			// then
 			assertThat(savedMusical.isDeleted()).isTrue();
 			assertThat(savedMusical.getCastings())
-				.extracting(Casting::isDeleted)
-				.allMatch(isDeleted -> isDeleted == true);
+					.extracting(Casting::isDeleted)
+					.allMatch(isDeleted -> isDeleted == true);
 			assertThat(savedMusical.getDetailImages())
-				.extracting(MusicalDetailImage::isDeleted)
-				.allMatch(isDeleted -> isDeleted == true);
+					.extracting(MusicalDetailImage::isDeleted)
+					.allMatch(isDeleted -> isDeleted == true);
 			assertThat(savedMusical.getSchedules())
-				.extracting(Schedule::isDeleted)
-				.allMatch(isDeleted -> isDeleted == true);
+					.extracting(Schedule::isDeleted)
+					.allMatch(isDeleted -> isDeleted == true);
 			assertThat(savedMusical.getSeatGrades())
-				.extracting(SeatGrade::isDeleted)
-				.allMatch(isDeleted -> isDeleted == true);
+					.extracting(SeatGrade::isDeleted)
+					.allMatch(isDeleted -> isDeleted == true);
 			assertThat(savedMusical.getMusicalSeats())
-				.extracting(MusicalSeat::isDeleted)
-				.allMatch(isDeleted -> isDeleted == true);
+					.extracting(MusicalSeat::isDeleted)
+					.allMatch(isDeleted -> isDeleted == true);
 		}
 
 		@Test
@@ -330,27 +313,113 @@ class MusicalFacadeServiceTest {
 		void deleteMusicalFail() throws IOException {
 			// given
 			Long musicalId = musicalFacadeService.create(createRequestDTO, thumbnail,
-				List.of(detailImage1, detailImage2));
+					List.of(detailImage1, detailImage2));
 			Musical savedMusical = musicalRepository.findById(musicalId).get();
 
 			Schedule schedule = ScheduleProvider.createSchedule(savedMusical);
 			scheduleRepository.save(schedule);
 
 			Ticket ticket = Ticket.builder()
-				.seatGrade(savedMusical.getSeatGrades().get(0))
-				.musical(savedMusical)
-				.seat(seat1)
-				.ticketStatus(TicketStatus.AVAILABLE)
-				.stadium(stadium)
-				.user(user)
-				.schedule(schedule)
-				.build();
+					.seatGrade(savedMusical.getSeatGrades().get(0))
+					.musical(savedMusical)
+					.seat(seat1)
+					.ticketStatus(TicketStatus.AVAILABLE)
+					.stadium(stadium)
+					.user(user)
+					.schedule(schedule)
+					.build();
 			ticket.setMusical(savedMusical);
 			ticketRepository.save(ticket);
 
 			// when & then
 			assertThatThrownBy(() -> musicalFacadeService.deleteMusical(musicalId))
-				.isInstanceOf(RuntimeException.class);
+					.isInstanceOf(RuntimeException.class);
+		}
+	}
+
+	@Nested
+	@DisplayName("updateMusical")
+	class UpdateMusical {
+
+		@Test
+		@DisplayName("Success - 입력 받은 뮤지컬 id 에 해당하는 뮤지컬 수정 성공한다.")
+		void updateMusicalSuccess() throws IOException {
+			// given
+			Actor changeActor1 = ActorProvider.createActor();
+			Actor changeActor2 = ActorProvider.createActor();
+			actorRepository.save(changeActor1);
+			actorRepository.save(changeActor2);
+			Stadium changeStadium = TestUtil.createStadium("change name", "change address", "change url");
+			stadiumRepository.save(changeStadium);
+			Seat changeSeat = SeatProvider.createSeat(changeStadium);
+			seatRepository.save(changeSeat);
+
+			MusicalSeatGradeUpdateRequestDTO musicalSeatGradeUpdateRequestDTO = MusicalSeatGradeUpdateRequestDTO.builder()
+					.seatGradeName("VIP")
+					.seatGradePrice(10000)
+					.build();
+
+			MusicalSeatUpdateRequestDTO musicalSeatUpdateRequestDTO = MusicalSeatUpdateRequestDTO.builder()
+					.seatId(changeSeat.getId())
+					.seatGradeName("VIP")
+					.build();
+
+			MusicalUpdateRequestDTO musicalUpdateRequestDTO = MusicalUpdateRequestDTO.builder()
+					.title("change title")
+					.startDate(LocalDate.now())
+					.endDate(LocalDate.now().plusDays(10))
+					.description("change description")
+					.viewRating(ViewRating.ALL)
+					.genre(Genre.COMEDY)
+					.runningTime(60)
+					.managerId(user.getId())
+					.stadiumId(changeStadium.getId())
+					.actors(List.of(changeActor1.getId(), changeActor2.getId()))
+					.seatGrades(List.of(musicalSeatGradeUpdateRequestDTO))
+					.seats(List.of(musicalSeatUpdateRequestDTO))
+					.build();
+
+			Musical musical = MusicalProvider.createMusical(thumbnail.getName(), stadium, user);
+			musicalRepository.save(musical);
+
+			// when
+			musicalFacadeService.update(musical.getId(), musicalUpdateRequestDTO, thumbnail, List.of(detailImage1, detailImage2));
+
+			// then
+			assertThat(musical.getTitle()).isEqualTo(musicalUpdateRequestDTO.title());
+			assertThat(musical.getStartDate()).isEqualTo(musicalUpdateRequestDTO.startDate());
+			assertThat(musical.getEndDate()).isEqualTo(musicalUpdateRequestDTO.endDate());
+			assertThat(musical.getDescription()).isEqualTo(musicalUpdateRequestDTO.description());
+			assertThat(musical.getViewRating()).isEqualTo(musicalUpdateRequestDTO.viewRating());
+			assertThat(musical.getGenre()).isEqualTo(musicalUpdateRequestDTO.genre());
+			assertThat(musical.getRunningTime()).isEqualTo(musicalUpdateRequestDTO.runningTime());
+			assertThat(musical.getUser().getId()).isEqualTo(musicalUpdateRequestDTO.managerId());
+			assertThat(musical.getStadium().getId()).isEqualTo(musicalUpdateRequestDTO.stadiumId());
+			assertThat(musical.getCastings())
+					.extracting("actor.name")
+					.contains(actor1.getName())
+					.contains(actor2.getName());
+			assertThat(musical.getSeatGrades())
+					.extracting("name", "price")
+					.contains(tuple(musicalUpdateRequestDTO.seatGrades().get(0).seatGradeName(), musicalUpdateRequestDTO.seatGrades().get(0).seatGradePrice()));
+			assertThat(musical.getMusicalSeats())
+					.extracting("seat.id", "seatGrade.name")
+					.contains(tuple(musicalUpdateRequestDTO.seats().get(0).seatId(), musicalUpdateRequestDTO.seats().get(0).seatGradeName()));
+		}
+
+		@Test
+		@DisplayName("Fail - 이미 뮤지컬의 스케줄이 존재하는 경우 IllegalArgumentException 이 발생한다.")
+		void updateMusicalWhenMusicalScheduleAlreadyExistFail() throws IOException {
+			// given
+			Musical musical = MusicalProvider.createMusical("thumbnail", stadium, user);
+			musicalRepository.save(musical);
+			Schedule schedule = ScheduleProvider.createSchedule(musical);
+			scheduleRepository.save(schedule);
+
+			// when, then
+			assertThatThrownBy(() -> musicalFacadeService.update(musical.getId(), MusicalUpdateRequestDTO.builder().build(), thumbnail, List.of(detailImage1)))
+					.isExactlyInstanceOf(IllegalArgumentException.class)
+					.hasMessage("이미 뮤지컬의 스케줄이 존재합니다.");
 		}
 	}
 

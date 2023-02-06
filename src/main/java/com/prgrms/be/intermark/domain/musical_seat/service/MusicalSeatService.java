@@ -48,6 +48,10 @@ public class MusicalSeatService {
 					.musical(musical)
 					.seatGrade(seatGrade)
 					.build();
+
+			createdMusicalSeat.
+					updateMusicalSeat(musical, seat, seatGrade);
+
 			musicalSeatRepository.save(createdMusicalSeat);
 		});
 	}

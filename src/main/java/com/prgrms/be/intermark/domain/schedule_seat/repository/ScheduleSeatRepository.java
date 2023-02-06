@@ -1,8 +1,8 @@
 package com.prgrms.be.intermark.domain.schedule_seat.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.prgrms.be.intermark.domain.schedule.model.Schedule;
+import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
+import com.prgrms.be.intermark.domain.seat.model.Seat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -11,9 +11,6 @@ import org.springframework.data.repository.query.Param;
 import javax.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
-import com.prgrms.be.intermark.domain.schedule.model.Schedule;
-import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
-import com.prgrms.be.intermark.domain.seat.model.Seat;
 
 public interface ScheduleSeatRepository extends JpaRepository<ScheduleSeat, Long> {
 

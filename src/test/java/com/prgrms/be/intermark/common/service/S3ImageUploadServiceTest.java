@@ -1,12 +1,8 @@
 package com.prgrms.be.intermark.common.service;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URL;
-
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,9 +13,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class S3ImageUploadServiceTest {
@@ -61,9 +62,9 @@ class S3ImageUploadServiceTest {
             MockMultipartFile multipartFile = new MockMultipartFile("testImage", "testMusicalThumbnail.jpg", "jpg", "".getBytes());
 
             // when & then
-			Assertions.assertThatThrownBy(() -> s3ImageUploadService.uploadImage(multipartFile, "subpath/"))
-				.isExactlyInstanceOf(IllegalArgumentException.class);
-		}
+            Assertions.assertThatThrownBy(() -> s3ImageUploadService.uploadImage(multipartFile, "subpath/"))
+                    .isExactlyInstanceOf(IllegalArgumentException.class);
+        }
 
     }
 }
