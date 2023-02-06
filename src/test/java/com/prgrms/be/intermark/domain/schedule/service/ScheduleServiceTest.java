@@ -1,11 +1,33 @@
 package com.prgrms.be.intermark.domain.schedule.service;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.prgrms.be.intermark.domain.musical.model.Genre;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.ViewRating;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
 import com.prgrms.be.intermark.domain.musical_seat.repository.MusicalSeatRepository;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleCreateRequestDTO;
+import com.prgrms.be.intermark.domain.schedule.dto.ScheduleFindResponseDTO;
 import com.prgrms.be.intermark.domain.schedule.dto.ScheduleUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule.repository.ScheduleRepository;
@@ -21,25 +43,6 @@ import com.prgrms.be.intermark.domain.ticket.repository.TicketRepository;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleServiceTest {
@@ -367,6 +370,48 @@ class ScheduleServiceTest {
             // then
             verify(scheduleSeatRepository).findAllByScheduleId(scheduleId);
             scheduleSeatResponseDTO.verify(() -> ScheduleSeatResponseDTO.from(any(ScheduleSeat.class)), times(scheduleSeats.size()));
+        }
+    }
+
+    @Nested
+    @DisplayName("findSchedule")
+    class FindSchedule {
+
+        @Test
+        @DisplayName("Success - 스케줄 상세 조회에 성공한다.")
+        void findScheduleSuccess() {
+            // given
+            Long scheduleId = 1L;
+            Schedule schedule = Schedule.builder()
+                .startTime(LocalDateTime.of(2023, 3, 15, 18, 30))
+                .endTime(LocalDateTime.of(2023, 3, 15, 20, 30))
+                .musical(musical)
+                .build();
+            when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.of(schedule));
+
+            // when
+            ScheduleFindResponseDTO scheduleInfo = scheduleService.findSchedule(scheduleId);
+
+            // then
+            verify(scheduleRepository).findById(scheduleId);
+            assertThat(scheduleInfo).hasFieldOrPropertyWithValue("isDeleted", schedule.isDeleted())
+                .hasFieldOrPropertyWithValue("musicalName", schedule.getMusical().getTitle())
+                .hasFieldOrPropertyWithValue("stadiumName", schedule.getMusical().getStadium().getName())
+                .hasFieldOrPropertyWithValue("startTime", schedule.getStartTime())
+                .hasFieldOrPropertyWithValue("endTime", schedule.getEndTime());
+        }
+
+        @Test
+        @DisplayName("Fail - 찾으려는 스케줄이 없으면 조회에 실패한다.")
+        void findScheduleFail() {
+            // given
+            Long scheduleId = 1L;
+            when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> scheduleService.findSchedule(scheduleId))
+                .isExactlyInstanceOf(EntityNotFoundException.class);
+            verify(scheduleRepository).findById(scheduleId);
         }
     }
 }
