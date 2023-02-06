@@ -10,15 +10,14 @@ import com.prgrms.be.intermark.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import java.util.Collection;
 
 @Slf4j
@@ -37,10 +36,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<PageResponseDTO<User, UserInfoResponseDTO>> findUsers(
-            @PathParam(value = "page") int page,
-            @PathParam(value = "size") int size) {
-        PageRequest pageRequest = pageService.getPageRequest(PageRequest.of(page, size), (int) userService.countAllUser());
+    public ResponseEntity<PageResponseDTO<User, UserInfoResponseDTO>> findUsers(Pageable pageable) {
+        PageRequest pageRequest = pageService.getPageRequest(pageable, (int) userService.countAllUser());
         PageResponseDTO<User, UserInfoResponseDTO> users = userService.findAllUser(pageRequest);
         return ResponseEntity.ok(users);
     }

@@ -1,10 +1,9 @@
 package com.prgrms.be.intermark.common.service;
 
-import java.util.List;
-
+import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
+import java.util.List;
 
 public interface ImageUploadService {
 

@@ -95,7 +95,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findByIdForFasade(Long userId) {
+    public User findByIdForFacade(Long userId) {
         return userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
     }

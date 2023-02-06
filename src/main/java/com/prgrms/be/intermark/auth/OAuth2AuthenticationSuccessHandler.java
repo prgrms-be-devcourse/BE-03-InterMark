@@ -1,6 +1,7 @@
 package com.prgrms.be.intermark.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.prgrms.be.intermark.auth.dto.TokenResponseDTO;
 import com.prgrms.be.intermark.common.dto.ErrorResponse;
 import com.prgrms.be.intermark.domain.user.dto.UserIdAndRoleDTO;
@@ -43,7 +44,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
             OAuth2User principal = oauth2Token.getPrincipal();
             String social = oauth2Token.getAuthorizedClientRegistrationId();
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
             log.info("{}", principal.getAttributes());
             try{
@@ -59,6 +60,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 CookieUtil.addCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, REFRESH_TOKEN_COOKIE_MAX_AGE, response);
 
                 String loginSuccessJson = mapper.writeValueAsString(generateLoginSuccessJson(aceessToken));
+                response.setStatus(HttpStatus.OK.value());
                 response.setContentType("application/json;charset=UTF-8");
                 response.setContentLength(loginSuccessJson.getBytes(StandardCharsets.UTF_8).length);
                 response.getWriter().write(loginSuccessJson);

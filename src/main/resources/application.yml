@@ -1,7 +1,7 @@
 spring:
 # .env 파일을 통해 환경변수를 설정해주고 싶다면 아래의 주석을 해재해 주세요
   config:
-    import: optional:file:env/spring-local.env[.properties]
+    import: optional:file:env/spring-deploy.env[.properties]
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DATABASE}
@@ -19,7 +19,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         show-sql: true
@@ -32,6 +32,10 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
 jwt:
   secret:
     access: ${JWT_ACCESS_KEY}

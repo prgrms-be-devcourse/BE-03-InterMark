@@ -18,6 +18,7 @@ import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
+
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
@@ -104,6 +105,16 @@ public class GlobalControllerAdvice {
 
 	@ExceptionHandler(DateTimeParseException.class)
 	public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException e) {
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.BAD_REQUEST,
+				e.getMessage(),
+				LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
 		ErrorResponse errorResponse = ErrorResponse.of(
 				HttpStatus.BAD_REQUEST,
 				e.getMessage(),

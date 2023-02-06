@@ -36,13 +36,19 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5', 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     compileOnly 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.h2database:h2:1.4.200'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-
-    // log clockwatch로 전송하기 위한 의존성
+    testImplementation 'org.projectlombok:lombok'
+    testImplementation "org.mockito:mockito-inline:3.4.0"
+    testImplementation 'io.findify:s3mock_2.13:0.2.6'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1'
+    // log cloudwatch로 전송하기 위한 의존성
     implementation "ca.pjer:logback-awslogs-appender:1.6.0"
 
     testImplementation('org.springframework.security:spring-security-test')
@@ -55,7 +61,7 @@ dependencies {
 test {
     outputs.dir snippetsDir
     useJUnitPlatform()
-
+    systemProperty 'spring.profiles.active', 'test'
     finalizedBy('jacocoTestReport')
 }
 
