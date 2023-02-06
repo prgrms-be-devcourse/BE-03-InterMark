@@ -5,8 +5,10 @@ import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
 import com.prgrms.be.intermark.common.service.page.PageService;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.repository.MusicalRepository;
+import com.prgrms.be.intermark.domain.schedule.model.Schedule;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.schedule_seat.repository.ScheduleSeatRepository;
+import com.prgrms.be.intermark.domain.seat.model.Seat;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketCreateRequestDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseByMusicalDTO;
 import com.prgrms.be.intermark.domain.ticket.dto.TicketResponseByUserDTO;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -40,8 +43,8 @@ public class TicketService {
         User user = userRepository.findByIdAndIsDeletedFalse(ticketCreateRequestDTO.userId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 유저입니다."));
 
-        ScheduleSeat scheduleSeat = scheduleSeatRepository.findByScheduleSeatFetch(ticketCreateRequestDTO.scheduleSeatId())
-            .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 스케줄좌석입니다."));
+        ScheduleSeat scheduleSeat = scheduleSeatRepository.findByScheduleSeatFetchWithLock(ticketCreateRequestDTO.scheduleSeatId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 스케줄좌석입니다."));
 
         if (scheduleSeat.isReserved()) {
             throw new IllegalArgumentException("이미 예약된 좌석입니다.");
@@ -62,7 +65,6 @@ public class TicketService {
     public PageResponseDTO<Ticket, TicketResponseDTO> getAllTickets(Pageable pageable) {
         PageRequest pageRequest = pageService.getPageRequest(pageable, (int) ticketRepository.count());
         Page<Ticket> ticketPage = ticketRepository.findAll(pageRequest);
-
         return new PageResponseDTO<>(ticketPage, TicketResponseDTO::from, PageListIndexSize.TICKET_LIST_INDEX_SIZE);
     }
 
@@ -108,13 +110,18 @@ public class TicketService {
     @Transactional
     public void deleteTicket(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
-            .orElseThrow(() -> {
-                throw new EntityNotFoundException("존재하지 않는 티켓입니다.");
-            });
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException("존재하지 않는 티켓입니다.");
+                });
 
         if (ticket.isDeleted()) {
             throw new EntityNotFoundException("이미 환불된 티켓입니다.");
         }
+
+        Schedule schedule = ticket.getSchedule();
+        Seat seat = ticket.getSeat();
+        Optional<ScheduleSeat> scheduleSeat = scheduleSeatRepository.findByScheduleAndSeat(schedule, seat);
+        scheduleSeat.ifPresent(ScheduleSeat::refund);
 
         ticket.deleteTicket();
     }

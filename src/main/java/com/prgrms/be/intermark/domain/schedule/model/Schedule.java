@@ -3,7 +3,10 @@ package com.prgrms.be.intermark.domain.schedule.model;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.schedule_seat.model.ScheduleSeat;
 import com.prgrms.be.intermark.domain.ticket.model.Ticket;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
