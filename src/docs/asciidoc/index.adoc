@@ -281,7 +281,7 @@ GET /api/v1/schedules?musical=&page=&size=
 }
 ```
 
-=== 특정 스케쥴 조회
+=== 특정 스케쥴 조회정
 
 .request
 include::{snippets}/Schedule/get/http-request.adoc[]
@@ -302,6 +302,18 @@ include::{snippets}/Schedule/get/response-body.adoc[]
 include::{snippets}/Schedule/get/response-fields.adoc[]
 
 === 특정 스케쥴의 좌석 조회
+.request
+include::{snippets}/ScheduleSeats/get/http-request.adoc[]
+====== request body
+include::{snippets}/ScheduleSeats/get/request-body.adoc[]
+
+.response
+include::{snippets}/ScheduleSeats/get/http-response.adoc[]
+
+====== response body
+include::{snippets}/ScheduleSeats/get/response-body.adoc[]
+include::{snippets}/ScheduleSeats/get/response-fields.adoc[]
+
 
 === 스케쥴 수정
 
