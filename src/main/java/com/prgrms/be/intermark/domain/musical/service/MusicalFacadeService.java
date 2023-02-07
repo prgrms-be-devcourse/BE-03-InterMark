@@ -1,5 +1,13 @@
 package com.prgrms.be.intermark.domain.musical.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.prgrms.be.intermark.common.dto.ImageResponseDTO;
 import com.prgrms.be.intermark.common.dto.page.PageListIndexSize;
 import com.prgrms.be.intermark.common.dto.page.PageResponseDTO;
@@ -8,7 +16,12 @@ import com.prgrms.be.intermark.domain.actor.model.Actor;
 import com.prgrms.be.intermark.domain.actor.service.ActorService;
 import com.prgrms.be.intermark.domain.casting.model.Casting;
 import com.prgrms.be.intermark.domain.casting.service.CastingService;
-import com.prgrms.be.intermark.domain.musical.dto.*;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalDetailResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSeatGradeCreateRequestDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalSummaryResponseDTO;
+import com.prgrms.be.intermark.domain.musical.dto.MusicalUpdateRequestDTO;
 import com.prgrms.be.intermark.domain.musical.model.Musical;
 import com.prgrms.be.intermark.domain.musical.model.MusicalDetailImage;
 import com.prgrms.be.intermark.domain.musical_seat.model.MusicalSeat;
@@ -24,14 +37,8 @@ import com.prgrms.be.intermark.domain.ticket.model.Ticket;
 import com.prgrms.be.intermark.domain.ticket.service.TicketService;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -86,7 +93,7 @@ public class MusicalFacadeService {
     @Transactional
     public void update(
             Long musicalId,
-            MusicalUpdateRequestDTO musicalSeatUpdateRequestDTO,
+            MusicalUpdateRequestDTO musicalUpdateRequestDTO,
             MultipartFile thumbnailImage,
             List<MultipartFile> detailImages
     ) {
@@ -100,17 +107,17 @@ public class MusicalFacadeService {
             throw new IllegalArgumentException("이미 예약된 뮤지컬입니다.");
         }
 
-        ImageResponseDTO thumbnailInfo = imageUploadService.uploadImage(thumbnailImage,THUMBNAIL_PATH);
-        Stadium stadium = stadiumService.findById(musicalSeatUpdateRequestDTO.stadiumId());
-        User manager = userService.findByIdForFacade(musicalSeatUpdateRequestDTO.managerId());
+        ImageResponseDTO thumbnailInfo = imageUploadService.uploadImage(thumbnailImage, THUMBNAIL_PATH);
+        Stadium stadium = stadiumService.findById(musicalUpdateRequestDTO.stadiumId());
+        User manager = userService.findByIdForFacade(musicalUpdateRequestDTO.managerId());
 
-        seatGradeService.update(musicalSeatUpdateRequestDTO.seatGrades(), musical);
-        musicalSeatService.update(musicalSeatUpdateRequestDTO.seats(), musicalSeatUpdateRequestDTO.stadiumId(), musical);
-        castingService.update(musicalSeatUpdateRequestDTO.actors(), musical);
+        seatGradeService.update(musicalUpdateRequestDTO.seatGrades(), musical);
+        musicalSeatService.update(musicalUpdateRequestDTO.seats(), musicalUpdateRequestDTO.stadiumId(), musical);
+        castingService.update(musicalUpdateRequestDTO.actors(), musical);
 
         List<ImageResponseDTO> detailImagesInfo = imageUploadService.uploadImages(detailImages, DETAIL_IMAGES_PATH);
         musicalDetailImageService.update(detailImagesInfo, musical);
-        musicalService.updateMusical(musical, musicalSeatUpdateRequestDTO, thumbnailInfo.path(), stadium, manager);
+        musicalService.updateMusical(musical, musicalUpdateRequestDTO, thumbnailInfo.path(), stadium, manager);
     }
 
     @Transactional(readOnly = true)

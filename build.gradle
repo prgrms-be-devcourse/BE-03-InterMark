@@ -46,8 +46,9 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testImplementation 'org.projectlombok:lombok'
     testImplementation "org.mockito:mockito-inline:3.4.0"
+    testImplementation 'io.findify:s3mock_2.13:0.2.6'
 
-    // log clockwatch로 전송하기 위한 의존성
+    // log cloudwatch로 전송하기 위한 의존성
     implementation "ca.pjer:logback-awslogs-appender:1.6.0"
 
     testImplementation('org.springframework.security:spring-security-test')
@@ -60,7 +61,7 @@ dependencies {
 test {
     outputs.dir snippetsDir
     useJUnitPlatform()
-
+    systemProperty 'spring.profiles.active', 'test'
     finalizedBy('jacocoTestReport')
 }
 

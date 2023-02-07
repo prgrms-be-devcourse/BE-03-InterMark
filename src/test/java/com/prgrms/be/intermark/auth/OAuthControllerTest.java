@@ -98,7 +98,7 @@ class OAuthControllerTest {
             when(tokenProvider.createAceessToken(anyLong(), any(UserRole.class)))
                     .thenReturn(newAccessToken);
             ResultActions actions = mockMvc.perform(get("/refresh")
-                    .header("Authorization", "Bearer "+ accessToken)
+                    .header("Authorization", "Bearer " + accessToken)
                     .cookie(new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken)));
             // then
             verify(tokenProvider, times(2)).validate(anyString());
@@ -123,7 +123,7 @@ class OAuthControllerTest {
             when(tokenProvider.getExpiredTokenClaims(anyString()))
                     .thenReturn(getExpiredClaims(accessToken));
             ResultActions actions = mockMvc.perform(get("/refresh")
-                    .header("Authorization", "Bearer "+ accessToken)
+                    .header("Authorization", "Bearer " + accessToken)
                     .cookie(new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken)));
             // then
             verify(tokenProvider).validate(anyString());
@@ -144,7 +144,7 @@ class OAuthControllerTest {
             when(tokenProvider.validate(anyString()))
                     .thenReturn(false);
             ResultActions actions = mockMvc.perform(get("/refresh")
-                    .header("Authorization", "Bearer "+ accessToken)
+                    .header("Authorization", "Bearer " + accessToken)
                     .cookie(new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken)));
             // then
             verify(tokenProvider).validate(anyString());
@@ -176,7 +176,7 @@ class OAuthControllerTest {
             when(tokenProvider.validate(refreshToken))
                     .thenReturn(false);
             ResultActions actions = mockMvc.perform(get("/refresh")
-                    .header("Authorization", "Bearer "+ accessToken)
+                    .header("Authorization", "Bearer " + accessToken)
                     .cookie(new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken)));
             // then
             verify(tokenProvider).validate(accessToken);
