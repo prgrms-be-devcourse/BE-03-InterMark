@@ -1,0 +1,93 @@
+= InterMark API
+:toc: left
+:toc-levels:4
+
+== User
+
+=== 로그인/ 회원가입
+
+
+=== 유저 리스트 조회
+.request
+include::{snippets}/find-users-page-success/http-request.adoc[]
+include::{snippets}/find-users-page-success/request-parameters.adoc[]
+include::{snippets}/Delete Schedule/request-body.adoc[]
+
+.response
+include::{snippets}/find-users-page-success/http-response.adoc[]
+include::{snippets}/find-users-page-success/response-body.adoc[]
+
+
+=== 특정 유저 조회
+.request
+include::{snippets}/find-user-success/http-request.adoc[]
+include::{snippets}/find-user-success/request-body.adoc[]
+.response
+include::{snippets}/find-user-success/http-response.adoc[]
+include::{snippets}/find-user-success/response-body.adoc[]
+include::{snippets}/find-user-success/response-fields.adoc[]
+
+=== 유저 권한 수정
+
+.request
+include::{snippets}/fail-change-authority-not-found-user-by-admin/http-request.adoc[]
+include::{snippets}/fail-change-authority-not-found-user-by-admin/path-parameters.adoc[]
+
+==== request header
+include::{snippets}/fail-change-authority-not-found-user-by-admin/request-headers.adoc[]
+include::{snippets}/fail-change-authority-not-found-user-by-admin/request-body.adoc[]
+
+.response
+include::{snippets}/success-change-authority-by-admin/http-response.adoc[]
+include::{snippets}/success-change-authority-by-admin/response-body.adoc[]
+
+include::{snippets}/success-change-authority-by-admin/response-fields.adoc[]
+
+
+=== 유저 삭제
+
+.request
+include::{snippets}/deleteUserBySelfSucess/http-request.adoc[]
+include::{snippets}/deleteUserBySelfSucess/request-headers.adoc[]
+include::{snippets}/deleteUserBySelfSucess/path-parameters.adoc[]
+include::{snippets}/deleteUserBySelfSucess/request-body.adoc[]
+.response
+include::{snippets}/deleteUserBySelfSucess/http-response.adoc[]
+include::{snippets}/deleteUserBySelfSucess/response-headers.adoc[]
+include::{snippets}/deleteUserBySelfSucess/response-body.adoc[]
+
+
+
+== Musical
+=== 뮤지컬 생성
+include::{snippets}/Musical/create/http-request.adoc[]
+include::{snippets}/Musical/create/request-body.adoc[]
+include::{snippets}/Musical/create/request-part-createRequestDto-fields.adoc[]
+include::{snippets}/Musical/create/request-parts.adoc[]
+
+include::{snippets}/Musical/create/http-response.adoc[]
+include::{snippets}/Musical/create/response-headers.adoc[]
+include::{snippets}/Musical/create/response-body.adoc[]
+
+=== 뮤지컬 리스트 조회
+=== 뮤지컬 상세 조회
+=== 뮤지컬 수정
+=== 뮤지컬 삭제
+== Schedule
+
+=== 스케줄 생성
+=== 스케쥴 리스트 조회
+=== 특정 스케쥴 조회
+=== 스케쥴 수정
+=== 스케쥴 삭제
+.request
+include::{snippets}/Delete Schedule/http-request.adoc[]
+include::{snippets}/Delete Schedule/path-parameters.adoc[]
+include::{snippets}/Delete Schedule/request-body.adoc[]
+
+.response
+include::{snippets}/Delete Schedule/http-response.adoc[]
+include::{snippets}/Delete Schedule/response-body.adoc[]
+== Ticket
+=== 티켓 생성(뮤지컬 예매)
+=== 티켓 환불(삭제)
