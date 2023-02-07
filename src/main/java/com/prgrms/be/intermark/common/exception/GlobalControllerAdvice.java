@@ -1,13 +1,11 @@
 package com.prgrms.be.intermark.common.exception;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
-
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.prgrms.be.intermark.common.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,10 +13,33 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import com.prgrms.be.intermark.common.dto.ErrorResponse;
+import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+
 
 @RestControllerAdvice
 public class GlobalControllerAdvice {
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e){
+		if(e.getCause() instanceof InvalidFormatException){
+			InvalidFormatException exception = (InvalidFormatException)  e.getCause();
+			if(exception.getTargetType().isEnum()){
+				String targetType = exception.getTargetType().getSimpleName();
+				ErrorResponse errorResponse = ErrorResponse.of(
+						HttpStatus.BAD_REQUEST,
+						targetType+"에 맞지않는 값입니다.",
+						LocalDateTime.now()
+				);
+				return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+			}
+		}
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.BAD_REQUEST, e.getMessage(), LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
@@ -110,6 +131,15 @@ public class GlobalControllerAdvice {
 				LocalDateTime.now()
 		);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e){
+		ErrorResponse errorResponse = ErrorResponse.of(
+				HttpStatus.UNAUTHORIZED,
+				e.getMessage(),
+				LocalDateTime.now()
+		);
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(Exception.class)

@@ -2,6 +2,7 @@ package com.prgrms.be.intermark.config;
 
 import com.prgrms.be.intermark.auth.*;
 import com.prgrms.be.intermark.domain.user.UserRole;
+import com.prgrms.be.intermark.domain.user.repository.UserRepository;
 import com.prgrms.be.intermark.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,11 +23,14 @@ public class SpringSecurityConfig {
     private String accessSecret;
     @Value("${jwt.secret.refresh}")
     private String refreshSecret;
+    private final UserRepository userRepository;
 
-    public SpringSecurityConfig(CustomOauth2UserService customOauth2UserService, UserService userService, TokenProvider tokenProvider) {
+    public SpringSecurityConfig(CustomOauth2UserService customOauth2UserService, UserService userService, TokenProvider tokenProvider,
+                                UserRepository userRepository) {
         this.customOauth2UserService = customOauth2UserService;
         this.userService = userService;
         this.tokenProvider = tokenProvider;
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -85,6 +89,6 @@ public class SpringSecurityConfig {
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter(tokenProvider);
+        return new TokenAuthenticationFilter(tokenProvider,userRepository);
     }
 }

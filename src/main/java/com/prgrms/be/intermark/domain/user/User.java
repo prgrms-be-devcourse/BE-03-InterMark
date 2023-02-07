@@ -80,9 +80,6 @@ public class User {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
-        this.isDeleted = isDeleted;
-        this.birth = birth;
-        this.email = email;
     }
 
     public void setBirth(@Nullable LocalDate birth) {
@@ -99,5 +96,9 @@ public class User {
 
     public boolean isDeleted() {
         return this.isDeleted;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 }

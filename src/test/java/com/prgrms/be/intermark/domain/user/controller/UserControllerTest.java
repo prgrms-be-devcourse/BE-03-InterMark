@@ -8,19 +8,26 @@ import com.prgrms.be.intermark.common.service.page.PageService;
 import com.prgrms.be.intermark.domain.user.SocialType;
 import com.prgrms.be.intermark.domain.user.User;
 import com.prgrms.be.intermark.domain.user.UserRole;
+import com.prgrms.be.intermark.domain.user.dto.UpdateUserAuthorityRequestDTO;
 import com.prgrms.be.intermark.domain.user.dto.UserInfoResponseDTO;
 import com.prgrms.be.intermark.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.core.Authentication;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -28,9 +35,24 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -52,7 +74,7 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @SpyBean
     private TokenProvider tokenProvider;
 
     @MockBean
@@ -193,6 +215,347 @@ class UserControllerTest {
                                     fieldWithPath("errors").type(JsonFieldType.ARRAY).optional().description("발생한 에러 리스트"),
                                     fieldWithPath("createdAt").type(JsonFieldType.STRING).description("예외 발생 시간")
                             )));
+        }
+    }
+
+    @Nested
+    class DeleteUser {
+        static Stream<Arguments> userIdRoleProvider() {
+            return Stream.of(
+                    arguments(1L, UserRole.ROLE_USER),
+                    arguments(1L, UserRole.ROLE_SELLER),
+                    arguments(1L, UserRole.ROLE_ADMIN)
+            );
+        }
+
+        static Stream<Arguments> userIdRoleProviderExceptAdmin() {
+            return Stream.of(
+                    arguments(1L, UserRole.ROLE_USER),
+                    arguments(1L, UserRole.ROLE_SELLER)
+            );
+        }
+
+        static Stream<Arguments> adminUserIdRoleProvider() {
+            return Stream.of(
+                    arguments(1L, UserRole.ROLE_ADMIN)
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("userIdRoleProvider")
+        @DisplayName("Success -유저가 자신의 계정을 삭제 시킨다. 상태코드 204 반환")
+        public void deleteUser_DeleteSelf_Success(Long userId, UserRole userRole) throws Exception {
+            //given
+            String aceessToken = tokenProvider.createAceessToken(userId, userRole);
+            Authentication authenticationByToken = tokenProvider.getAuthentication(aceessToken);
+            doNothing().when(userService).delete(anyLong());
+
+            //when
+            ResultActions resultActions = mockMvc.perform(
+                    delete("/api/v1/users/{userId}", userId)
+                            .header("Authorization", "Bearer " + "{access 토큰}").with(csrf()).with(authentication(authenticationByToken))
+            ).andDo(print());
+            //then
+            resultActions.andExpect(status().isNoContent())
+                    .andDo(
+                            document(
+                                    "deleteUserBySelfSucess",
+                                    pathParameters(parameterWithName("userId").description("유저 ID")),
+                                    requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    )
+                            )
+                    );
+            verify(userService, only()).delete(userId);
+
+        }
+
+
+        @ParameterizedTest
+        @MethodSource("userIdRoleProviderExceptAdmin")
+        @DisplayName("Fail - 관리자가 아닌 유저가 다른유저를 delete 한다. 상태코드 401 반환")
+        public void deleteUser_DiffrentUserId_Fail(Long userId, UserRole role) throws Exception {
+            //given
+            Long targetUserId = userId + 1;
+            String aceessToken = tokenProvider.createAceessToken(userId, role);
+            Authentication authenticationByToken = tokenProvider.getAuthentication(aceessToken);
+            doNothing().when(userService).delete(anyLong());
+
+            //when
+            ResultActions resultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", targetUserId).
+                    with(csrf()).with(authentication(authenticationByToken))
+                    .header("Authorization", "Bearer " + aceessToken)).andDo(print());
+            //then
+            resultActions
+                    .andExpect(status().isUnauthorized())
+                    .andDo(
+                            document("fail-delete-different-user",
+                                    pathParameters(
+                                            parameterWithName("targetId").description("유저 ID")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http상태 코드"),
+                                            fieldWithPath("message").type(JsonFieldType.STRING).description("에러의 메시지"),
+                                            fieldWithPath("errors").type(Arrays.asList(JsonFieldType.ARRAY,JsonFieldType.NULL)).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );
+            verify(userService, never()).delete(targetUserId);
+
+        }
+
+        @ParameterizedTest
+        @MethodSource("adminUserIdRoleProvider")
+        @DisplayName("Success -  관리자가 다른 유저의 계정을 삭제시킨다. 상태코드 204")
+        public void deleteUser_AdminDeleteDiffrentUser_Success(Long userId, UserRole role) throws Exception {
+            //given
+            Long targetUserId = userId + 1;
+            String aceessToken = tokenProvider.createAceessToken(userId, role);
+            Authentication authenticationByToken = tokenProvider.getAuthentication(aceessToken);
+            doNothing().when(userService).delete(anyLong());
+
+            //when
+            ResultActions resultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", targetUserId)
+                    .with(csrf()).with(authentication(authenticationByToken)).header("Authorization", "Bearer " + aceessToken)).andDo(print());
+            //then
+            resultActions.andExpect(status().isNoContent()).
+                    andDo(
+                            document("sucess-delete-by-admin",
+                                    pathParameters(
+                                            parameterWithName("targetId").description("유저 ID")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    )
+                            ));
+            verify(userService, never()).delete(userId);
+
+        }
+        @ParameterizedTest
+        @MethodSource("adminUserIdRoleProvider")
+        @DisplayName("Fail - 관리자가 삭제되거나 존재하지 않는 유저의 계정을 삭제시킨다. 상태코드 404")
+        public void deleteUser_AdminDeleteAlreadyDeletedOrNotFoundUser_fail(Long userId,UserRole role) throws Exception{
+            //given
+            Long deletedUserId = userId + 1;
+            Long cannotFindUserId = userId + 10;
+            String aceessToken = tokenProvider.createAceessToken(userId, role);
+            Authentication authenticationByToken = tokenProvider.getAuthentication(aceessToken);
+            doThrow(new EntityNotFoundException()).when(userService).delete(deletedUserId);
+            doThrow(new EntityNotFoundException()).when(userService).delete(cannotFindUserId);
+            //when
+            ResultActions deletedUserResultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", deletedUserId)
+                    .with(csrf()).with(authentication(authenticationByToken)).header("Authorization", "Bearer " + aceessToken)).andDo(print());
+            ResultActions cannotFindUserResultActions = mockMvc.perform(delete("/api/v1/users/{targetId}", cannotFindUserId)
+                    .with(csrf()).with(authentication(authenticationByToken)).header("Authorization", "Bearer " + aceessToken)).andDo(print());
+            //then
+            deletedUserResultActions.andExpect(status().isNotFound())
+                    .andDo(
+                            document("fail-admin-delete-not-found-user",
+                                    pathParameters(
+                                            parameterWithName("targetId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http 상태 코드"),
+                                            fieldWithPath("message").type(JsonFieldType.NULL).description("에러의 메시지"),
+                                            fieldWithPath("errors").type(JsonFieldType.NULL).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );
+            cannotFindUserResultActions.andExpect(status().isNotFound());
+
+            verify(userService, times(1)).delete(deletedUserId);
+            verify(userService, times(1)).delete(cannotFindUserId);
+        }
+
+
+    }
+    @Nested
+    class UpdateUserAuthority{
+        static Stream<Arguments> allUserAndWrongRequestBodyProvider(){
+            return Stream.of(
+                    arguments(1L,UserRole.ROLE_USER,2L,"{\"택도없는거시기\":123}"),
+                    arguments(1L,UserRole.ROLE_USER,2L,"{\"authority\":\"USER\"}"),
+                    arguments(1L,UserRole.ROLE_USER,2L,"{\"authority\":\"ROLE_FINDER\"}"),
+                    arguments(1L,UserRole.ROLE_ADMIN,2L,"{\"택도없는거시기\":123}"),
+                    arguments(1L,UserRole.ROLE_ADMIN,2L,"{\"authority\":\"ROLE_FINDER\"}"),
+                    arguments(1L,UserRole.ROLE_ADMIN,2L,"{\"authority\":\"USER\"}")
+            );
+        }
+        static Stream<Arguments> notAdminAndTargetProvider(){
+            return Stream.of(
+                    arguments(1L,UserRole.ROLE_USER,2L,UserRole.ROLE_USER),
+                    arguments(1L,UserRole.ROLE_USER,2L,UserRole.ROLE_SELLER),
+                    arguments(1L,UserRole.ROLE_USER,2L,UserRole.ROLE_ADMIN),
+                    arguments(1L,UserRole.ROLE_SELLER,2L,UserRole.ROLE_USER),
+                    arguments(1L,UserRole.ROLE_SELLER,2L,UserRole.ROLE_SELLER),
+                    arguments(1L,UserRole.ROLE_SELLER,2L,UserRole.ROLE_ADMIN)
+            );
+        }
+
+
+        static Stream<Arguments> adminAndTargetProvider(){
+            return Stream.of(
+                    arguments(1L,UserRole.ROLE_ADMIN,2L,UserRole.ROLE_USER),
+                    arguments(1L,UserRole.ROLE_ADMIN,2L,UserRole.ROLE_SELLER),
+                    arguments(1L,UserRole.ROLE_ADMIN,2L,UserRole.ROLE_ADMIN)
+            );
+        }
+        @ParameterizedTest
+        @MethodSource("adminAndTargetProvider")
+        @DisplayName("Success - 관리자가 특정 유저의 권한을 바꾼다. 200")
+        public void updateRole_adminUpdateRole_success(Long userId,UserRole userRole,Long targetUserId,UserRole targetUserRole) throws Exception{
+            //given
+            String accessToken = tokenProvider.createAceessToken(userId, userRole);
+            UpdateUserAuthorityRequestDTO updateUserAuthorityRequestDTO = UpdateUserAuthorityRequestDTO.builder().authority(targetUserRole).build();
+            Authentication authenticationByToken = tokenProvider.getAuthentication(accessToken);
+            doNothing().when(userService).updateRole(targetUserId,targetUserRole);
+            //when
+            ResultActions resultActions = mockMvc
+                    .perform(patch("/api/v1/users/{targetUserId}/authority", targetUserId)
+                            .with(csrf())
+                            .with(authentication(authenticationByToken))
+                            .header("Authorization", "Bearer " + accessToken).contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updateUserAuthorityRequestDTO))
+                    ).andDo(print());
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "success-change-authority-by-admin",
+                                    pathParameters(
+                                            parameterWithName("targetUserId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),requestFields(
+                                            fieldWithPath("authority").type(JsonFieldType.STRING).description("ROLE_USER | ROLE_SELLER | ROLE_ADMIN")
+                                    )
+                            )
+                    );
+            verify(userService,times(1)).updateRole(targetUserId,targetUserRole);
+        }
+        @ParameterizedTest
+        @MethodSource("adminAndTargetProvider")
+        @DisplayName("Fail - 관리자가 삭제되거나 존재하지 안는 유저의 권한을 바꾼다. 404")
+        public void updateRole_adminUpdateRoleToDeletedUser_fail(Long userId,UserRole userRole,Long targetUserId,UserRole targetUserRole) throws Exception{
+            //given
+            String accessToken = tokenProvider.createAceessToken(userId, userRole);
+            UpdateUserAuthorityRequestDTO updateUserAuthorityRequestDTO = UpdateUserAuthorityRequestDTO.builder().authority(targetUserRole).build();
+            Authentication authenticationByToken = tokenProvider.getAuthentication(accessToken);
+            doThrow(EntityNotFoundException.class).when(userService).updateRole(targetUserId,targetUserRole);
+            //when
+            ResultActions resultActions = mockMvc
+                    .perform(patch("/api/v1/users/{targetUserId}/authority", targetUserId)
+                            .with(csrf())
+                            .with(authentication(authenticationByToken))
+                            .header("Authorization", "Bearer " + accessToken).contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updateUserAuthorityRequestDTO))
+                    ).andDo(print());
+            //then
+            resultActions.andExpect(status().isNotFound())
+                    .andDo(
+                            document(
+                                    "fail-change-authority-not-found-user-by-admin",
+                                    pathParameters(
+                                            parameterWithName("targetUserId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),requestFields(
+                                            fieldWithPath("authority").type(JsonFieldType.STRING).description("ROLE_USER | ROLE_SELLER | ROLE_ADMIN")
+                                    ),responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http 상태 코드"),
+                                            fieldWithPath("message").type(Arrays.asList(JsonFieldType.STRING,JsonFieldType.NULL)).description("에러의 메시지"),
+                                            fieldWithPath("errors").type(Arrays.asList(JsonFieldType.ARRAY,JsonFieldType.NULL)).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );
+            verify(userService,times(1)).updateRole(targetUserId,targetUserRole);
+        }
+        @ParameterizedTest
+        @MethodSource("notAdminAndTargetProvider")
+        @DisplayName("Fail - 관리자가 아닌 사람이 특정 유저의 권한을 바꾼다.상태코드 401")
+        public void updateRole_userUpdateRoleWhoIsNotAdmin_fail(
+                Long userId,
+                UserRole userRole,
+                Long targetUserId,
+                UserRole targetUserRole
+        ) throws Exception{
+            //given
+            String accessToken = tokenProvider.createAceessToken(userId, userRole);
+            UpdateUserAuthorityRequestDTO updateUserAuthorityRequestDTO = UpdateUserAuthorityRequestDTO.builder().authority(targetUserRole).build();
+            Authentication authenticationByToken = tokenProvider.getAuthentication(accessToken);
+            doNothing().when(userService).updateRole(targetUserId,targetUserRole);
+
+            //when
+            ResultActions resultActions = mockMvc
+                    .perform(patch("/api/v1/users/{targetUserId}/authority", targetUserId)
+                            .with(csrf())
+                            .with(authentication(authenticationByToken))
+                            .header("Authorization", "Bearer " + accessToken).contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updateUserAuthorityRequestDTO))
+                    ).andDo(print());
+            //then
+            resultActions.andExpect(status().isUnauthorized())
+                    .andDo(
+                            document(
+                                    "fail-change-authority-by-unauthorized-user",
+                                    pathParameters(
+                                            parameterWithName("targetUserId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),requestFields(
+                                            fieldWithPath("authority").type(JsonFieldType.STRING).description("ROLE_USER | ROLE_SELLER | ROLE_ADMIN")
+                                    ),responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http 상태 코드"),
+                                            fieldWithPath("message").type(Arrays.asList(JsonFieldType.STRING,JsonFieldType.NULL)).description("에러의 메시지"),
+                                            fieldWithPath("errors").type(Arrays.asList(JsonFieldType.ARRAY,JsonFieldType.NULL)).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );;
+            verify(userService,never()).updateRole(targetUserId,targetUserRole);
+        }
+        @ParameterizedTest
+        @MethodSource("allUserAndWrongRequestBodyProvider")
+        @DisplayName("Fail - 어떤 사람의 권한을 바꾼다. 요청의 RequestBody가 잘못됐다. 상태코드 400")
+        public void updateRole_anyoneUpdateRoleWithWrongRequestBody_fail(
+                Long userId,
+                UserRole userRole,
+                Long targetId,
+                String requestBody) throws Exception{
+            //given
+            String accessToken = tokenProvider.createAceessToken(userId, userRole);
+            Authentication authenticationByToken = tokenProvider.getAuthentication(accessToken);
+            doNothing().when(userService).updateRole(anyLong(),any());
+            //when
+            ResultActions resultActions = mockMvc
+                    .perform(patch("/api/v1/users/{targetId}/authority",targetId)
+                            .with(csrf()).with(authentication(authenticationByToken))
+                            .header("Authorization", "Bearer " + accessToken).contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                    ).andDo(print());
+            //then
+            resultActions.andExpect(status().isBadRequest())
+                    .andDo(
+                            document(
+                                    "fail-wrong-request-body",
+                                    pathParameters(
+                                            parameterWithName("targetId").description("유저 Id")
+                                    ),requestHeaders(
+                                            headerWithName("Authorization").description("Bearer + {access 토큰}")
+                                    ),responseFields(
+                                            fieldWithPath("status").type(JsonFieldType.NUMBER).description("http 상태 코드"),
+                                            fieldWithPath("message").type(JsonFieldType.STRING).description("에러의 메시지"),
+                                            subsectionWithPath("errors").type(Arrays.asList(JsonFieldType.ARRAY,JsonFieldType.NULL)).description("errors를 나타낸다."),
+                                            fieldWithPath("createdAt").type(JsonFieldType.STRING).description("언제 발생했는지를 나타낸다.")
+                                    )
+                            )
+                    );;
+            verify(userService,never()).updateRole(anyLong(),any());
         }
     }
 }

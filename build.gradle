@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.7'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id 'org.asciidoctor.convert' version '1.5.8'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
     id 'jacoco'
 }
 
@@ -14,6 +14,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    asciidoctorExt
 }
 
 repositories {
@@ -21,10 +22,12 @@ repositories {
 }
 
 ext {
-    set('snippetsDir', file("build/generated-snippets"))
+    snippetsDir = file('build/generated-snippets')
 }
 
 dependencies {
+    implementation 'org.thymeleaf:thymeleaf:3.0.11.RELEASE'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -47,15 +50,15 @@ dependencies {
     testImplementation 'org.projectlombok:lombok'
     testImplementation "org.mockito:mockito-inline:3.4.0"
     testImplementation 'io.findify:s3mock_2.13:0.2.6'
-
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1'
     // log cloudwatch로 전송하기 위한 의존성
     implementation "ca.pjer:logback-awslogs-appender:1.6.0"
 
     testImplementation('org.springframework.security:spring-security-test')
 
     // Rest Docs
-    asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
+    asciidoctorExt "org.springframework.restdocs:spring-restdocs-asciidoctor"
 }
 
 test {
@@ -67,9 +70,17 @@ test {
 
 asciidoctor {
     inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
     dependsOn test
 }
 
+bootJar{
+    dependsOn asciidoctor
+    copy {
+        from "${asciidoctor.outputDir}"
+        into "src/main/resources/static"
+    }
+}
 jacoco {
     toolVersion = '0.8.8'
 }
