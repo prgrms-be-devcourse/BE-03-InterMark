@@ -10,18 +10,25 @@
 === 유저 리스트 조회
 .request
 include::{snippets}/find-users-page-success/http-request.adoc[]
+====== request parameter
 include::{snippets}/find-users-page-success/request-parameters.adoc[]
+====== request Body
 include::{snippets}/Delete Schedule/request-body.adoc[]
+
+
 
 .response
 include::{snippets}/find-users-page-success/http-response.adoc[]
+====== response Body
 include::{snippets}/find-users-page-success/response-body.adoc[]
 
 
 === 특정 유저 조회
 .request
 include::{snippets}/find-user-success/http-request.adoc[]
+====== request Body
 include::{snippets}/find-user-success/request-body.adoc[]
+
 .response
 include::{snippets}/find-user-success/http-response.adoc[]
 include::{snippets}/find-user-success/response-body.adoc[]
@@ -31,26 +38,32 @@ include::{snippets}/find-user-success/response-fields.adoc[]
 
 .request
 include::{snippets}/fail-change-authority-not-found-user-by-admin/http-request.adoc[]
+====== path variable
 include::{snippets}/fail-change-authority-not-found-user-by-admin/path-parameters.adoc[]
-
-==== request header
-include::{snippets}/fail-change-authority-not-found-user-by-admin/request-headers.adoc[]
+====== request Body
 include::{snippets}/fail-change-authority-not-found-user-by-admin/request-body.adoc[]
+include::{snippets}/fail-change-authority-not-found-user-by-admin/request-fields.adoc[]
+====== request header
+include::{snippets}/fail-change-authority-not-found-user-by-admin/request-headers.adoc[]
 
 .response
 include::{snippets}/success-change-authority-by-admin/http-response.adoc[]
 include::{snippets}/success-change-authority-by-admin/response-body.adoc[]
-
 include::{snippets}/success-change-authority-by-admin/response-fields.adoc[]
+
 
 
 === 유저 삭제
 
 .request
 include::{snippets}/deleteUserBySelfSucess/http-request.adoc[]
-include::{snippets}/deleteUserBySelfSucess/request-headers.adoc[]
+====== path variable
 include::{snippets}/deleteUserBySelfSucess/path-parameters.adoc[]
+====== request Body
 include::{snippets}/deleteUserBySelfSucess/request-body.adoc[]
+====== request header
+include::{snippets}/deleteUserBySelfSucess/request-headers.adoc[]
+
 .response
 include::{snippets}/deleteUserBySelfSucess/http-response.adoc[]
 include::{snippets}/deleteUserBySelfSucess/response-headers.adoc[]
@@ -61,33 +74,193 @@ include::{snippets}/deleteUserBySelfSucess/response-body.adoc[]
 == Musical
 === 뮤지컬 생성
 include::{snippets}/Musical/create/http-request.adoc[]
-include::{snippets}/Musical/create/request-body.adoc[]
+====== multipart formdata
+.Part : createRequestDto
 include::{snippets}/Musical/create/request-part-createRequestDto-fields.adoc[]
 include::{snippets}/Musical/create/request-parts.adoc[]
-
-include::{snippets}/Musical/create/http-response.adoc[]
+====== request header
 include::{snippets}/Musical/create/response-headers.adoc[]
+
+
+.response
+include::{snippets}/Musical/create/http-response.adoc[]
+====== response body
 include::{snippets}/Musical/create/response-body.adoc[]
+====== response header
+include::{snippets}/Musical/create/response-headers.adoc[]
 
 === 뮤지컬 리스트 조회
-=== 뮤지컬 상세 조회
-=== 뮤지컬 수정
-=== 뮤지컬 삭제
-== Schedule
+.request
+include::{snippets}/Find All Musicals/http-request.adoc[]
+====== request parameter
+include::{snippets}/Find All Musicals/request-parameters.adoc[]
+====== request Body
+include::{snippets}/Find All Musicals/request-body.adoc[]
 
+.response
+include::{snippets}/Find All Musicals/http-response.adoc[]
+====== response body
+include::{snippets}/Find All Musicals/response-body.adoc[]
+include::{snippets}/Find All Musicals/response-fields.adoc[]
+
+
+=== 뮤지컬 상세 조회
+.request
+include::{snippets}/Find Musical Detail/http-request.adoc[]
+====== path variable
+include::{snippets}/Find Musical Detail/path-parameters.adoc[]
+====== request parameter
+====== request Body
+include::{snippets}/Find Musical Detail/request-body.adoc[]
+====== request header
+
+.response
+include::{snippets}/Find Musical Detail/http-response.adoc[]
+====== response body
+include::{snippets}/Find Musical Detail/response-body.adoc[]
+include::{snippets}/Find Musical Detail/response-fields.adoc[]
+
+
+=== 뮤지컬 수정
+
+.request
+include::{snippets}/Update Musical/http-request.adoc[]
+====== path variable
+include::{snippets}/Update Musical/path-parameters.adoc[]
+====== request parameter
+====== request Body
+include::{snippets}/Update Musical/request-body.adoc[]
+====== multipart formdata
+include::{snippets}/Update Musical/request-part-musicalUpdateRequestDTO-fields.adoc[]
+include::{snippets}/Update Musical/request-parts.adoc[]
+====== request header
+
+.response
+include::{snippets}/Update Musical/http-response.adoc[]
+include::{snippets}/Update Musical/response-body.adoc[]
+
+=== 뮤지컬 삭제
+.request
+include::{snippets}/Musical/delete/http-request.adoc[]
+====== path variable
+include::{snippets}/Musical/delete/path-parameters.adoc[]
+====== request parameter
+====== request Body
+include::{snippets}/Musical/delete/request-body.adoc[]
+
+====== request header
+
+.response
+include::{snippets}/Musical/delete/http-response.adoc[]
+include::{snippets}/Musical/delete/response-body.adoc[]
+
+== Schedule
 === 스케줄 생성
+.request
+include::{snippets}/Save Schedule/http-request.adoc[]
+====== path variable
+====== request parameter
+====== request Body
+include::{snippets}/Save Schedule/request-body.adoc[]
+include::{snippets}/Save Schedule/request-fields.adoc[]
+====== request header
+.response
+include::{snippets}/Save Schedule/http-response.adoc[]
+
+====== response body
+include::{snippets}/Save Schedule/response-body.adoc[]
+
+====== response header
+include::{snippets}/Save Schedule/response-headers.adoc[]
+
 === 스케쥴 리스트 조회
+.request
+====== path variable
+====== request parameter
+====== request Body
+====== request header
+.response
+
+
 === 특정 스케쥴 조회
+.request회
+include::{snippets}/Schedule/get/http-request.adoc[]
+====== path variable
+include::{snippets}/Schedule/get/path-parameters.adoc[]
+====== request parameter
+====== request Body
+include::{snippets}/Schedule/get/request-body.adoc[]
+
+====== request header
+
+.response
+include::{snippets}/Schedule/get/http-response.adoc[]
+====== response body
+include::{snippets}/Schedule/get/response-body.adoc[]
+include::{snippets}/Schedule/get/response-fields.adoc[]
+
+=== 특정 스케쥴의 좌석 조회
+
 === 스케쥴 수정
+.request
+include::{snippets}/Update Schedule/http-request.adoc[]
+====== path variable
+include::{snippets}/Update Schedule/path-parameters.adoc[]
+====== request parameter
+====== request Body
+include::{snippets}/Update Schedule/request-body.adoc[]
+include::{snippets}/Update Schedule/request-fields.adoc[]
+====== request header
+
+.response
+include::{snippets}/Update Schedule/http-response.adoc[]
+====== response body
+include::{snippets}/Update Schedule/response-body.adoc[]
+
+
 === 스케쥴 삭제
 .request
 include::{snippets}/Delete Schedule/http-request.adoc[]
+====== path variable
 include::{snippets}/Delete Schedule/path-parameters.adoc[]
+====== request parameter
+====== request Body
 include::{snippets}/Delete Schedule/request-body.adoc[]
+====== request header
 
 .response
 include::{snippets}/Delete Schedule/http-response.adoc[]
 include::{snippets}/Delete Schedule/response-body.adoc[]
 == Ticket
 === 티켓 생성(뮤지컬 예매)
+.request
+include::{snippets}/Save Ticket/http-request.adoc[]
+====== path variable
+====== request parameter
+====== request Body
+include::{snippets}/Save Ticket/request-body.adoc[]
+include::{snippets}/Save Ticket/request-fields.adoc[]
+====== request header
+
+
+.response
+include::{snippets}/Save Ticket/http-response.adoc[]
+====== response body
+include::{snippets}/Save Ticket/response-body.adoc[]
+include::{snippets}/Save Ticket/request-fields.adoc[]
+
+
+
 === 티켓 환불(삭제)
+.request
+include::{snippets}/Ticket/delete/http-request.adoc[]
+====== path variable
+include::{snippets}/Ticket/delete/path-parameters.adoc[]
+====== request parameter
+====== request Body
+include::{snippets}/Ticket/delete/request-body.adoc[]
+====== request header
+.response
+
+include::{snippets}/Ticket/delete/http-response.adoc[]
+include::{snippets}/Ticket/delete/response-body.adoc[]
